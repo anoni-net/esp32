@@ -41,9 +41,18 @@
 <main id="main">
 {% block main %}{% endblock %}
 </main>
+{# 頁尾照 anoni-net/www 的 _layout.html.j2：聯絡方式與社群的網站、onion 位址、授權 #}
 <footer>
-  <p>由 <a href="https://anoni.net/">匿名網路社群 anoni.net</a> 開發，<a href="{{ repo }}">原始碼</a>以 MIT 授權釋出，歡迎回報問題與一起改進。</p>
-  {% if target == 'onion' %}<p>你正在使用 onion 版本。網頁安裝需要 Chrome 或 Edge 的 Web Serial，Tor Browser 沒有這個功能。</p>{% endif %}
+  <div class="cols">
+    <a href="mailto:whisper@anoni.net">{{ icon('email-outline') }}whisper@anoni.net</a>
+    <a href="https://anoni.net/contact/#pgp">{{ icon('key-variant') }}PGP 公鑰</a>
+    <a href="https://form.anoni.net/s/cmc9ceju1000dlj017fiathzq">{{ icon('rss') }}訂閱電子報</a>
+    <a href="https://anoni.net/contact/">{{ icon('card-account-mail-outline') }}聯絡方式</a>
+    <a href="https://anoni.net/docs/">{{ icon('folder-open-outline') }}文件 anoni.net/docs</a>
+    <a href="https://anoni.net/news/">{{ icon('newspaper-variant-outline') }}新聞導讀 anoni.net/news</a>
+  </div>
+  <p class="onion">{{ icon('simple-torproject') }}Onion 位址：esp32.anoninetru5tflukgfaehun7q6khowgmymcff3gtk5oyesqazhmfxtyd.onion{% if target == 'onion' %}。網頁安裝需要 Chrome 或 Edge 的 Web Serial，Tor Browser 沒有這個功能{% endif %}</p>
+  <p class="license">{{ icon('octicons-mark-github-24') }}由<a href="https://anoni.net/">匿名網路社群 anoni.net</a> 開發，<a href="{{ repo }}">原始碼</a>以 MIT 授權釋出</p>
 </footer>
 </div>
 </body>

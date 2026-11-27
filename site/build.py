@@ -64,6 +64,7 @@ TARGETS = {
         ("https://anoni.net/esp32/", f"http://esp32.{ONION}/"),
         ("https://anoni.net/docs", f"http://docs.{ONION}"),
         ("https://anoni.net/gears", f"http://gears.{ONION}"),
+        ("https://form.anoni.net", f"http://form.{ONION}"),
         ("https://anoni.net", f"http://{ONION}"),
     ]},
 }

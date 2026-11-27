@@ -66,7 +66,7 @@ p{font-size:34px;line-height:1.5;margin:0;color:#d8eef7}
 .phone img{width:100%;display:block}
 </style></head><body><div class="wrap"><div class="text">
 <div class="brand"><img src="LOGO" alt="">anoni.net</div>
-<h1>ESP32 小工具</h1>
+<h1>ESP32 工坊</h1>
 <p>隨身偵測器：找出一直跟著你的藍牙追蹤器，也能檢查旅館房間與會議室</p>
 <div class="url">anoni.net/esp32</div>
 </div><div class="phone"><img src="SHOT" alt=""></div></div></body></html>"""

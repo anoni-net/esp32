@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ title }}{% if path %} · anoni.net ESP32 小工具{% else %} · anoni.net{% endif %}</title>
+<title>{{ title }}{% if path %} · anoni.net ESP32 工坊{% else %} · anoni.net{% endif %}</title>
 <meta name="description" content="{{ description }}">
 {# 分享卡照 anoni-net/www 的 _layout.html.j2，og.png 是 1200x630 #}
 <meta property="og:title" content="{{ title }}">
@@ -12,7 +12,7 @@
 <meta property="og:image" content="{{ og_image }}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="ESP32 小工具：用 ESP32-S3 開發板做的隱私小工具">
+<meta property="og:image:alt" content="ESP32 工坊：用 ESP32-S3 開發板做的隱私工具">
 <meta property="og:site_name" content="anoni.net">
 <meta property="og:description" content="{{ description }}">
 <meta property="og:locale" content="zh_TW">
@@ -37,7 +37,7 @@
       <source srcset="{{ asset('logo-wordmark-white.svg') }}" media="(prefers-color-scheme: dark)">
       <img class="brand__logo" src="{{ asset('logo-wordmark-tonal.svg') }}" alt="anoni.net" width="116" height="28">
     </picture>
-    <span class="brand__product">ESP32 小工具</span>
+    <span class="brand__product">ESP32 工坊</span>
   </a>
   <nav class="main" aria-label="主要">
     {% for t in nav_tools %}<a href="{{ root }}{{ t.slug }}/"{% if path == t.slug + '/' %} aria-current="page"{% endif %}>{{ t.name }}</a>

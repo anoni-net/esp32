@@ -2,7 +2,7 @@
 {% block main %}
 <h1>找不到這一頁</h1>
 <p class="lead">這個網址沒有對應的頁面，可能是打錯了，或頁面已經搬走。</p>
-<p class="actions"><a class="btn solid" href="{{ root }}">回到 ESP32 小工具</a><a class="btn" href="{{ root }}install/">安裝韌體</a></p>
+<p class="actions"><a class="btn solid" href="{{ root }}">回到 ESP32 工坊</a><a class="btn" href="{{ root }}install/">安裝韌體</a></p>
 <ul class="faq">
 {% for t in nav_tools %}  <li><a href="{{ root }}{{ t.slug }}/">{{ t.name }}</a>：{{ t.summary }}</li>
 {% endfor %}  <li><a href="{{ root }}about-esp32/">ESP32 是什麼</a></li>

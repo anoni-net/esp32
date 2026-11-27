@@ -69,7 +69,7 @@ TARGETS = {
     ]},
 }
 UA = "anoni-esp32-site"
-SITE_DESC = "匿名網路社群 anoni.net 用 ESP32-S3 開發板做的隱私小工具：隨身偵測器找出跟著你的藍牙追蹤器，也能檢查旅館房間與會議室。原始碼公開。"
+SITE_DESC = "匿名網路社群 anoni.net 用 ESP32-S3 開發板做的隱私工具：隨身偵測器找出跟著你的藍牙追蹤器，也能檢查旅館房間與會議室。原始碼公開。"
 
 
 def load_tools():
@@ -156,7 +156,7 @@ class Site:
     # 頁面：(輸出路徑, 模板, 內容)
     def pages(self):
         # 首頁列出全部的工具，開發用的排在後面、用不同的樣式標出來。導覽列只放給一般使用者的工具
-        yield "", "home.html.j2", {"title": "ESP32 小工具", "description": SITE_DESC,
+        yield "", "home.html.j2", {"title": "ESP32 工坊", "description": SITE_DESC,
                                    "tools": self.user_tools + [t for t in self.tools if t["audience"] == "dev"],
                                    "hero_v": {t["slug"]: self.file_v(t["dir"] / "site" / "shots" / "alert.png") for t in self.tools}}
         for t in self.tools:

@@ -19,9 +19,21 @@ ESP32 有好幾個型號，社群的工具都做在 ESP32-S3 上。它同時有 
 
 ESP32-S3 的 Wi-Fi 只支援 2.4 GHz。從網路更新時要連 2.4 GHz 的 Wi-Fi，大部分家用路由器兩種頻段都有。
 
-## 怎麼挑選開發板
+## 晶片、模組與開發板 {#parts}
 
-<figure class="board"><img src="{static:esp32-s3-devkitc-1.png}" width="750" height="410" alt="Espressif 的 ESP32-S3-DevKitC-1 開發板照片，左邊是 ESP32-S3 模組，右側有兩個 USB 孔與 Reset、Boot 兩顆按鈕"><figcaption>Espressif 原廠的 ESP32-S3-DevKitC-1（照片取自 <a href="https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide.html">Espressif 的說明文件</a>）。社群常用的相容板外型相同，接頭換成 USB-C，下面那個孔的絲印是 <code>COM</code>。</figcaption></figure>
+商品名稱裡常同時出現 ESP32-S3、WROOM-1 與 DevKitC-1，它們由小到大是三層東西：
+
+- **晶片**：ESP32-S3 本身是一顆 7 mm 見方的晶片，處理器、Wi-Fi 與藍牙都在裡面
+- **模組**：晶片加上 flash、天線與其他元件，罩在一片金屬殼底下，就是照片左邊印著 ESPRESSIF 與 ESP32-S3-WROOM-1 的那一塊。晶片在金屬殼裡，從外面看不到
+- **開發板**：模組焊在一片電路板上，加上 USB 孔、BOOT 與 RESET 兩顆按鈕、燈號與兩排排針，接上 USB 線就能使用
+
+<figure class="board"><img src="{static:esp32-s3-devkitc-1.png}" width="750" height="410" alt="Espressif 的 ESP32-S3-DevKitC-1 開發板照片，英文標示指出各個元件：左邊的 ESP32-S3-WROOM-1 模組、中間的 RGB LED、右側的兩個 USB 孔與 Reset、Boot 兩顆按鈕，以及上下兩排排針"><figcaption>Espressif 原廠的 ESP32-S3-DevKitC-1，左邊標示 ESP32-S3-WROOM-1 的就是模組（照片取自 <a href="https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide.html">Espressif 的說明文件</a>）。</figcaption></figure>
+
+要買的是開發板。記憶體的大小寫在模組的型號裡，例如 `ESP32-S3-WROOM-1-N16R8` 的 `N16` 是 16 MB flash，`R8` 是 8 MB PSRAM。開發板的商品名稱會沿用這段代號，所以挑選時看 `N16R8` 這幾個字。
+
+## 挑選開發板 {#choose}
+
+上面的照片是原廠的開發板，社群常用的相容板外型相同，接頭換成 USB-C。
 
 - 型號寫明 `ESP32-S3` 與 `N16R8`，商品名稱常寫成「ESP32-S3-DevKitC-1 N16R8」或「ESP32-S3 N16R8 開發板」
 - 選有兩個 USB-C 孔的版本，一個標 `COM`（原廠板標 `UART`），安裝韌體時接這個孔，另一個標 `USB`

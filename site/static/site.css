@@ -274,6 +274,9 @@ code { font-size: .88em; background: var(--c-surface); padding: .05em .3em; bord
 .done .i { color: var(--c-accent); margin-top: .15rem; width: 1.5em; height: 1.5em; }
 figure.board { margin: .5rem 0 1rem; max-width: 36rem; }
 figure.board img { display: block; width: 100%; height: auto; border-radius: var(--radius); background: #fff; border: 1px solid var(--c-border); }
+/* 型號這類帶連字號的詞不在連字號處斷行 */
+.nw { white-space: nowrap; }
+figure.board.small { max-width: 24rem; margin: .6rem 0 .8rem; }
 figure.board figcaption { font-size: .88rem; color: var(--c-muted); margin-top: .4rem; line-height: 1.6; }
 .handoff { display: flex; gap: 1.25rem; align-items: center; background: var(--c-surface); border-radius: var(--radius); padding: 1rem; margin: .75rem 0; }
 .handoff figure { margin: 0; flex: none; text-align: center; }

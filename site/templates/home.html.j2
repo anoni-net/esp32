@@ -7,7 +7,7 @@
   <p class="actions"><a class="btn solid" href="{{ root }}install/">安裝韌體</a><a class="btn" href="{{ root }}about-esp32/">ESP32 是什麼</a></p>
   </div>
   {% for t in tools if t.scenarios %}{% if loop.first %}
-  <figure class="phone hero-shot"><a href="{{ root }}demo/{{ t.slug }}/"><img src="{{ root }}shots/{{ t.slug }}/alert.png" width="390" height="844" alt="{{ t.name }}的手機面板，顯示一個跟著你的 Find My 配件觸發了警示（示範資料）"></a>
+  <figure class="phone hero-shot"><a href="{{ root }}demo/{{ t.slug }}/"><img src="{{ root }}shots/{{ t.slug }}/alert.png?v={{ hero_v[t.slug] }}" width="390" height="844" alt="{{ t.name }}的手機面板，顯示一個跟著你的 Find My 配件觸發了警示（示範資料）"></a>
     <figcaption>{{ t.name }}的手機面板（示範資料）</figcaption></figure>
   {% endif %}{% endfor %}
 </section>

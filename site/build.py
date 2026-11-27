@@ -118,13 +118,17 @@ class Site:
 
     # 頁面：(輸出路徑, 模板, 內容)
     def pages(self):
-        yield "", "home.html.j2", {"title": "ESP32 小工具", "tools": self.tools}
+        yield "", "home.html.j2", {"title": "ESP32 小工具", "tools": self.tools,
+                                   "hero_v": {t["slug"]: self.file_v(t["dir"] / "site" / "shots" / "alert.png") for t in self.tools}}
         for t in self.tools:
             yield f"{t['slug']}/", "tool.html.j2", {"title": t["name"], "tool": t, "html_body": self.body(t, depth=1)}
             if t["scenarios"]:
                 yield f"demo/{t['slug']}/", "demo.html.j2", {"title": f"{t['name']}的模擬面板", "tool": t,
                                                              "scenarios": t["scenarios"].DEMO}
-        yield "install/", "install.html.j2", {"title": "安裝韌體", "tools": self.tools,
+        # manifest.json 在 assets.anoni.net 快取 12 小時。網址帶正式通道韌體的 SHA-256，換版之後網址就不同。
+        # 部署腳本在 latest.json 變動時重建網頁，網址跟著換。韌體檔名本身帶雜湊，內容不會變
+        manifest_v = {t["slug"]: (self.versions.get(t["slug"]) or {}).get("sha256", "")[:12] or "0" for t in self.tools}
+        yield "install/", "install.html.j2", {"title": "安裝韌體", "tools": self.tools, "manifest_v": manifest_v,
                                               "versions": {t["slug"]: self.version_block(t) for t in self.tools}}
         for p in sorted((SITE / "pages").glob("*.md")):
             meta, body = split_front(p.read_text(encoding="utf-8"))
@@ -154,15 +158,23 @@ class Site:
                 return s
         raise SystemExit(f"{tool['slug']}/site.md：沒有 {key} 這個情境")
 
+    @staticmethod
+    def file_v(path):
+        """圖片網址的版本參數：檔案內容的雜湊，重新產生之後網址就不同，不會用到快取的舊圖。"""
+        import hashlib
+        return hashlib.sha256(path.read_bytes()).hexdigest()[:10] if path.exists() else "0"
+
     def shot(self, tool, key, root):
         s = self.scenario(tool, key)
+        v = self.file_v(tool["dir"] / "site" / "shots" / f"{key}.png")
         alt = f"模擬面板的「{s['title']}」畫面：{s['desc']}"
         return (f'<figure class="phone"><a href="{root}demo/{tool["slug"]}/#{key}">'
-                f'<img src="{root}shots/{tool["slug"]}/{key}.png" width="390" height="844" alt="{html.escape(alt)}" loading="lazy"></a>'
+                f'<img src="{root}shots/{tool["slug"]}/{key}.png?v={v}" width="390" height="844" alt="{html.escape(alt)}" loading="lazy"></a>'
                 f'<figcaption>{html.escape(s["title"])}（示範資料）</figcaption></figure>')
 
     def oled(self, tool, root):
-        items = "".join(f'<figure><img src="{root}oled/{tool["slug"]}/{html.escape(o["file"])}" width="512" height="256" '
+        items = "".join(f'<figure><img src="{root}oled/{tool["slug"]}/{html.escape(o["file"])}'
+                        f'?v={self.file_v(tool["dir"] / "site" / "oled" / o["file"])}" width="512" height="256" '
                         f'alt="OLED 畫面：{html.escape(o["caption"])}" loading="lazy"><figcaption>{html.escape(o["caption"])}</figcaption></figure>'
                         for o in tool.get("oled", []))
         return f'<div class="oled">{items}</div>'

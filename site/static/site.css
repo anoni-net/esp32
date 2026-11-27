@@ -56,6 +56,8 @@ html { background: var(--c-bg); color: var(--c-text); font: 17px/1.75 var(--font
 body { margin: 0; padding: 0 1rem; }
 a { color: var(--c-link); text-underline-offset: .2em; }
 a:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 2px; border-radius: 2px; }
+/* 內文裡的中文連結不從字跟字中間斷開（例如「怎／麼挑」），整段換到下一行。太長放不下時才斷開，不會撐出畫面 */
+main a { word-break: keep-all; overflow-wrap: anywhere; }
 .sheet { max-width: var(--frame); margin: 0 auto; }
 
 .skip { position: absolute; left: -999px; }
@@ -228,6 +230,7 @@ code { font-size: .88em; background: var(--c-surface); padding: .05em .3em; bord
 .need li { display: flex; gap: .7rem; align-items: flex-start; background: var(--c-surface); border-radius: var(--radius); padding: .8rem 1rem; font-size: .92rem; line-height: 1.55; }
 .need .i { width: 2rem; height: 2rem; color: var(--c-accent); }
 .need strong { display: block; color: var(--c-strong); font-size: 1rem; }
+.need .more { display: block; margin-top: .15rem; }
 .steps-strip { list-style: none; padding: 0; margin: .5rem 0 1rem; display: grid; gap: .5rem; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); counter-reset: none; }
 .steps-strip a { display: flex; align-items: center; gap: .6rem; border: 1px solid var(--c-border); border-radius: var(--radius); padding: .6rem .8rem; text-decoration: none; color: var(--c-strong); font-weight: 600; }
 .steps-strip a:hover { border-color: var(--c-line); }

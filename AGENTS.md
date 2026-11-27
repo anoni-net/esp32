@@ -28,6 +28,10 @@
 - 只依賴 C++ 標準函式庫的邏輯（版本判斷、地點比對、探測請求、裝置資訊、會議室檢查）寫在獨立的標頭檔，`tests/unit/` 在電腦上編譯同一份
 - 面板網頁改 `panel.html`，PlatformIO 建置時會重新產生 `panel_gz.h`，兩個檔案一起 commit
 
+## 專案網頁的兩種讀者
+
+`site/` 產生的 anoni.net/esp32/ 有兩種讀者：不會寫程式、接上 USB 就要能裝好並用手機或電腦連上板子的人，以及會寫程式的工程師。每一頁都先寫給前者，用操作上看得到的說法（操作頁面、Wi-Fi、BOOT 鍵），腳位、建置、分割表、版本雜湊這些技術內容放在頁尾的「給開發者」段落或 `developers/` 頁。開發用的工具在 `site.toml` 寫 `audience = "dev"`，不列在首頁與導覽列。網頁上引用的按鈕名稱與燈號要對照 `panel.html` 與韌體，不要只照 README 寫。
+
 ## 文字
 
 README、註解與面板文字用正體中文，照 [anoni.net 寫作風格規範](https://anoni.net/join/writing-style/)。

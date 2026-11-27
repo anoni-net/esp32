@@ -3,7 +3,7 @@
 {% block main %}
 <p class="crumb"><a href="{{ root }}">ESP32 小工具</a></p>
 <h1>安裝韌體</h1>
-<p class="lead">用電腦的 Chrome 或 Edge 打開這一頁，USB 線接上板子，按一下按鈕就能安裝，不需要寫程式。只要裝一次，之後的更新在操作頁面上按一下就好。</p>
+<p class="lead">用電腦的 Chrome 或 Edge 打開這一頁，USB 線接上板子，按一下按鈕就能安裝，不需要寫程式。只要裝一次，之後的更新在操作頁面上完成，不必再接電腦。</p>
 
 {% for t in tools if t.install == 'web' %}
 <section class="install" id="{{ t.slug }}">
@@ -22,7 +22,7 @@
 <ol class="steps">
   <li><strong>準備</strong>：ESP32-S3 N16R8 開發板（<a href="{{ root }}about-esp32/">怎麼挑</a>）、一條能傳資料的 USB-C 線，以及一台裝了 Chrome 或 Edge 的電腦（Windows、macOS、Linux 或 Chromebook）。</li>
   <li><strong>接上板子</strong>：USB 線接板子上標著 <code>COM</code> 的那個孔，另一端接電腦。板子上的燈亮起來就是有電了。</li>
-  <li><strong>按下安裝</strong>：按上面的「接上板子並安裝」，瀏覽器會跳出一個視窗列出接在電腦上的裝置。選名稱裡有 USB、usbserial、CH340 或 CP210x 的那一個，按「連線」。</li>
+  <li><strong>按下安裝</strong>：按上面的「接上板子並安裝」，瀏覽器會跳出一個視窗列出接在電腦上的裝置。選名稱是 <code>USB Single Serial</code>，或帶有 usbmodem、usbserial、CH340、CP210x 字樣的那一個，按「連線」。</li>
   <li><strong>確認安裝</strong>：接下來的視窗是英文的。按 <code>Install 隨身偵測器</code>，確認畫面（Confirm Installation）再按一次 <code>Install</code>。</li>
   <li><strong>等待完成</strong>：進度條跑完大約需要一兩分鐘，過程中不要拔掉 USB 線，也讓這個分頁留在畫面上。看到 <code>Installation complete!</code> 就完成了，按 <code>Next</code> 之後關掉視窗。</li>
 </ol>
@@ -32,7 +32,7 @@
 <h2>找不到板子的時候</h2>
 <ul class="faq">
   <li><strong>視窗裡沒有任何裝置</strong>：換一條 USB 線試試，只能充電的線電腦看不到板子。也確認接的是標著 <code>COM</code> 的孔。</li>
-  <li><strong>Mac 上找不到 CH340 或 CP210x</strong>：板子上的 USB 轉序列埠晶片需要驅動程式，安裝視窗裡有下載連結，裝好之後重新接上板子。</li>
+  <li><strong>Mac 上找不到板子</strong>：有些板子的 USB 晶片（CH340、CP210x）在 Mac 上要另外裝驅動程式，安裝視窗裡有下載連結，裝好之後重新接上板子。顯示成 <code>USB Single Serial</code> 的板子不必裝。</li>
   <li><strong>連線失敗或安裝到一半停住</strong>：拔掉 USB 線，按住板子上的 <code>BOOT</code> 鍵再接上線，放開 BOOT 之後重新按「接上板子並安裝」。</li>
   <li><strong>裝置被別的程式佔用</strong>：關掉 Arduino IDE、序列埠監控之類的程式再試一次。</li>
   <li><strong>只有手機</strong>：手機的瀏覽器不能安裝韌體，請借一台電腦，或在工作坊現場請工作人員協助。</li>

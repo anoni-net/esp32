@@ -21,6 +21,7 @@ layout_check.py），截圖存在 site/.cache/screenshots/。找不到 Chrome �
     <!-- version -->     正式通道目前的版本（建置時讀 latest.json）
     <!-- oled -->        site.toml 的 [[oled]] 列出的 OLED 畫面
     {root}               網站根目錄的相對路徑，連到站內其他頁面時用
+    {static:檔名}        static/ 底下的檔案（例如圖片），網址帶內容的雜湊
 
 site/pages/ 的頁面另外可以寫 <!-- versions -->（各工具正式通道的版本）與 <!-- devtools -->（開發用的工具）。
 
@@ -216,6 +217,8 @@ class Site:
             out = re.sub(r"(<p>)?<!-- install -->(</p>)?", lambda m: self.install_button(tool, root), out)
             out = re.sub(r"(<p>)?<!-- version -->(</p>)?", lambda m: self.version_block(tool), out)
             out = re.sub(r"(<p>)?<!-- oled -->(</p>)?", lambda m: self.oled(tool, root), out)
+        # {static:檔名}：static/ 底下的檔案，網址帶內容的雜湊（同模板的 asset()）
+        out = re.sub(r"\{static:([\w./-]+)\}", lambda m: f"{root}static/{m.group(1)}?v={self.static_v(m.group(1))}", out)
         # 表格包一層，窄螢幕時可以左右捲動
         out = out.replace("<table>", '<div class="table"><table>').replace("</table>", "</table></div>")
         return out.replace("{root}", root)

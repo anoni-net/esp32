@@ -8,6 +8,9 @@ Copyright (c) 2026 anoni.net，以 MIT 授權釋出（見 LICENSE）。
 - NimBLE-Arduino（h2zero）：Apache-2.0
 - U8g2（olikraus）：BSD-2-Clause
 
+site/static/esp32-s3-devkitc-1.png 是 Espressif Systems 的 ESP32-S3-DevKitC-1（v1.1）照片，取自
+https://github.com/espressif/esp-dev-kits（Apache-2.0）的 docs/_static/esp32-s3-devkitc-1/，未經修改。
+
 專案網頁的圖示（site/icons/）取自 Material Design Icons（Pictogrammers），Pictogrammers Free License，
 全文在 site/icons/LICENSE-material.txt。QR code 由 segno（BSD-3-Clause）在建置時產生。
 

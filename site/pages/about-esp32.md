@@ -21,8 +21,10 @@ ESP32 有好幾個型號，社群的工具都做在 ESP32-S3 上。它同時有 
 
 ## 怎麼挑板子
 
+<figure class="board"><img src="{static:esp32-s3-devkitc-1.png}" width="750" height="410" alt="Espressif 的 ESP32-S3-DevKitC-1 開發板照片，左邊是 ESP32-S3 模組，右側有兩個 USB 孔與 Reset、Boot 兩顆按鈕"><figcaption>Espressif 原廠的 ESP32-S3-DevKitC-1（照片取自 <a href="https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide.html">Espressif 的說明文件</a>）。社群常用的相容板外型相同，接頭換成 USB-C，下面那個孔的絲印是 <code>COM</code>。</figcaption></figure>
+
 - 型號寫明 `ESP32-S3` 與 `N16R8`，商品名稱常寫成「ESP32-S3-DevKitC-1 N16R8」或「ESP32-S3 N16R8 開發板」
-- 選有兩個 USB-C 孔的版本，一個標 `COM`，安裝韌體時接這個孔，另一個標 `USB`
+- 選有兩個 USB-C 孔的版本，一個標 `COM`（原廠板標 `UART`），安裝韌體時接這個孔，另一個標 `USB`
 - 44 腳的 DevKitC 相容板最好。想加裝蜂鳴器或小螢幕（OLED）又不想焊接，可以加買一片插得上的擴展板，接線方式見[給開發者](../developers/#pins)
 - 另外準備一條能傳資料的 USB-C 線，只能充電的線燒不了韌體
 

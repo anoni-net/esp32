@@ -235,9 +235,9 @@ code { font-size: .88em; background: var(--c-surface); padding: .05em .3em; bord
 .if .i { color: var(--c-muted); margin-top: .15rem; }
 .done { border: 1px solid var(--c-line); }
 .done .i { color: var(--c-accent); margin-top: .15rem; width: 1.5em; height: 1.5em; }
-figure.board { margin: .5rem 0 1rem; max-width: 20rem; }
-figure.board img { display: block; width: 100%; height: auto; border-radius: var(--radius); }
-figure.board figcaption { font-size: .85rem; color: var(--c-muted); margin-top: .3rem; }
+figure.board { margin: .5rem 0 1rem; max-width: 36rem; }
+figure.board img { display: block; width: 100%; height: auto; border-radius: var(--radius); background: #fff; border: 1px solid var(--c-border); }
+figure.board figcaption { font-size: .88rem; color: var(--c-muted); margin-top: .4rem; line-height: 1.6; }
 .handoff { display: flex; gap: 1.25rem; align-items: center; background: var(--c-surface); border-radius: var(--radius); padding: 1rem; margin: .75rem 0; }
 .handoff figure { margin: 0; flex: none; text-align: center; }
 .handoff svg.qr { display: block; width: 8.5rem; height: 8.5rem; border-radius: 6px; }

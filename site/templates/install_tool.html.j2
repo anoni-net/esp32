@@ -18,9 +18,10 @@
 
 <section class="step" id="plug">
   <h2><span class="n">1</span>接上板子</h2>
-  <figure class="board"><img src="{{ asset('board.svg') }}" width="320" height="260" alt="開發板的示意圖：下緣有兩個 USB-C 孔，安裝時接標著 COM 的那一個，旁邊有 BOOT 與 RST 兩顆按鈕"><figcaption>示意圖，實際的位置依板子而不同，看板子上的字</figcaption></figure>
+  <figure class="board"><img src="{{ asset('esp32-s3-devkitc-1.png') }}" width="750" height="410" alt="Espressif 的 ESP32-S3-DevKitC-1 開發板照片，右側有兩個 USB 孔：上面是 USB Port，下面是 USB-to-UART Port。兩個孔左邊各有一顆按鈕，上面是 Reset，下面是 Boot。">
+    <figcaption>Espressif 原廠的 ESP32-S3-DevKitC-1（照片取自 <a href="https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide.html">Espressif 的說明文件</a>）。安裝時接右下角的 <strong>USB-to-UART Port</strong>，原廠板的絲印是 <code>UART</code>，社群常用的相容板是 USB-C 接頭、絲印 <code>COM</code>。旁邊的 <strong>Boot Button</strong> 就是 BOOT 鍵。</figcaption></figure>
   <ol>
-    <li>找到板子上標著 <code>COM</code> 的 USB-C 孔，把線插進去</li>
+    <li>找到板子右側、靠近 BOOT 鍵的那個 USB 孔，絲印是 <code>COM</code> 或 <code>UART</code>，把線插進去</li>
     <li>線的另一端接電腦</li>
     <li>板子上的燈亮起來，就是有電了</li>
   </ol>
@@ -45,7 +46,7 @@
     <li>確認畫面再按一次 <code>Install</code></li>
     <li>等進度條跑完，大約兩分鐘。這段時間不要拔線，也讓這個分頁留在畫面上</li>
   </ol>
-  <p class="if">{{ icon('alert-circle-outline') }}<span>如果視窗裡沒有任何裝置，換一條能傳資料的線，或確認接的是 <code>COM</code> 孔。有些板子在 Mac 上要先裝驅動程式，視窗裡有下載連結。</span></p>
+  <p class="if">{{ icon('alert-circle-outline') }}<span>如果視窗裡沒有任何裝置，換一條能傳資料的線，或確認接的是 <code>COM</code>（<code>UART</code>）那個孔。有些板子在 Mac 上要先裝驅動程式，視窗裡有下載連結。</span></p>
   <p class="if">{{ icon('alert-circle-outline') }}<span>如果連線失敗或停在一半，拔掉線，按住板子上的 <code>BOOT</code> 鍵再接上線，放開之後重新按安裝。關掉 Arduino IDE 這類也在用板子的程式。</span></p>
   <p class="done">{{ icon('check-circle-outline') }}<span>看到 <code>Installation complete!</code> 就裝好了，按 <code>Next</code> 關掉視窗。原本的設定與記錄都會保留。下一步要打開板子的 Wi-Fi。</span></p>
 </section>

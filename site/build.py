@@ -122,6 +122,8 @@ class Site:
             if t["scenarios"]:
                 yield f"demo/{t['slug']}/", "demo.html.j2", {"title": f"{t['name']}的模擬面板", "tool": t,
                                                              "scenarios": t["scenarios"].DEMO}
+        yield "install/", "install.html.j2", {"title": "安裝韌體", "tools": self.tools,
+                                              "versions": {t["slug"]: self.version_block(t) for t in self.tools}}
         for p in sorted((SITE / "pages").glob("*.md")):
             meta, body = split_front(p.read_text(encoding="utf-8"))
             yield f"{p.stem}/", "page.html.j2", {"title": meta["title"], "lead": meta.get("lead", ""),
@@ -167,7 +169,7 @@ class Site:
         return f'<p class="actions"><a class="btn" href="{root}demo/{tool["slug"]}/">在網頁上試試看面板</a></p>'
 
     def install_button(self, tool, root):
-        return f'<p class="actions"><a class="btn solid" href="{root}install/?tool={tool["slug"]}">前往安裝</a></p>'
+        return f'<p class="actions"><a class="btn solid" href="{root}install/#{tool["slug"]}">前往安裝</a></p>'
 
     def version_block(self, tool):
         v = self.versions.get(tool["slug"])
@@ -236,8 +238,13 @@ def check(out, target):
         text = f.read_text(encoding="utf-8")
         frame = "frame" in rel.parts
         if not frame:
-            if re.search(r"<script|\son[a-z]+=|style=\"", text):
-                problems.append(f"{target}/{rel}：頁面有 script、inline 事件或 style，CSP 會擋下")
+            # 只允許安裝頁載入站內的 ESP Web Tools（CSP 是 script-src 'self'），不能有 inline 的 script、事件與 style
+            scripts = re.findall(r"<script\b[^>]*>", text)
+            if any(not re.search(r'type="module" src="[./]*static/esp-web-tools/install-button\.js"', s) for s in scripts) \
+                    or re.search(r"<script\b[^>]*>[^<]", text) or re.search(r'\son[a-z]+=|style="', text):
+                problems.append(f"{target}/{rel}：頁面有 inline 的 script、事件或 style，CSP 會擋下")
+            if scripts and rel.as_posix() != "install/index.html":
+                problems.append(f"{target}/{rel}：只有安裝頁可以載入 script")
             for m in re.finditer(r'(?:href|src)="([^"]+)"', text):
                 url = html.unescape(m.group(1))
                 if re.match(r"(https?:|mailto:)", url):

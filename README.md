@@ -24,7 +24,7 @@
 
 ## 燒錄
 
-每個工具都是一個 PlatformIO 專案。裝好 [PlatformIO](https://platformio.org/install/cli) 之後：
+不會寫程式的人用電腦的 Chrome 或 Edge 打開[安裝頁](https://anoni.net/esp32/install/)，接上板子按一下就能安裝。從原始碼建置時，每個工具都是一個 PlatformIO 專案。裝好 [PlatformIO](https://platformio.org/install/cli) 之後：
 
 ```bash
 cd pocket-detector
@@ -43,6 +43,8 @@ USB 線接開發板標 `COM` 的那個孔。上傳失敗時，按住 BOOT 鍵、
 ./tools/publish_firmware.sh pocket-detector --dry-run  # 只建置，印出 latest.json
 ./tools/promote_firmware.sh pocket-detector            # 實機測試通過後推到正式通道
 ```
+
+發布時一起產生安裝頁（ESP Web Tools）用的 `manifest.json` 與開機程式、分割表、otadata 三個檔案，程式槽用的是同一個韌體檔。網頁安裝只寫這四段，不碰 NVS 的設定與 flash 記錄。
 
 每個工具的通道目錄與建置設定寫在 `<工具>/publish.env`。上傳用 ssh 與 rsync，主機由 `PUBLISH_HOST`、`PUBLISH_ROOT` 指定，或寫在不進版控的 `tools/publish.local.env`。正式通道只放實機測試通過、從測試通道原封不動複製過去的檔案，流程見 [pocket-detector 的說明](pocket-detector/README.md#發布韌體到-assetsanoninet)。
 

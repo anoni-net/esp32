@@ -12,6 +12,7 @@
 # 把測試通道上的同一個檔案複製到正式通道，不重新建置，建置時間與 SHA-256 都不變。
 # 韌體的檔名帶 SHA-256 的前 12 碼，同一個檔名的內容不會變，Cloudflare 快取舊的也沒關係。
 # latest.json 最後才換上，先寫到暫存檔再 mv，板子不會讀到寫一半的檔案。
+# 同時產生網頁安裝（ESP Web Tools）用的 manifest.json 與開機程式、分割表、otadata 三個檔案。
 # 工具的資料夾或 lib/ 有還沒 commit 的變更時拒絕發布，發布出去的版本要對得回 commit。ALLOW_DIRTY=1 可以略過。
 set -euo pipefail
 
@@ -54,14 +55,39 @@ cp "$BIN" "$WORK/${FILE}"
 python3 -I -c 'import json,sys; print(json.dumps({"build":sys.argv[1],"file":sys.argv[2],"size":int(sys.argv[3]),"sha256":sys.argv[4],"commit":sys.argv[5]}, ensure_ascii=False))' \
   "${BUILD}" "${FILE}" "${SIZE}" "${SHA}" "${COMMIT}" > "$WORK/latest.json"
 cat "$WORK/latest.json"
-[ "$DRY_RUN" = 1 ] && { echo "（--dry-run，沒有上傳）"; exit 0; }
+
+# 網頁安裝用的其他三個檔案與 manifest.json。開機程式先寫進 flash 設定（同 pio 燒錄時的處理），
+# 檔名帶內容的雜湊，內容不會變。程式槽用的是上面同一個韌體檔
+ESPTOOL="$HOME/.platformio/packages/tool-esptool/esptool"
+BOOT_APP0="$HOME/.platformio/packages/framework-arduinoespressif32/tools/partitions/boot_app0.bin"
+# shellcheck disable=SC2086
+"$ESPTOOL" --chip "$CHIP" merge-bin -o "$WORK/bootloader.bin" $FLASH_ARGS 0x0 ".pio/build/${PIO_ENV}/bootloader.bin" >/dev/null
+cp ".pio/build/${PIO_ENV}/partitions.bin" "$WORK/partitions.bin"
+cp "$BOOT_APP0" "$WORK/boot_app0.bin"
+PARTS=""
+for part in bootloader partitions boot_app0; do
+  h="$(shasum -a 256 "$WORK/${part}.bin" | cut -c1-12)"
+  mv "$WORK/${part}.bin" "$WORK/${part}-${h}.bin"
+  PARTS="$PARTS ${part}-${h}.bin"
+done
+# shellcheck disable=SC2086
+set -- $PARTS
+python3 -I -c 'import json,sys
+n,chip,ver,boot,part,app0,app=sys.argv[1:]
+print(json.dumps({"name":n,"version":ver,"new_install_prompt_erase":False,"new_install_improv_wait_time":0,
+  "builds":[{"chipFamily":chip,"parts":[{"path":boot,"offset":0},{"path":part,"offset":0x8000},
+  {"path":app0,"offset":0xe000},{"path":app,"offset":0x10000}]}]},ensure_ascii=False))' \
+  "$NAME" "$CHIP_FAMILY" "${BUILD}（${COMMIT}）" "$1" "$2" "$3" "$FILE" > "$WORK/manifest.json"
+[ "$DRY_RUN" = 1 ] && { cat "$WORK/manifest.json"; ls -l "$WORK"; echo "（--dry-run，沒有上傳）"; exit 0; }
 
 [ -n "${PUBLISH_HOST:-}" ] && [ -n "${PUBLISH_ROOT:-}" ] || die "要設定 PUBLISH_HOST 與 PUBLISH_ROOT（或寫在 tools/publish.local.env）"
 DEST="${PUBLISH_ROOT}/${CHANNEL}-test"
 ssh "$PUBLISH_HOST" "mkdir -p '$DEST'"
 rsync -t --chmod=F644 "$WORK/${FILE}" "$PUBLISH_HOST:$DEST/${FILE}"
+for part in $PARTS; do rsync -t --chmod=F644 "$WORK/$part" "$PUBLISH_HOST:$DEST/$part"; done
+rsync -t --chmod=F644 "$WORK/manifest.json" "$PUBLISH_HOST:$DEST/.manifest.json.tmp"
 rsync -t --chmod=F644 "$WORK/latest.json" "$PUBLISH_HOST:$DEST/.latest.json.tmp"
-ssh "$PUBLISH_HOST" "mv '$DEST/.latest.json.tmp' '$DEST/latest.json'"
+ssh "$PUBLISH_HOST" "mv '$DEST/.manifest.json.tmp' '$DEST/manifest.json' && mv '$DEST/.latest.json.tmp' '$DEST/latest.json'"
 
 # 經過 Cloudflare 確認讀得到，內容跟剛才產生的一樣
 got="$(curl -fsS "${URL}/latest.json?r=$RANDOM$RANDOM")" || die "讀不到 ${URL}/latest.json"

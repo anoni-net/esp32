@@ -8,6 +8,9 @@ Copyright (c) 2026 anoni.net，以 MIT 授權釋出（見 LICENSE）。
 - NimBLE-Arduino（h2zero）：Apache-2.0
 - U8g2（olikraus）：BSD-2-Clause
 
+專案網頁的安裝頁附帶 ESP Web Tools 10.5.2（esphome，Apache-2.0），放在 site/static/esp-web-tools/，
+未經修改，授權全文在同一個資料夾的 LICENSE。
+
 pocket-detector/pocket_detector/roomcheck_ids.h 由 pocket-detector/tools/make_roomcheck_ids.py
 從以下公開的登記資料挑選產生，檔頭寫著下載日期：
 

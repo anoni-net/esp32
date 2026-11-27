@@ -46,8 +46,20 @@ fi
 cur="$(curl -fsS "${URL}/latest.json?r=$RANDOM$RANDOM" || true)"
 [ "$cur" = "$(cat "$WORK/latest.json")" ] && { echo "正式通道已經是這個版本"; exit 0; }
 
-# 先放韌體檔，latest.json 最後用 mv 換上，板子不會讀到指向還不存在的檔案的 latest.json
+# 網頁安裝的 manifest.json 與它列出的檔案（舊的版本沒有 manifest.json 時略過）
+curl -fsS "${TEST_URL}/manifest.json?r=$RANDOM$RANDOM" -o "$WORK/manifest.json" 2>/dev/null || rm -f "$WORK/manifest.json"
+PARTS=""
+if [ -f "$WORK/manifest.json" ]; then
+  PARTS="$(python3 -I -c 'import json,sys; j=json.load(open(sys.argv[1])); f=sys.argv[2]
+ps=[p["path"] for b in j["builds"] for p in b["parts"]]
+assert f in ps, "manifest.json 沒有指向 latest.json 的韌體"
+print(" ".join(p for p in ps if p!=f))' "$WORK/manifest.json" "$FILE")" || die "測試通道的 manifest.json 跟 latest.json 對不上"
+fi
+
+# 先放韌體檔，manifest.json 與 latest.json 最後用 mv 換上，板子與網頁不會讀到指向還不存在的檔案的版本
 ssh "$PUBLISH_HOST" "set -e; mkdir -p '$DEST_DIR'; cp -p '$SRC_DIR/$FILE' '$DEST_DIR/$FILE'; \
+  for p in $PARTS; do cp -p '$SRC_DIR/'\$p '$DEST_DIR/'\$p; done; \
+  if [ -n '$PARTS' ]; then cp '$SRC_DIR/manifest.json' '$DEST_DIR/.manifest.json.tmp'; mv '$DEST_DIR/.manifest.json.tmp' '$DEST_DIR/manifest.json'; fi; \
   cp '$SRC_DIR/latest.json' '$DEST_DIR/.latest.json.tmp'; mv '$DEST_DIR/.latest.json.tmp' '$DEST_DIR/latest.json'"
 
 got="$(curl -fsS "${URL}/latest.json?r=$RANDOM$RANDOM")" || die "讀不到 ${URL}/latest.json"

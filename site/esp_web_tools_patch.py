@@ -22,8 +22,11 @@ PATCHES = [
     ("install-dialog", r'this\._manifest\.new_install_prompt_erase\?this\._state="ASK_ERASE":this\._startInstall\(!0\)',
      'this._manifest.new_install_prompt_erase?this._state="ASK_ERASE":this._startInstall(!1)', 2),
     # --- 2. 對話框的文字 ---
-    ("install-dialog", r'`Install \$\{this\._manifest\.name\}`', '`安裝${this._manifest.name}`', 2),
-    ("install-dialog", r'`Update \$\{this\._manifest\.name\}`', '`更新${this._manifest.name}`', 1),
+    # 英文名稱（Pocket Detector）跟中文之間空一格：「安裝 Pocket Detector」
+    ("install-dialog", r'`Install \$\{this\._manifest\.name\}`',
+     '`安裝${/^[\\x00-\\x7f]/.test(this._manifest.name)?" ":""}${this._manifest.name}`', 2),
+    ("install-dialog", r'`Update \$\{this\._manifest\.name\}`',
+     '`更新${/^[\\x00-\\x7f]/.test(this._manifest.name)?" ":""}${this._manifest.name}`', 1),
     ("install-dialog", r'>Logs & Console<', '>查看開發板的輸出<', 2),
     ("install-dialog", r'_renderProgress\("Connecting"\)', '_renderProgress("連線中")', 1),
     ("install-dialog", r't="Confirm Installation"', 't="確認安裝"', 1),
@@ -31,7 +34,7 @@ PATCHES = [
     ("install-dialog", r'Your device is running\s+\$\{this\._info\.firmware\}&nbsp;\$\{this\._info\.version\}\.',
      '開發板目前的韌體是 ${this._info.firmware}&nbsp;${this._info.version}。', 1),
     ("install-dialog", r'Do you want to \$\{s\}\s+\$\{this\._manifest\.name\}&nbsp;\$\{this\._manifest\.version\}\?',
-     '要${s}${this._manifest.name}（${this._manifest.version}）嗎？開發板上的設定與記錄會保留。', 1),
+     '要${s}${/^[\\x00-\\x7f]/.test(this._manifest.name)?" ":""}${this._manifest.name}（${this._manifest.version}）嗎？開發板上的設定與記錄會保留。', 1),
     ("install-dialog", r'All data on the device will be erased\.', '開發板上所有的資料都會被清除。', 1),
     ("install-dialog", r'>\s*Back\s*</ew-text-button>', '>返回</ew-text-button>', 5),
     ("install-dialog", r'>\s*Install\s*</ew-text-button>', '>安裝</ew-text-button>', 1),

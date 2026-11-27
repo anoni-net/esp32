@@ -32,17 +32,19 @@
   <h2><span class="n">2</span>安裝韌體</h2>
   {% if firmware | length > 1 %}<p>選擇操作頁面的語言：</p>{% endif %}
   {% for f in firmware %}
-  <div class="install-lang" lang="{{ f.lang }}" id="lang-{{ f.lang }}">
+  <div class="install-lang" id="lang-{{ f.lang }}">
   <esp-web-install-button manifest="{{ f.manifest }}">
-    <button slot="activate" class="btn solid big">{% if firmware | length > 1 %}接上開發板並安裝（{{ f.label }}）{% else %}接上開發板並安裝{{ tool.name }}{% endif %}</button>
-    <div slot="unsupported" class="note">這個瀏覽器不能直接安裝，手機、Safari、Firefox 與 Tor Browser 都沒有網頁燒錄的功能。請在電腦上用 Chrome 或 Edge 打開 <strong>anoni.net/esp32/install/</strong>。</div>
-    <div slot="not-allowed" class="note">網頁安裝要在 https 的網址底下才能使用，請從 https://anoni.net/esp32/install/ 打開。</div>
+    <button slot="activate" class="btn solid big">{% if firmware | length > 1 %}接上開發板並安裝（<span lang="{{ f.lang }}">{{ f.label }}</span>）{% else %}接上開發板並安裝{{ tool.name }}{% endif %}</button>
+    {# 不支援的瀏覽器只在第一個按鈕的位置說明一次，其他語系的按鈕留空，不重複同一段話 #}
+    {% if loop.first %}<div slot="unsupported" class="note">這個瀏覽器不能直接安裝，手機、Safari、Firefox 與 Tor Browser 都沒有網頁燒錄的功能。請在電腦上用 Chrome 或 Edge 打開 <strong>anoni.net/esp32/install/</strong>。</div>
+    <div slot="not-allowed" class="note">網頁安裝要在 https 的網址底下才能使用，請從 https://anoni.net/esp32/install/ 打開。</div>{% else %}<div slot="unsupported"></div><div slot="not-allowed"></div>{% endif %}
   </esp-web-install-button>
   </div>
   {% endfor %}
+  {% if firmware | length > 1 %}<p class="note">語言是裝進開發板的韌體決定的，之後想換，回到這裡安裝另一個語言即可，設定與記錄都會保留。</p>{% endif %}
   <ol>
     <li>按上面的按鈕，瀏覽器跳出一個視窗，選 <code>USB Single Serial</code>（或名稱帶有 usbmodem、usbserial 的那一個），按「連線」</li>
-    <li>按「安裝{{ tool.name }}」</li>
+    <li>按「安裝{{ tool.name }}」{% if firmware | length > 1 %}（其他語言的名稱不同，按「安裝」開頭的那一個）{% endif %}</li>
     <li>確認畫面再按一次「安裝」</li>
     <li>等進度條跑完，大約兩分鐘。這段時間不要拔線，也讓這個分頁留在畫面上</li>
   </ol>

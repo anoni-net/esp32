@@ -1,6 +1,6 @@
 +++
 title = "給開發者"
-lead = "原始碼、從原始碼建置、開發板的腳位，以及韌體怎麼發布與驗證。只想使用工具的話，看安裝韌體與連上板子就夠了。"
+lead = "原始碼、從原始碼建置、開發板的腳位，以及韌體怎麼發布與驗證。只想使用工具的話，看安裝韌體與連上裝置就夠了。"
 +++
 
 ## 原始碼 {#source}
@@ -28,7 +28,7 @@ pio run -t upload       # 建置並燒錄
 pio device monitor      # 看序列埠的輸出，鮑率 115200
 ```
 
-平台與程式庫的版本固定在 `platformio.ini`（espressif32 8.0.0，Arduino 核心 3.3.12，NimBLE-Arduino 2.5.2，U8g2 2.36.18）。上傳失敗時，按住 `BOOT`、按一下 `RST`、放開 `BOOT`，讓板子進入下載模式再試一次。
+平台與程式庫的版本固定在 `platformio.ini`（espressif32 8.0.0，Arduino 核心 3.3.12，NimBLE-Arduino 2.5.2，U8g2 2.36.18）。上傳失敗時，按住 `BOOT`、按一下 `RST`、放開 `BOOT`，讓開發板進入下載模式再試一次。
 
 用 Arduino IDE 的話，先把 `lib/` 底下的資料夾複製到 Arduino 的 `libraries` 資料夾，開發板選 `ESP32S3 Dev Module`，Flash Size 16MB、PSRAM 選 OPI PSRAM、Partition Scheme 選 16M Flash（3MB APP/9.9MB FATFS），細節見[隨身偵測器的說明](https://github.com/anoni-net/esp32/tree/main/pocket-detector#arduino-ide)。
 
@@ -41,7 +41,7 @@ pio device monitor      # 看序列埠的輸出，鮑率 115200
 | GPIO0 | BOOT 鍵：長按開關 Wi-Fi、短按確認警示或打記號、雙擊尋找 |
 | GPIO4 | 蜂鳴器（有源，高電位觸發） |
 | GPIO8、GPIO9 | OLED 的 SDA、SCL（SSD1306，I2C 位址 `0x3C` 或 `0x3D`） |
-| GPIO48 | 板上的 RGB LED（部分板子是 GPIO38） |
+| GPIO48 | 板上的 RGB LED（部分開發板是 GPIO38） |
 
 接線時避開這幾支：
 
@@ -69,14 +69,14 @@ OLED 的 `VCC` 接 3.3V，ESP32-S3 的腳位不耐 5V。完整的接線說明見
 
 | 通道 | 網址 | 內容 |
 |---|---|---|
-| 正式 | `https://assets.anoni.net/esp32-tracker/` | 實機測試通過的版本，網頁安裝與板子的自動更新都讀這裡 |
-| 測試 | `https://assets.anoni.net/esp32-tracker-test/` | 每次修改都發布，給開發用的板子 |
+| 正式 | `https://assets.anoni.net/esp32-tracker/` | 實機測試通過的版本，網頁安裝與自動更新都讀這裡 |
+| 測試 | `https://assets.anoni.net/esp32-tracker-test/` | 每次修改都發布，給開發測試用的開發板 |
 
-每個通道有 `latest.json`（板子從網址更新時讀）與 `manifest.json`（網頁安裝讀），寫著建置時間、commit、SHA-256 與檔名。韌體檔名帶 SHA-256 的前 12 碼，同一個檔名的內容不會改變。板子下載時一邊寫進另一個程式槽一邊計算 SHA-256，跟 `latest.json` 相符才切換。網址寫死在韌體裡，知道熱點密碼的人也只能裝上社群發布的版本。
+每個通道有 `latest.json`（從網路更新時讀）與 `manifest.json`（網頁安裝讀），寫著建置時間、commit、SHA-256 與檔名。韌體檔名帶 SHA-256 的前 12 碼，同一個檔名的內容不會改變。開發板下載時一邊寫進另一個程式槽一邊計算 SHA-256，跟 `latest.json` 相符才切換。網址寫死在韌體裡，知道熱點密碼的人也只能裝上社群發布的版本。
 
 安裝頁分成兩層：`/esp32/install/` 選工具，`/esp32/install/<工具>/` 選語系並安裝。每個工具在 `site.toml` 用 `[[firmware]]` 列出各語系的韌體（語言、按鈕上的名稱、發布通道），新增語系時另外建置、發布到自己的通道，再加一段 `[[firmware]]`，安裝頁就多一個按鈕。
 
-新版本先用 `tools/publish_firmware.sh` 發布到測試通道，開發用的板子從測試通道更新、實機測試（`tests/hil/run_hil.py --update`）通過之後，才用 `tools/promote_firmware.sh` 把同一個檔案原封不動複製到正式通道。
+新版本先用 `tools/publish_firmware.sh` 發布到測試通道，開發測試用的開發板從測試通道更新、實機測試（`tests/hil/run_hil.py --update`）通過之後，才用 `tools/promote_firmware.sh` 把同一個檔案原封不動複製到正式通道。
 
 正式通道目前的版本：
 
@@ -89,10 +89,10 @@ OLED 的 `VCC` 接 3.3V，ESP32-S3 的腳位不耐 5V。完整的接線說明見
 ```bash
 cd pocket-detector
 ./tools/run_tests.sh                    # 單元測試、面板測試、對比測試
-./tools/run_tests.sh --hil /dev/cu.xxx  # 加上接在電腦上的板子做實機測試
+./tools/run_tests.sh --hil /dev/cu.xxx  # 加上接在電腦上的開發板做實機測試
 ```
 
-GitHub Actions 在每個 PR 編譯所有工具，執行不需要板子的測試，並建置這個網站、用 320、390、1280 三種寬度檢查版面。
+GitHub Actions 在每個 PR 編譯所有工具，執行不需要開發板的測試，並建置這個網站、用 320、390、1280 三種寬度檢查版面。
 
 ## 開發用的工具 {#devtools}
 

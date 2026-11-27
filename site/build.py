@@ -25,7 +25,7 @@ layout_check.py），截圖存在 site/.cache/screenshots/。找不到 Chrome �
 
 site/pages/ 的頁面另外可以寫 <!-- versions -->（各工具正式通道的版本）與 <!-- devtools -->（開發用的工具）。
 
-讀者分兩種：不會寫程式、接上 USB 就要能裝好並連上板子的人，以及會寫程式的工程師。每一頁都先寫給前者，
+讀者分兩種：不會寫程式、接上 USB 就要能裝好並連上裝置的人，以及會寫程式的工程師。每一頁都先寫給前者，
 腳位、建置、版本雜湊這些技術內容放在頁尾的「給開發者」段落或 developers/ 頁。site.toml 寫
 audience = "dev" 的工具（例如示範韌體）不列在導覽列，首頁的工具列表排在最後並標成開發用，也列在 developers/ 頁。
 
@@ -106,7 +106,7 @@ def fetch_version(channel, offline):
         return None
     url = f"https://assets.anoni.net/{channel}/latest.json"
     try:
-        # 加上隨機的查詢字串，避開 Cloudflare 快取的舊版本（同板子的做法）
+        # 加上隨機的查詢字串，避開 Cloudflare 快取的舊版本（同韌體的做法）
         req = urllib.request.Request(f"{url}?r={secrets.token_hex(4)}", headers={"User-Agent": UA})
         with urllib.request.urlopen(req, timeout=15) as r:
             j = json.load(r)

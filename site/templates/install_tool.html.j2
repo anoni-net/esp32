@@ -10,20 +10,20 @@
 
 <h2>你的步驟</h2>
 <ol class="steps-strip">
-  <li><a href="#plug"><span class="n">1</span>接上板子</a></li>
+  <li><a href="#plug"><span class="n">1</span>接上開發板</a></li>
   <li><a href="#install"><span class="n">2</span>安裝韌體</a></li>
-  <li><a href="#wifi"><span class="n">3</span>打開板子的 Wi-Fi</a></li>
+  <li><a href="#wifi"><span class="n">3</span>打開開發板的 Wi-Fi</a></li>
   <li><a href="#phone"><span class="n">4</span>用手機連上</a></li>
 </ol>
 
 <section class="step" id="plug">
-  <h2><span class="n">1</span>接上板子</h2>
+  <h2><span class="n">1</span>接上開發板</h2>
   <figure class="board"><img src="{{ asset('esp32-s3-devkitc-1.png') }}" width="750" height="410" alt="Espressif 的 ESP32-S3-DevKitC-1 開發板照片，右側有兩個 USB 孔：上面是 USB Port，下面是 USB-to-UART Port。兩個孔左邊各有一顆按鈕，上面是 Reset，下面是 Boot。">
     <figcaption>Espressif 原廠的 ESP32-S3-DevKitC-1（照片取自 <a href="https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide.html">Espressif 的說明文件</a>）。安裝時接右下角的 <strong>USB-to-UART Port</strong>，原廠板的絲印是 <code>UART</code>，社群常用的相容板是 USB-C 接頭、絲印 <code>COM</code>。旁邊的 <strong>Boot Button</strong> 就是 BOOT 鍵。</figcaption></figure>
   <ol>
-    <li>找到板子右側、靠近 BOOT 鍵的那個 USB 孔，絲印是 <code>COM</code> 或 <code>UART</code>，把線插進去</li>
+    <li>找到開發板右側、靠近 BOOT 鍵的那個 USB 孔，絲印是 <code>COM</code> 或 <code>UART</code>，把線插進去</li>
     <li>線的另一端接電腦</li>
-    <li>板子上的燈亮起來，就是有電了</li>
+    <li>開發板上的燈亮起來，就是有電了</li>
   </ol>
   <p class="if">{{ icon('alert-circle-outline') }}<span>如果燈沒有亮，換一條線或換電腦上的另一個孔再試。</span></p>
 </section>
@@ -34,7 +34,7 @@
   {% for f in firmware %}
   <div class="install-lang" lang="{{ f.lang }}" id="lang-{{ f.lang }}">
   <esp-web-install-button manifest="{{ f.manifest }}">
-    <button slot="activate" class="btn solid big">{% if firmware | length > 1 %}接上板子並安裝（{{ f.label }}）{% else %}接上板子並安裝{{ tool.name }}{% endif %}</button>
+    <button slot="activate" class="btn solid big">{% if firmware | length > 1 %}接上開發板並安裝（{{ f.label }}）{% else %}接上開發板並安裝{{ tool.name }}{% endif %}</button>
     <div slot="unsupported" class="note">這個瀏覽器不能直接安裝，手機、Safari、Firefox 與 Tor Browser 都沒有網頁燒錄的功能。請在電腦上用 Chrome 或 Edge 打開 <strong>anoni.net/esp32/install/</strong>。</div>
     <div slot="not-allowed" class="note">網頁安裝要在 https 的網址底下才能使用，請從 https://anoni.net/esp32/install/ 打開。</div>
   </esp-web-install-button>
@@ -46,18 +46,18 @@
     <li>確認畫面再按一次「安裝」</li>
     <li>等進度條跑完，大約兩分鐘。這段時間不要拔線，也讓這個分頁留在畫面上</li>
   </ol>
-  <p class="if">{{ icon('alert-circle-outline') }}<span>如果視窗裡沒有任何裝置，換一條能傳資料的線，或確認接的是 <code>COM</code>（<code>UART</code>）那個孔。有些板子在 Mac 上要先裝驅動程式，視窗裡有下載連結。</span></p>
-  <p class="if">{{ icon('alert-circle-outline') }}<span>如果連線失敗或停在一半，拔掉線，按住板子上的 <code>BOOT</code> 鍵再接上線，放開之後重新按安裝。關掉 Arduino IDE 這類也在用板子的程式。</span></p>
-  <p class="done">{{ icon('check-circle-outline') }}<span>看到「安裝完成！」就裝好了，按「下一步」再關掉視窗。板子上原本的設定與記錄都會保留。下一步要打開板子的 Wi-Fi。</span></p>
+  <p class="if">{{ icon('alert-circle-outline') }}<span>如果視窗裡沒有任何裝置，換一條能傳資料的線，或確認接的是 <code>COM</code>（<code>UART</code>）那個孔。有些開發板在 Mac 上要先裝驅動程式，視窗裡有下載連結。</span></p>
+  <p class="if">{{ icon('alert-circle-outline') }}<span>如果連線失敗或停在一半，拔掉線，按住開發板上的 <code>BOOT</code> 鍵再接上線，放開之後重新按安裝。關掉 Arduino IDE 這類也在使用開發板的程式。</span></p>
+  <p class="done">{{ icon('check-circle-outline') }}<span>看到「安裝完成！」就裝好了，按「下一步」再關掉視窗。開發板上原本的設定與記錄都會保留。下一步要打開開發板的 Wi-Fi。</span></p>
 </section>
 
 <section class="step" id="wifi">
-  <h2><span class="n">3</span>打開板子的 Wi-Fi</h2>
+  <h2><span class="n">3</span>打開開發板的 Wi-Fi</h2>
   <ol>
     <li>拔掉 USB 線，改接行動電源或手機充電器。想繼續接著電腦也可以</li>
-    <li>長按板子上的 <code>BOOT</code> 鍵 2 秒，燈號變色時放開</li>
+    <li>長按開發板上的 <code>BOOT</code> 鍵 2 秒，燈號變色時放開</li>
   </ol>
-  <p class="done">{{ icon('check-circle-outline') }}<span>燈每 3 秒亮一下青色，板子的 Wi-Fi 就開好了。下一步改用手機。</span></p>
+  <p class="done">{{ icon('check-circle-outline') }}<span>燈每 3 秒亮一下青色，開發板的 Wi-Fi 就開好了。下一步改用手機。</span></p>
 </section>
 
 <section class="step" id="phone">
@@ -70,7 +70,7 @@
     <li>手機的 Wi-Fi 設定裡找到 <code>BLE-Tracker-</code> 開頭的名稱，輸入密碼 <code>anoni-tracker</code></li>
     <li>操作頁面自動跳出來。沒有的話，用瀏覽器打開 <code>http://192.168.4.1</code></li>
   </ol>
-  <p class="done">{{ icon('check-circle-outline') }}<span>看到操作頁面就完成了！第一件事到「設定 → 名稱與密碼」改掉預設的密碼。iPhone、Android 的注意事項與連不上的時候，見<a href="{{ root }}connect/">連上板子</a>。</span></p>
+  <p class="done">{{ icon('check-circle-outline') }}<span>看到操作頁面就完成了！第一件事到「設定 → 名稱與密碼」改掉預設的密碼。iPhone、Android 的注意事項與連不上的時候，見<a href="{{ root }}connect/">連上裝置</a>。</span></p>
 </section>
 
 <h2>給開發者</h2>

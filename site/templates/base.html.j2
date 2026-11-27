@@ -41,7 +41,7 @@
   </a>
   <nav class="main" aria-label="主要">
     {% for t in nav_tools %}<a href="{{ root }}{{ t.slug }}/"{% if path == t.slug + '/' %} aria-current="page"{% endif %}>{{ t.name }}</a>
-    {% endfor %}{% for p, label in [('install/', '安裝韌體'), ('connect/', '連上板子'), ('about-esp32/', 'ESP32 是什麼'), ('developers/', '給開發者')] %}<a href="{{ root }}{{ p }}"{% if path == p %} aria-current="page"{% endif %}>{{ label }}</a>
+    {% endfor %}{% for p, label in [('install/', '安裝韌體'), ('connect/', '連上裝置'), ('about-esp32/', 'ESP32 是什麼'), ('developers/', '給開發者')] %}<a href="{{ root }}{{ p }}"{% if path == p %} aria-current="page"{% endif %}>{{ label }}</a>
     {% endfor %}
   </nav>
 </header>

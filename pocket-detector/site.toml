@@ -9,7 +9,7 @@ channel = "esp32-tracker"
 install = "web"
 
 # 網頁安裝的韌體，每個語系一份：操作頁面的語言、按鈕上的名稱、正式通道在 assets.anoni.net 上的目錄。
-# 只有一個語系時按鈕寫「接上板子並安裝」，多個語系時每個語系一個按鈕。新增語系時韌體要另外建置並發布到
+# 只有一個語系時按鈕寫「接上開發板並安裝」，多個語系時每個語系一個按鈕。新增語系時韌體要另外建置並發布到
 # 自己的通道（tools/publish_firmware.sh 的 publish.env），再加一段 [[firmware]]
 [[firmware]]
 lang = "zh-TW"

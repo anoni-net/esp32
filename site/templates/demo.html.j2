@@ -2,7 +2,7 @@
 {% block main %}
 <p class="crumb"><a href="{{ root }}">ESP32 工坊</a><a href="{{ root }}{{ tool.slug }}/">{{ tool.name }}</a></p>
 <h1>{{ title }}</h1>
-<p class="lead">這是板子上的操作頁面，跟韌體裡的是同一份網頁。資料是虛構的示範，按鈕不會連到任何裝置。選一個情境看看各種狀況下的畫面。</p>
+<p class="lead">這是{{ tool.name }}的操作頁面，跟韌體裡的是同一份網頁。資料是虛構的示範，按鈕不會連到任何裝置。選一個情境看看各種狀況下的畫面。</p>
 <div class="demo">
   <ul class="scenarios" aria-label="情境">
   {% for s in scenarios %}
@@ -13,5 +13,5 @@
     <iframe name="panel" src="frame/{{ scenarios[0].key }}.html" title="{{ tool.name }}的操作頁面（示範）" sandbox="allow-scripts" width="390" height="760"></iframe>
   </div>
 </div>
-<p>實際使用時，手機或電腦連上板子的 Wi-Fi 後會自動打開這個頁面（<a href="{{ root }}connect/">連線的步驟</a>）。準備好板子之後，<a href="{{ root }}install/{{ tool.slug }}/">前往安裝</a>。</p>
+<p>實際使用時，手機或電腦連上開發板的 Wi-Fi 後會自動打開這個頁面（<a href="{{ root }}connect/">連線的步驟</a>）。準備好開發板之後，<a href="{{ root }}install/{{ tool.slug }}/">前往安裝</a>。</p>
 {% endblock %}

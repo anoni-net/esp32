@@ -2,7 +2,7 @@
 {% block main %}
 <p class="crumb"><a href="{{ root }}">ESP32 工坊</a></p>
 <h1>安裝韌體</h1>
-<p class="lead">選一個工具，用電腦的 Chrome 或 Edge 接上板子，按一下就能安裝，不需要寫程式。</p>
+<p class="lead">選一個工具，用電腦的 Chrome 或 Edge 接上開發板，按一下就能安裝，不需要寫程式。</p>
 
 <h2>你需要</h2>
 {% include "_need.html.j2" %}
@@ -17,7 +17,7 @@
   </li>
 {% endfor %}
 </ul>
-<p>裝好之後，照<a href="{{ root }}connect/">連上板子</a>的步驟用手機或電腦打開操作頁面。</p>
+<p>裝好之後，照<a href="{{ root }}connect/">連上裝置</a>的步驟用手機或電腦打開操作頁面。</p>
 
 <h2>給開發者</h2>
 <p>每個工具的安裝頁用 ESP Web Tools 寫入正式通道的韌體，版本與 SHA-256 寫在各安裝頁的最後。{% for t in tools if t.install == 'pio' %}{{ t.name }}{% if not loop.last %}、{% endif %}{% endfor %}只提供從原始碼建置的方式，見<a href="{{ root }}developers/#build">建置與燒錄</a>。</p>

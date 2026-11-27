@@ -25,55 +25,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 PAGE_SRC = Path(os.environ.get("PANEL_SRC", ROOT / "pocket_detector" / "panel.html"))
 
-# 虛構的狀態。欄位對應 webpanel.h 的 statusJson()
-BASE = {
-    "scan": 412, "uptime": 7200, "trackers": 2, "alert": True, "marks": 1, "timeKnown": True, "epoch": 1795538292,
-    "logMounted": True, "logOn": True, "log": True, "logFull": False, "logKB": 812, "wifiNow": 0, "quiet": False,
-    "captive": True, "stats": False, "statsOn": False, "statsAllowed": True, "statNow": 0, "statPersist": 0,
-    "statTotal": 0, "bleOn": False, "bleConnected": False, "bleSecure": True, "bleBonds": 0, "blePin": 123456,
-    "needSpan": 600, "needNear": 6, "needPresence": 70, "needRssi": -85, "needPlaces": 0, "placeId": 0, "placeName": "",
-    "moving": False, "appleDevices": 3, "mode": "偵測", "automode": 0, "autosound": 0, "wifiscan": False,
-    "preset": 1, "interval": 15, "duration": 5, "idle": 10, "led": True, "apName": "Test-Panel-0000",
-    "defaultPass": False,
-    "trk": [
-        {"addr": "02:00:00:00:00:01", "type": "Apple", "rssi": -58, "span": 1520, "ago": 0, "win": 40, "near": 31,
-         "pres": 92, "alerted": True, "acked": False, "places": 0, "rh": [-80, -78, -79, -70, -66, -60]},
-        {"addr": "02:00:00:00:00:02", "type": "Tile", "rssi": -90, "span": 120, "ago": 30, "win": 5, "near": 0,
-         "pres": 40, "alerted": False, "acked": False, "places": 0, "rh": [-62, -64, -63, -75, -80, -88, -90]},
-    ],
-    "recent": [{"n": 1, "uptime": 1750, "epoch": 1795532842, "label": "出門"}], "histVer": 1,
-    "findOn": False, "findAddr": "", "findLabel": "", "findType": "", "findWifi": False, "findRssi": 0,
-    "findSeen": False, "findAgo": 0, "findLeft": 0,
-    "soundBusy": False, "soundAddr": "", "soundMsg": "", "soundAgo": 0,
-    "roomState": 0, "roomVer": 0, "roomLeft": 0, "roomEst": 130, "roomlog": False,
-    "build": "Nov 27 2026 10:00:00", "rev": "abc1234", "part": "app0", "otaState": 0, "otaLeft": 0,
-    "netSsid": "TestNet", "netState": 0, "netMsg": "", "netBuild": "", "netRev": "", "netGot": 0, "netTotal": 0,
-    "probeOn": False, "probeVer": 0, "meetPhase": 0, "meetVer": 0, "meetAlert": False, "every": 30,
-    "scanAgo": 12000, "bleNow": 43, "mem": [88064, 33792, 70000, 8126464, 0, 0],
-    "testchan": False, "autoupd": False, "netLastAuto": False, "netAgo": 0, "autoNext": 0, "autoFrom": "",
-}
-ROOM_IDLE = {"ver": 0, "state": "idle", "items": []}
-PLACES = {"cur": 3, "curSaved": True, "max": 32, "list": [
-    {"id": 3, "name": "家", "visits": 4, "aps": 24}, {"id": 7, "name": "", "visits": 1, "aps": 18}]}
-HIST_PATH = {"name": "Test-Panel-0000", "epoch": 1795538292, "uptime": 7200, "trk": [
-    {"addr": "02:00:00:00:00:01", "type": "Apple", "first": 600, "last": 7000, "alert": 3000, "acked": False,
-     "maxRssi": -55, "scans": 120, "sound": -1, "autoOff": False, "iv": [[600, 7000]], "pl": [3, 5, 9]}],
-    "places": {"3": "家", "9": "公司"}, "marks": []}
-MEET_BASE = {"ver": 2, "phase": 1, "rssi": -70, "sec": 20, "baseLeft": 40, "base": 3, "new": 0, "lvl": 0, "alert": False, "rate": 0,
-             "baseRate": 0, "probes": 0, "maxNew": 0, "devs": []}
-MEET_ALERT = {"ver": 9, "phase": 2, "rssi": -70, "sec": 900, "baseLeft": 0, "base": 3, "new": 1, "lvl": 2, "alert": True, "rate": 1.5,
-              "baseRate": 0, "probes": 3, "maxNew": 1, "groups": 1,
-              "devs": [{"i": 7, "r": -55, "best": -50, "ago": 2, "since": 120, "first": 780, "last": 898, "now": True, "fl": 20,
-                        "use": 10, "air": -1, "rh": [-70, -66, -60, -58, -55, -55], "l": "iPhone 或 iPad（有行動網路）",
-                        "nm": "Test <的> iPhone", "act": "螢幕亮著"},
-                       {"i": 9, "r": -68, "best": -65, "ago": 300, "since": 600, "first": 300, "last": 600, "now": False, "fl": 0,
-                        "use": -1, "air": -1, "rh": [-68], "l": "Windows 筆電", "nm": "", "act": ""}],
-              "wg": [{"fp": "1a2b3c4d", "n": 4, "first": 800, "last": 890, "r": -52, "now": True, "apple": False,
-                      "m": "samsung SM-S911B", "nm": "測試的 S23"}]}
-PROBES = {"ver": 3, "on": True, "sec": 130, "left": 170, "ch": 6, "frames": 523, "src": 87, "fixed": 12, "directed": 41,
-          "full": False, "ssids": [{"src": 5, "f": 12, "fx": False, "r": -55, "n": "Free-Public"},
-                                   {"src": 1, "f": 9, "fx": True, "r": -48, "n": 'Home "5G" <b>'}]}
-WIFI_ON = {"wifiscan": True, "needPlaces": 3, "placeId": 3, "placeName": "家", "wifiNow": 12}
+# 虛構的狀態與假的 fetch 放在 scenarios.py，網站的截圖與模擬面板用同一份
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from scenarios import (BASE, FETCH_STUB, HIST_PATH, MEET_ALERT, MEET_BASE, PLACES, PROBES,  # noqa: E402
+                       ROOM_IDLE, WIFI_ON)
 
 # 每個案例：(覆寫的欄位, 分頁, 檢查)。檢查是一段 JS，回傳失敗原因的陣列，空陣列代表通過
 CASES = {
@@ -391,10 +346,8 @@ CASES = {
 }
 
 INJECT = """<script>
-window.__errs=[];window.addEventListener('error',e=>window.__errs.push(String(e.message)));
+""" + FETCH_STUB + """window.__errs=[];window.addEventListener('error',e=>window.__errs.push(String(e.message)));
 try{localStorage.clear();localStorage.tab=%(tab)s}catch(e){}
-const __FX=%(fx)s,__RX=%(rx)s,__HX=%(hx)s,__PX=%(px)s,__QX=%(qx)s,__MX=%(mx)s;
-window.fetch=async(u,o)=>{u=String(u);return {ok:true,status:200,json:async()=>u.startsWith('/api/room')?__RX:u.startsWith('/api/history/prev')?[]:u.startsWith('/api/history')?__HX:u.startsWith('/api/places')?__PX:u.startsWith('/api/probes')?__QX:u.startsWith('/api/meeting')?__MX:__FX,text:async()=>'ok'};};
 window.addEventListener('load',()=>setTimeout(()=>{let f;try{f=(function(){%(check)s})();}catch(e){f=['檢查本身出錯：'+e.message];}
   f=f.concat(window.__errs.map(m=>'JS 錯誤：'+m));const p=document.createElement('pre');p.id='__r';p.textContent=JSON.stringify(f);document.body.appendChild(p);},1200));
 </script>

@@ -40,3 +40,17 @@ jobs:
       - name: 不需要板子的測試
         working-directory: pocket-detector
         run: ./tools/run_tests.sh
+
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # 網頁寫出正式通道的版本時，要查得到那個 commit
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install uv
+      - name: 專案網頁的建置與檢查
+        run: uv run site/build.py --check

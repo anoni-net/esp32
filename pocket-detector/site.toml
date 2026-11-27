@@ -1,0 +1,13 @@
+# 專案網頁 anoni.net/esp32/ 上的卡片與介紹頁（site/build.py 讀這份）。介紹頁的內文在 site.md。
+name = "隨身偵測器"
+order = 1
+summary = "找出一直跟著你的 AirTag、SmartTag、Tile 與 DULT 追蹤器，也能檢查旅館房間的攝影機與會議室裡沒交出的手機。"
+hardware = "ESP32-S3 N16R8 開發板，蜂鳴器與 OLED 選用"
+# 正式通道在 assets.anoni.net 上的目錄，介紹頁與安裝頁寫出目前的版本
+channel = "esp32-tracker"
+# web：之後提供網頁安裝。第一階段先連到 PlatformIO 的燒錄方式
+install = "web"
+
+[demo]
+page = "pocket_detector/panel.html"
+scenarios = "tests/panel/scenarios.py"

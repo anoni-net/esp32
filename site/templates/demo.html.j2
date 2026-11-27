@@ -1,0 +1,18 @@
+{% extends "base.html.j2" %}
+{% block description %}在網頁上操作{{ tool.name }}的手機面板，用的是虛構的示範資料。{% endblock %}
+{% block main %}
+<p class="crumb"><a href="{{ root }}">ESP32 小工具</a><a href="{{ root }}{{ tool.slug }}/">{{ tool.name }}</a></p>
+<h1>{{ title }}</h1>
+<p class="lead">這是板子熱點上的手機面板，跟韌體裡的是同一份網頁。資料是虛構的示範，按鈕不會連到任何裝置。選一個情境看看各種狀況下的畫面。</p>
+<div class="demo">
+  <ul class="scenarios" aria-label="情境">
+  {% for s in scenarios %}
+    <li id="{{ s.key }}"><a href="frame/{{ s.key }}.html" target="panel"><strong>{{ s.title }}</strong><span>{{ s.desc }}</span></a></li>
+  {% endfor %}
+  </ul>
+  <div class="device">
+    <iframe name="panel" src="frame/{{ scenarios[0].key }}.html" title="{{ tool.name }}的模擬面板" sandbox="allow-scripts" width="390" height="760"></iframe>
+  </div>
+</div>
+<p>實際使用時，手機連上板子的熱點後會自動打開這個面板。準備好板子之後，<a href="{{ root }}install/?tool={{ tool.slug }}">前往安裝</a>。</p>
+{% endblock %}

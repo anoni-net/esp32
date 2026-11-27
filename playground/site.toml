@@ -1,0 +1,7 @@
+# 專案網頁 anoni.net/esp32/ 上的卡片與介紹頁（site/build.py 讀這份）。介紹頁的內文在 site.md。
+name = "示範韌體"
+order = 2
+summary = "用手機連上板子的熱點，在網頁上操作 ESP32-S3 的各項功能，了解這塊板子做得到什麼。"
+hardware = "ESP32-S3 N16R8 開發板"
+# pio：沒有發布通道，只提供 PlatformIO 的燒錄方式
+install = "pio"

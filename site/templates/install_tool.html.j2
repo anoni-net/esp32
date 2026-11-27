@@ -3,41 +3,74 @@
 {% block main %}
 <p class="crumb"><a href="{{ root }}">ESP32 小工具</a><a href="{{ root }}install/">安裝韌體</a></p>
 <h1>安裝{{ tool.name }}</h1>
-<p class="lead">用電腦的 Chrome 或 Edge 打開這一頁，USB 線接上板子，按一下按鈕就能安裝，不需要寫程式。只要裝一次，之後的更新在操作頁面上完成，不必再接電腦。</p>
+<p class="lead">不需要寫程式，照著四個步驟做，裝好之後用手機就能操作。</p>
 
-<section class="install" id="{{ tool.slug }}">
-  {% if firmware | length > 1 %}<p>選擇操作頁面的語言，按下對應的按鈕：</p>{% endif %}
-  {% for f in firmware %}
-  <div class="install-lang" lang="{{ f.lang }}" id="{{ f.lang }}">
-  <esp-web-install-button manifest="{{ f.manifest }}">
-    <button slot="activate" class="btn solid big">{% if firmware | length > 1 %}接上板子並安裝（{{ f.label }}）{% else %}接上板子並安裝{{ tool.name }}{% endif %}</button>
-    <div slot="unsupported" class="note">這個瀏覽器不能直接安裝，手機、Safari、Firefox 與 Tor Browser 都沒有網頁燒錄的功能。請在電腦上用 Chrome 或 Edge 打開 <strong>anoni.net/esp32/install/</strong>，接上板子再按安裝。</div>
-    <div slot="not-allowed" class="note">網頁安裝要在 https 的網址底下才能使用，請從 https://anoni.net/esp32/install/ 打開。</div>
-  </esp-web-install-button>
-  {% if f.build %}<p class="meta">{% if firmware | length > 1 %}{{ f.label }}：{% endif %}目前的版本建置於 {{ f.build }}。</p>{% endif %}
-  </div>
-  {% endfor %}
+<h2>你需要</h2>
+{% include "_need.html.j2" %}
+
+<h2>你的步驟</h2>
+<ol class="steps-strip">
+  <li><a href="#plug"><span class="n">1</span>接上板子</a></li>
+  <li><a href="#install"><span class="n">2</span>安裝韌體</a></li>
+  <li><a href="#wifi"><span class="n">3</span>打開板子的 Wi-Fi</a></li>
+  <li><a href="#phone"><span class="n">4</span>用手機連上</a></li>
+</ol>
+
+<section class="step" id="plug">
+  <h2><span class="n">1</span>接上板子</h2>
+  <figure class="board"><img src="{{ asset('board.svg') }}" width="320" height="260" alt="開發板的示意圖：下緣有兩個 USB-C 孔，安裝時接標著 COM 的那一個，旁邊有 BOOT 與 RST 兩顆按鈕"><figcaption>示意圖，實際的位置依板子而不同，看板子上的字</figcaption></figure>
+  <ol>
+    <li>找到板子上標著 <code>COM</code> 的 USB-C 孔，把線插進去</li>
+    <li>線的另一端接電腦</li>
+    <li>板子上的燈亮起來，就是有電了</li>
+  </ol>
+  <p class="if">{{ icon('alert-circle-outline') }}<span>如果燈沒有亮，換一條線或換電腦上的另一個孔再試。</span></p>
 </section>
 
-<h2>安裝的步驟</h2>
-<ol class="steps">
-  <li><strong>準備</strong>：ESP32-S3 N16R8 開發板（<a href="{{ root }}about-esp32/">怎麼挑</a>）、一條能傳資料的 USB-C 線，以及一台裝了 Chrome 或 Edge 的電腦（Windows、macOS、Linux 或 Chromebook）。</li>
-  <li><strong>接上板子</strong>：USB 線接板子上標著 <code>COM</code> 的那個孔，另一端接電腦。板子上的燈亮起來就是有電了。</li>
-  <li><strong>按下安裝</strong>：按上面的安裝按鈕，瀏覽器會跳出一個視窗列出接在電腦上的裝置。選名稱是 <code>USB Single Serial</code>，或帶有 usbmodem、usbserial、CH340、CP210x 字樣的那一個，按「連線」。</li>
-  <li><strong>確認安裝</strong>：接下來的視窗是英文的。按 <code>Install {{ tool.name }}</code>，確認畫面（Confirm Installation）再按一次 <code>Install</code>。</li>
-  <li><strong>等待完成</strong>：進度條跑完大約需要一兩分鐘，過程中不要拔掉 USB 線，也讓這個分頁留在畫面上。看到 <code>Installation complete!</code> 就完成了，按 <code>Next</code> 之後關掉視窗。</li>
-</ol>
-<p>安裝只會寫入韌體的部分，板子上原本的設定（熱點名稱與密碼）、警示歷史與記錄都會保留。</p>
-<p class="actions"><a class="btn solid" href="{{ root }}connect/">下一步：連上板子</a></p>
+<section class="step" id="install">
+  <h2><span class="n">2</span>安裝韌體</h2>
+  {% if firmware | length > 1 %}<p>選擇操作頁面的語言：</p>{% endif %}
+  {% for f in firmware %}
+  <div class="install-lang" lang="{{ f.lang }}" id="lang-{{ f.lang }}">
+  <esp-web-install-button manifest="{{ f.manifest }}">
+    <button slot="activate" class="btn solid big">{% if firmware | length > 1 %}接上板子並安裝（{{ f.label }}）{% else %}接上板子並安裝{{ tool.name }}{% endif %}</button>
+    <div slot="unsupported" class="note">這個瀏覽器不能直接安裝，手機、Safari、Firefox 與 Tor Browser 都沒有網頁燒錄的功能。請在電腦上用 Chrome 或 Edge 打開 <strong>anoni.net/esp32/install/</strong>。</div>
+    <div slot="not-allowed" class="note">網頁安裝要在 https 的網址底下才能使用，請從 https://anoni.net/esp32/install/ 打開。</div>
+  </esp-web-install-button>
+  </div>
+  {% endfor %}
+  <ol>
+    <li>按上面的按鈕，瀏覽器跳出一個視窗，選 <code>USB Single Serial</code>（或名稱帶有 usbmodem、usbserial 的那一個），按「連線」</li>
+    <li>接下來的視窗是英文的。按 <code>Install {{ tool.name }}</code></li>
+    <li>確認畫面再按一次 <code>Install</code></li>
+    <li>等進度條跑完，大約兩分鐘。這段時間不要拔線，也讓這個分頁留在畫面上</li>
+  </ol>
+  <p class="if">{{ icon('alert-circle-outline') }}<span>如果視窗裡沒有任何裝置，換一條能傳資料的線，或確認接的是 <code>COM</code> 孔。有些板子在 Mac 上要先裝驅動程式，視窗裡有下載連結。</span></p>
+  <p class="if">{{ icon('alert-circle-outline') }}<span>如果連線失敗或停在一半，拔掉線，按住板子上的 <code>BOOT</code> 鍵再接上線，放開之後重新按安裝。關掉 Arduino IDE 這類也在用板子的程式。</span></p>
+  <p class="done">{{ icon('check-circle-outline') }}<span>看到 <code>Installation complete!</code> 就裝好了，按 <code>Next</code> 關掉視窗。原本的設定與記錄都會保留。下一步要打開板子的 Wi-Fi。</span></p>
+</section>
 
-<h2>找不到板子的時候</h2>
-<ul class="faq">
-  <li><strong>視窗裡沒有任何裝置</strong>：換一條 USB 線試試，只能充電的線電腦看不到板子。也確認接的是標著 <code>COM</code> 的孔。</li>
-  <li><strong>Mac 上找不到板子</strong>：有些板子的 USB 晶片（CH340、CP210x）在 Mac 上要另外裝驅動程式，安裝視窗裡有下載連結，裝好之後重新接上板子。顯示成 <code>USB Single Serial</code> 的板子不必裝。</li>
-  <li><strong>連線失敗或安裝到一半停住</strong>：拔掉 USB 線，按住板子上的 <code>BOOT</code> 鍵再接上線，放開 BOOT 之後重新按安裝按鈕。</li>
-  <li><strong>裝置被別的程式佔用</strong>：關掉 Arduino IDE、序列埠監控之類的程式再試一次。</li>
-  <li><strong>只有手機</strong>：手機的瀏覽器不能安裝韌體，請借一台電腦，或在工作坊現場請工作人員協助。</li>
-</ul>
+<section class="step" id="wifi">
+  <h2><span class="n">3</span>打開板子的 Wi-Fi</h2>
+  <ol>
+    <li>拔掉 USB 線，改接行動電源或手機充電器。想繼續接著電腦也可以</li>
+    <li>長按板子上的 <code>BOOT</code> 鍵 2 秒，燈號變色時放開</li>
+  </ol>
+  <p class="done">{{ icon('check-circle-outline') }}<span>燈每 3 秒亮一下青色，板子的 Wi-Fi 就開好了。下一步改用手機。</span></p>
+</section>
+
+<section class="step" id="phone">
+  <h2><span class="n">4</span>用手機連上</h2>
+  <div class="handoff">
+    <figure>{{ qr('https://anoni.net/esp32/connect/') }}<figcaption>anoni.net/esp32/connect/</figcaption></figure>
+    <p>接下來要用手機操作。用手機的相機掃描這個 QR code，在手機上打開連線的步驟，或在手機的瀏覽器輸入 <code>anoni.net/esp32/connect/</code>。</p>
+  </div>
+  <ol>
+    <li>手機的 Wi-Fi 設定裡找到 <code>BLE-Tracker-</code> 開頭的名稱，輸入密碼 <code>anoni-tracker</code></li>
+    <li>操作頁面自動跳出來。沒有的話，用瀏覽器打開 <code>http://192.168.4.1</code></li>
+  </ol>
+  <p class="done">{{ icon('check-circle-outline') }}<span>看到操作頁面就完成了！第一件事到「設定 → 名稱與密碼」改掉預設的密碼。iPhone、Android 的注意事項與連不上的時候，見<a href="{{ root }}connect/">連上板子</a>。</span></p>
+</section>
 
 <h2>給開發者</h2>
 <p>網頁安裝用 <a href="https://esphome.github.io/esp-web-tools/">ESP Web Tools</a>，寫入開機程式、分割表、otadata 與程式槽四段，不碰 NVS 與 flash 記錄。安裝的檔案與正式通道相同：</p>

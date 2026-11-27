@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["jinja2>=3.1", "markdown>=3.5", "websockets>=13"]
+# dependencies = ["jinja2>=3.1", "markdown>=3.5", "websockets>=13", "segno>=1.6"]
 # ///
 """產生專案網頁 anoni.net/esp32/ 的 clearnet 與 onion 兩份靜態產物。
 
@@ -49,6 +49,7 @@ from urllib.parse import urlparse
 
 import markdown
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
+from markupsafe import Markup
 
 SITE = Path(__file__).resolve().parent
 ROOT = SITE.parent
@@ -113,6 +114,19 @@ def fetch_version(channel, offline):
         return None
 
 
+def icon(name):
+    """site/icons/ 的 SVG 內嵌進 HTML（同 anoni-net/www 的 icon()），不另外發請求，onion 版一樣可用。"""
+    svg = (SITE / "icons" / f"{name}.svg").read_text(encoding="utf-8").strip()
+    return Markup(svg.replace("<svg ", '<svg class="i" aria-hidden="true" focusable="false" ', 1))
+
+
+def qr(url):
+    """網址的 QR code，內嵌的 SVG。手機掃描後在手機上繼續看接下來的步驟（同 Tails 安裝指引的做法）。"""
+    import segno
+    return Markup(segno.make(url, error="m").svg_inline(scale=4, dark="#13232a", light="#ffffff", border=2,
+                                                        svgclass="qr", omitsize=True))
+
+
 def commit_in_repo(commit):
     """搬到這個 repo 之前建置的版本，commit 在這裡查不到，就不連到原始碼。"""
     import subprocess
@@ -125,6 +139,7 @@ class Site:
         self.tools = load_tools()
         self.env = Environment(loader=FileSystemLoader(SITE / "templates"), autoescape=True,
                                undefined=StrictUndefined, trim_blocks=True, lstrip_blocks=True)
+        self.env.globals.update(icon=icon, qr=qr)
         # 每個發布通道讀一次 latest.json。工具的版本是它主要通道（第一個語系）的版本
         self.channel_versions = {}
         for t in self.tools:

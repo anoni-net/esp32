@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        tool: [pocket-detector, playground]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: pio-${{ hashFiles(format('{0}/platformio.ini', matrix.tool)) }}
+      - run: pip install platformio
+      - name: 編譯
+        working-directory: ${{ matrix.tool }}
+        run: pio run
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # 面板測試用 GitHub 的 Ubuntu 映像檔內建的 google-chrome
+      - name: 不需要板子的測試
+        working-directory: pocket-detector
+        run: ./tools/run_tests.sh

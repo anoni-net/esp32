@@ -1,0 +1,18 @@
+anoni.net ESP32 小工具
+Copyright (c) 2026 anoni.net，以 MIT 授權釋出（見 LICENSE）。
+
+建置時下載、不包含在這個 repo 裡的程式庫：
+
+- Arduino-ESP32（Espressif Systems）：LGPL-2.1，經由 PlatformIO 的 espressif32 平台取得
+- ESP-IDF（Espressif Systems）：Apache-2.0
+- NimBLE-Arduino（h2zero）：Apache-2.0
+- U8g2（olikraus）：BSD-2-Clause
+
+pocket-detector/pocket_detector/roomcheck_ids.h 由 pocket-detector/tools/make_roomcheck_ids.py
+從以下公開的登記資料挑選產生，檔頭寫著下載日期：
+
+- IEEE Registration Authority 的 MA-L（OUI）登記資料：https://standards-oui.ieee.org/oui/oui.csv
+- 藍牙 SIG 的 Assigned Numbers（公司代碼與會員服務 UUID）：
+  https://bitbucket.org/bluetooth-SIG/public/src/main/assigned_numbers/
+
+追蹤器與 Apple Continuity 廣播格式的判讀參考公開的研究與規格，來源寫在各工具的 README。

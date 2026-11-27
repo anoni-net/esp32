@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>追蹤器偵測器</title>
+<style>
+:root{--bg:#F2F4F6;--surf:#FFFFFF;--ink:#18222D;--mute:#5E6B78;--line:#DCE1E6;--edge:#7B8794;--watchInk:#8A5A00;--onAct:#FFFFFF;--knob:#FFFFFF;--safe:#0E7C7B;--watch:#C98A00;--alert:#C8243B;--act:#1F5FAE;--hsafe:#0E7C7B;--hwatch:#9A6700;--halert:#C8243B;--state:var(--hsafe)}
+@media (prefers-color-scheme:dark){:root{--bg:#10161C;--surf:#19212A;--ink:#E7ECF0;--mute:#93A1AE;--line:#2A343F;--edge:#6B7785;--watchInk:#F0B429;--onAct:#0B1220;--knob:#10161C;--safe:#3FB8A9;--watch:#F0B429;--alert:#FF5468;--act:#6EA8FF;--hsafe:#0B5E5D;--hwatch:#7A5300;--halert:#9E1C30}}
+body.watch,body.acked{--state:var(--hwatch)}body.off{--state:#4A5560}body.alert{--state:var(--halert)}
+*{box-sizing:border-box}html,body{overflow-x:hidden}
+/* iOS 連點兩下會放大畫面，按鈕連按、點到文字時容易誤觸。這個設定不會繼承，所以套用到每個元素。
+   關掉雙點放大，兩指縮放保留 */
+*{touch-action:manipulation}
+html{scroll-padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;overflow-wrap:anywhere;padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+button:focus-visible,input:focus-visible,a:focus-visible,summary:focus-visible,textarea:focus-visible{outline:3px solid var(--act);outline-offset:2px}
+.top :focus-visible{outline-color:#fff}
+input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--edge);border-radius:10px;padding:10px 12px;width:100%}
+.num{font-variant-numeric:tabular-nums}
+.mute{color:var(--mute);font-size:14px}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+
+/* 頂部：狀態字與訊號距離圖 */
+.top{background:var(--state);color:#fff;padding:14px 0 18px;transition:background .4s}
+.top .wrap{display:grid;grid-template-columns:1fr auto;gap:4px 16px;align-items:center}
+.who{grid-column:1/-1;font-size:13px;display:flex;gap:12px;flex-wrap:wrap}
+.state{font-size:clamp(34px,11vw,46px);font-weight:800;line-height:1.1;letter-spacing:.04em}
+.say{font-size:15px;max-width:22em}
+.chips{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{font-size:13px;padding:3px 10px;border-radius:999px;background:rgba(0,0,0,.22)}
+.chip.warn{background:#fff;color:var(--hwatch);font-weight:600}
+svg.radar{width:132px;height:132px;grid-row:2/4;grid-column:2}
+.radar .ring{fill:none;stroke:rgba(255,255,255,.35);stroke-width:1}
+.radar .me{fill:#fff}
+.radar .dot{stroke:#fff;stroke-width:1.5}
+.env{font-size:13px}
+.who .beat{font-size:13px;min-height:24px;padding:2px 10px;margin:-3px 0;border-radius:999px;background:rgba(0,0,0,.22);color:#fff}
+/* 距離下一次掃描的進度，掃描的 5 秒內是滿的 */
+.beatbar{grid-column:1/-1;height:3px;border-radius:2px;background:rgba(255,255,255,.2);margin-top:10px;overflow:hidden}
+.beatbar i{display:block;height:100%;width:0;background:rgba(255,255,255,.75);transition:width .5s linear}
+body.off .beatbar{visibility:hidden}
+body.sub .top{padding:10px 0 12px}body.sub .state{font-size:26px}body.sub .radar,body.sub .say,body.sub .chips,body.sub .env{display:none}
+.actbar{display:none;gap:8px;margin-top:12px;grid-column:1/-1}
+body.alert .actbar,body.acked .actbar{display:flex}body.acked .actbar .ack{display:none}body.off .actbar{display:none}
+.actbar button{flex:1;background:#fff;color:var(--halert);font-weight:700;border-radius:12px;padding:12px 6px}
+
+/* 內容 */
+main{padding-top:16px}
+h2{font-size:18px;margin:22px 0 8px;font-weight:700}
+h2:first-child{margin-top:4px}
+.rows{background:var(--surf);border-radius:14px;overflow:hidden}
+.row{padding:12px 14px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.trk{display:grid;grid-template-columns:12px 1fr auto;gap:4px 10px;align-items:start}
+.trk .bullet{width:12px;height:12px;border-radius:50%;margin-top:6px}
+.trk .name{font-weight:600}
+.trk .meta{grid-column:2/-1;font-size:13px;color:var(--mute)}
+.trk .tag{font-size:13px;font-weight:600}
+.trk .trend{grid-column:2/-1;display:flex;gap:8px;align-items:center;font-size:13px;color:var(--mute)}
+.trk .trend svg{color:var(--ink);flex:none}
+.prog{grid-column:2/-1;display:grid;grid-template-columns:5.2em 1fr 4.4em;gap:3px 8px;align-items:center;font-size:13px;margin-top:4px}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--watch)}.bar i.done{background:var(--alert)}.trk.calm .bar i.done{background:var(--watch)}
+.btns{grid-column:2/-1;display:flex;gap:8px;margin-top:8px}
+.b{padding:8px 14px;border-radius:10px;background:var(--bg);font-size:14px;font-weight:600}
+.b.main{background:var(--act);color:var(--onAct)}
+.b:disabled{opacity:.45}
+.empty{padding:22px 14px;text-align:center;color:var(--mute)}
+.note{font-size:13px;color:var(--mute);margin:8px 2px 0}
+
+/* 記號 */
+.pads{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pads button{background:var(--surf);border-radius:12px;padding:16px 4px;font-weight:600;font-size:16px}
+.pads button:active{background:var(--act);color:var(--onAct)}
+.inline{display:flex;gap:8px;margin-top:8px}.inline .b{flex:none}
+ol.marks{list-style:none;margin:0;padding:0}
+ol.marks li{display:flex;gap:12px;padding:10px 14px;border-top:1px solid var(--line)}
+ol.marks li:first-child{border-top:0}
+ol.marks .t{color:var(--mute);min-width:4.5em}
+
+/* 設定 */
+.set{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.set>div{min-width:0;flex:1}
+.lbl{font-weight:600}
+.lbl.sub{margin-top:14px}
+.note.confirm{margin:0;padding:0 14px 12px;color:var(--ink);font-weight:600}
+.sw{flex:none;width:52px;height:30px;border-radius:15px;background:var(--mute);position:relative;transition:background .2s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--knob);transition:left .2s}
+.sw[aria-checked=true]{background:var(--safe)}.sw[aria-checked=true]::after{left:25px}
+.sw:disabled{opacity:.4}
+.seg{display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:3px;margin-top:8px}
+.seg button{flex:1;padding:7px 2px;border-radius:8px;font-size:14px}
+.seg button[aria-pressed=true]{background:var(--surf);font-weight:700;box-shadow:0 0 0 2px var(--act)}
+.names{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.names button{padding:6px 12px;border-radius:999px;background:var(--bg);font-size:14px}
+.pin{font-size:30px;font-weight:800;letter-spacing:.18em;margin:4px 0}
+pre{white-space:pre-wrap;word-break:break-all;font-size:12px;max-height:260px;overflow:auto;background:var(--bg);border-radius:10px;padding:10px;margin:8px 0 0}
+/* iOS 點進小於 16px 的輸入框會自動放大，摘要的文字框也用 16px */
+textarea{width:100%;height:300px;font:16px/1.5 ui-monospace,Menlo,monospace;color:var(--ink);background:var(--bg);border:1px solid var(--edge);border-radius:10px;padding:10px;margin-top:8px}
+.danger{color:var(--alert)}
+#histSess{flex-wrap:wrap}#histSess button{flex:1 0 30%}
+
+/* 房間檢查 */
+ul.why{grid-column:2/-1;margin:4px 0 0;padding-left:1.1em;font-size:13px}
+ul.why li{margin:2px 0}
+ul.lim{margin:0;padding-left:1.1em;font-size:14px;color:var(--mute)}ul.lim li{margin:4px 0}
+details.more summary{cursor:pointer;font-weight:600}
+#probeWhy p{font-size:14px;margin:10px 0 4px}
+details.more .trk{padding-top:10px}
+table.keys{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+table.keys td{padding:7px 4px;border-top:1px solid var(--line);vertical-align:top}
+table.keys td:first-child{font-weight:600;padding-right:10px;width:38%}
+table.keys.boot td:first-child{width:1%;white-space:nowrap}
+i.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:0}
+
+/* 時間軸 */
+svg.tl{width:100%;display:block}
+
+/* 尋找：全螢幕 */
+#find{position:fixed;inset:0;background:var(--surf);z-index:20;display:none;flex-direction:column;padding:20px 20px calc(20px + env(safe-area-inset-bottom))}
+#find.on{display:flex}
+#find .dbm{font-size:84px;font-weight:800;line-height:1;margin:auto 0 8px;text-align:center}
+#find .dbm small{font-size:28px;margin-left:8px;font-weight:700}
+#find .meter{height:22px;border-radius:11px;background:var(--line);overflow:hidden}
+#find .meter i{display:block;height:100%;background:var(--act);transition:width .5s}
+#find .hint{text-align:center;margin:12px 0 auto}
+#find .btns{display:flex;gap:8px}#find .btns .b{flex:1;padding:14px}
+
+/* 底部分頁 */
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--surf);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:10}
+nav button{flex:1;padding:12px 0 14px;font-size:15px;color:var(--mute);position:relative}
+nav button[aria-selected=true]{color:var(--ink);font-weight:700}
+nav button[aria-selected=true]::before{content:"";position:absolute;top:0;left:30%;right:30%;height:3px;border-radius:0 0 3px 3px;background:var(--state)}
+nav .badge{position:absolute;top:6px;margin-left:2px;min-width:8px;height:8px;border-radius:4px;background:var(--alert)}
+section[hidden]{display:none}
+.foot{font-size:12px;color:var(--mute);text-align:center;margin:28px 0 8px}.foot span{white-space:nowrap}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+#toast{pointer-events:none;position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;opacity:0;transition:opacity .2s;max-width:90%;font-size:14px;z-index:30}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style></head><body>
+<header class="top"><div class="wrap">
+<div class="who"><span id="dev"></span><span id="scanNo" class="num"></span><button id="beat" class="beat num" aria-pressed="false" title="按一下暫停或繼續掃描的倒數" onclick="toggleBeat()"></button><span id="linkInfo"></span></div>
+<div class="state" id="state">讀取中</div>
+<svg class="radar" id="radar" viewBox="-70 -70 140 140" role="img" aria-label="附近追蹤器的訊號距離"><path id="sweep" d="M0 0L62 0A62 62 0 0 0 53.7 -31Z" fill="rgba(255,255,255,.22)" style="display:none"/><g id="radarG"></g><circle class="me" cx="0" cy="0" r="4"/></svg>
+<div class="say" id="say"></div>
+<div class="env num" id="env"></div>
+<div class="chips" id="chips"></div>
+<div class="beatbar" aria-hidden="true"><i id="beatBar"></i></div>
+<div class="actbar"><button class="ack" onclick="act('/api/ack')">確認警示</button><button onclick="alertFind()">尋找它</button><button onclick="alertSound()">讓它響</button></div>
+</div></header>
+
+<main class="wrap">
+<section id="t-scan" role="tabpanel" aria-labelledby="tab-scan">
+<h2>附近的追蹤器</h2>
+<div class="rows" id="trkList"><div class="empty">讀取中</div></div>
+<p class="note" id="rule"></p>
+<p class="note" id="appleNote"></p>
+</section>
+
+<section id="t-hist" role="tabpanel" aria-labelledby="tab-hist" hidden>
+<div id="sessBox" hidden><h2>哪一次開機</h2><div class="seg" id="histSess"></div><p class="note" id="sessNote"></p></div>
+<h2>觸發過警示的追蹤器</h2>
+<div class="rows" id="histList"><div class="empty">自開機以來沒有觸發過警示</div></div>
+<p class="note">追蹤器 30 分鐘沒出現會從「附近的追蹤器」移除，這裡保留整次開機的紀錄。紀錄也存在板子的 flash，重新開機（例如接上電腦讀資料）後，到上方切換之前的開機查看，最多保留 8 次。</p>
+<h2>出現的時段</h2>
+<div class="seg" id="tlRange"></div>
+<div class="rows" style="margin-top:8px;padding:10px"><div id="timeline" class="mute">讀取中</div></div>
+<p class="note">名稱前標「警示」、時段畫成紅色的是觸發過警示的追蹤器，虛線是打的記號。</p>
+<h2>蒐證摘要</h2>
+<div class="rows"><div class="row"><p class="mute" style="margin:0">整理觸發警示的追蹤器、出現時段與期間的記號，附上判斷方式的限制，可以截圖或複製給協助你的人。</p>
+<div class="inline"><button class="b main" onclick="makeSummary()">產生摘要</button><button class="b" id="copyBtn" onclick="copySummary()" hidden>複製</button></div>
+<textarea id="summary" readonly hidden aria-label="蒐證摘要"></textarea></div></div>
+<div class="rows" id="prevClear" style="margin-top:8px" hidden><div class="row set"><div><div class="lbl">刪除之前開機的紀錄</div><div class="mute">只刪除存在 flash 的之前幾次開機，這次開機的紀錄保留</div></div><button class="b danger" onclick="twice(this,'刪除',clearPrev)">刪除</button></div></div>
+</section>
+
+<section id="t-mark" role="tabpanel" aria-labelledby="tab-mark" hidden>
+<h2>打記號</h2>
+<div class="pads" id="presets"></div>
+<div class="inline"><input id="label" maxlength="20" aria-label="記號的文字" placeholder="自訂文字，例如轉乘"><button class="b main" onclick="mark($('label').value)">記錄</button></div>
+<p class="note" id="markNote"></p>
+<h2>最近的記號</h2>
+<div class="rows"><ol class="marks" id="recent"></ol></div>
+<h2>時間</h2>
+<div class="rows"><div class="row set"><div><div class="lbl" id="clock">還沒對時</div><div class="mute">第一次打開面板時自動用手機的時間對時</div></div><button class="b" onclick="syncTime(true)">對時</button></div></div>
+</section>
+
+<section id="t-room" role="tabpanel" aria-labelledby="tab-room" hidden>
+<h2>會議室檢查</h2>
+<div class="rows"><div class="row"><p class="mute" style="margin:0">收走手機之後，監看房間裡有沒有還開著藍牙或 Wi-Fi 的裝置。開始後 2 分鐘建立基準，記下隔壁、走廊與房間裡固定的設備。之後基準之外出現訊號夠強的藍牙裝置就在這裡提醒，近距離有裝置在找 Wi-Fi 時標成留意。板子不出聲、不亮警示燈。只開行動網路、Wi-Fi 與藍牙都關掉的手機偵測不到，沒有無線功能的錄音設備也偵測不到。</p>
+<div class="lbl sub">範圍</div><div class="seg" id="seg_meet"></div>
+<div class="inline"><button class="b main" id="meetBtn" onclick="meetToggle()">開始檢查</button></div>
+<p class="num" id="meetSum"></p></div>
+<div id="meetList"></div></div>
+
+<h2>房間檢查</h2>
+<div class="rows"><div class="row"><p class="mute" style="margin:0">住旅館、民宿時，進房間先檢查一遍：列出附近的 Wi-Fi 與藍牙裝置，標出可能是攝影機的裝置與判斷理由。整個檢查約 2 分鐘，開始 15 秒後熱點會關閉、手機會斷線，追蹤器偵測也暫停。燈號從白色呼吸變成綠色連閃兩下就是完成，再到手機的 Wi-Fi 設定連回熱點看報告。短按 BOOT 可以中途取消。</p>
+<div class="inline"><button class="b main" id="roomBtn" onclick="roomStart()">開始檢查</button></div><p class="mute" id="roomMsg" style="margin:8px 0 0"></p></div></div>
+<h2 id="roomHead">檢查結果</h2>
+<div class="rows" id="roomList"><div class="empty">還沒有檢查過</div></div>
+<p class="note" id="roomSum"></p>
+<div id="roomHow" hidden><h2>怎麼找、找到之後怎麼做</h2>
+<div class="rows"><div class="row"><ul class="lim">
+<li>按裝置旁的「尋找」，拿著板子在房間裡慢慢走，數字越接近 0 越近，板子的嗶聲與燈號也會越來越快。Wi-Fi 裝置要正在傳資料，才能收到它的訊號。</li>
+<li>攝影機常藏在煙霧偵測器、時鐘、充電器、延長線、面紙盒、電視盒、冷氣與喇叭的開孔，特別留意對著床、浴室與衣櫃的位置。</li>
+<li>關燈後，手電筒貼近眼睛的高度慢慢掃過可疑的地方，鏡頭會反射出一個小亮點。</li>
+<li>找到之後不要拆開或丟掉，先拍照記下位置，再聯絡業者或報警。不放心的話換房間，或改用別的住宿。</li>
+<li>列出的裝置不一定是攝影機，訊號強也可能只是隔壁的智慧家電。</li>
+</ul></div></div></div>
+<h2>能找到與找不到的</h2>
+<div class="rows"><div class="row"><ul class="lim">
+<li>只能找到使用無線網路的攝影機。接網路線、只錄在記憶卡、或關著 Wi-Fi 的找不到。</li>
+<li>板子只能接收 2.4 GHz，只用 5 GHz 的裝置不會出現。</li>
+<li>很多攝影機只在偵測到動作、或有人在看的時候才上傳。檢查時沒在上傳的，只能靠廠商與名稱判斷。</li>
+<li>新的手機、筆電常用的高速傳輸模式（Wi-Fi 6、兩支天線同時傳）板子解不開，這類裝置的上傳量會算少。</li>
+<li>隔壁房間、走廊的裝置也會列出來。訊號強度越接近 0（例如 -45 dBm）代表越近。</li>
+<li>廠商的比對來自 IEEE 與藍牙 SIG 公開的登記資料，比對到的不一定是攝影機，改過位址或名稱的裝置也比對不出來。</li>
+<li>找到可疑的裝置，先拍照記下位置，不要自行拆除，聯絡業者或報警處理。</li>
+</ul></div></div>
+<div class="rows" style="margin-top:8px"><div class="row set"><div><div class="lbl">記錄裝置的位址</div><div class="mute">監聽會收到同住的人、隔壁房客手機的 MAC 位址。報告只顯示廠商、名稱與判斷理由，打開這個選項才把位址寫進 flash 記錄</div></div><button class="sw" role="switch" id="sw_roomlog" onclick="tog('roomlog')"></button></div></div>
+<h2>周圍手機洩漏的 Wi-Fi 名稱</h2>
+<div class="rows"><div class="row"><p class="mute" style="margin:0">手機找 Wi-Fi 時會送出探測請求，有些會直接問存過的網路，名稱（家、公司、住過的旅館）就跟著送出來，附近的人都收得到。這裡統計這個空間有多少這樣的資訊：監聽 5 分鐘，熱點與面板照常可以用。位址只在板子的記憶體裡計數，名稱只顯示在這裡，都不寫進記錄。停止後結果留在這裡，下次開始或重新開機時清除。</p>
+<div class="inline"><button class="b main" id="probeBtn" onclick="probeToggle()">開始監聽</button></div>
+<p class="mute num" id="probeSum"></p></div>
+<div id="probeList"></div>
+<details class="row more" id="probeWhy" hidden><summary>為什麼手機會送出這些名稱？怎麼關掉？</summary>
+<p>手機想快點找到認識的網路，會送出「附近有誰」的探測請求。大部分的請求不帶名稱，下面三種情況會把名稱說出來，附近的人都收得到：</p>
+<ul class="lim"><li><b>隱藏名稱的網路</b>：基地台不廣播名稱，手機只能說出名稱來找它。把 Wi-Fi 設成隱藏，反而讓手機走到哪裡都說出這個名稱</li>
+<li><b>舊的系統與部分裝置</b>：舊版的 Android、Windows、一些筆電與智慧家電，會把存過的網路一個一個問過去</li>
+<li><b>剛用過的網路</b>：有些系統為了快點連回去，直接問上一個連過的網路</li></ul>
+<p>從名稱可以猜出住處、公司與去過的旅館，也有人會架一個同名的基地台，等手機自動連上。可以這樣減少：</p>
+<ul class="lim"><li>家裡、辦公室的 Wi-Fi 不要隱藏名稱，已經隱藏的到路由器的設定改回公開</li>
+<li>刪除用不到的網路（住過的旅館、咖啡店、以前的公司），也就不會自動連上同名的基地台</li>
+<li>不常用的網路關掉自動加入。iPhone 在 Wi-Fi 設定點進那個網路，關閉「自動加入」</li>
+<li>保持隨機位址開著，iPhone 是「私人 Wi-Fi 位址」，Android 是「使用隨機 MAC」。名稱就算送出去了，也比較難連結到同一支手機</li>
+<li>出門時到「設定」把 Wi-Fi 關掉。iPhone 在控制中心點 Wi-Fi 只會中斷連線，還會繼續掃描</li></ul>
+<p class="note">改完之後再監聽一次，看看你的網路名稱還會不會出現。</p></details></div>
+</section>
+
+<section id="t-set" role="tabpanel" aria-labelledby="tab-set" hidden>
+<h2>連線</h2>
+<div class="rows">
+<div class="row set"><div><div class="lbl">Wi-Fi 熱點</div><div class="mute" id="wifiInfo">開啟中，這個面板就是經由它連線</div></div><button class="b" onclick="twice(this,'關閉',()=>act('/api/link',{wifi:0,ble:S.bleOn?1:0}))">關閉</button></div>
+<div class="row set"><div><div class="lbl">藍牙連線</div><div class="mute" id="bleInfo"></div></div><button class="sw" role="switch" id="sw_ble" onclick="act('/api/link',{wifi:1,ble:S.bleOn?0:1})"></button></div>
+<div class="row" id="pinRow"><div class="lbl">藍牙配對碼</div><div class="pin num" id="blePin">------</div><div class="mute">手機跳出配對視窗時輸入這組數字，已配對 <span id="bleBonds">0</span> 支手機</div>
+<div class="inline"><button class="b" onclick="act('/api/ble/newpin')">重新產生</button><button class="b" id="unpairBtn" onclick="twice(this,'清除已配對的手機',()=>act('/api/ble/unpair'))">清除已配對的手機</button></div></div>
+<div class="row set"><div><div class="lbl">全部關閉</div><div class="mute">Wi-Fi 與藍牙都關閉，板子停止對外發出訊號，回到只做被動掃描</div></div><button class="b" onclick="act('/api/linkoff')">關閉</button></div>
+<div class="row"><div class="lbl">BOOT 鍵</div><div class="mute">長按 2 秒：Wi-Fi 沒開就打開熱點，開著就全部關閉。藍牙與「只留藍牙」在這裡切換。短按、雙擊與燈號的意思見本頁最下方「BOOT 鍵與燈號」</div></div>
+<div class="row"><div class="lbl">沒有手機連著時自動關閉</div><div class="seg" id="seg_idle"></div></div>
+</div>
+
+<h2>偵測</h2>
+<div class="rows">
+<div class="row"><div class="lbl">警示門檻</div><div class="mute" id="presetInfo"></div><div class="seg" id="seg_preset"></div></div>
+<div class="row set"><div><div class="lbl">移動判斷</div><div class="mute">掃描周圍的 Wi-Fi 基地台判斷你換了地點，追蹤器要跟著你經過 3 個不同的地點才警示。停留在家裡、辦公室時，周圍的追蹤器不會再造成誤報</div></div><button class="sw" role="switch" id="sw_wifiscan" onclick="tog('wifiscan')"></button></div>
+<div class="row" id="placeBox" hidden><div class="lbl">地點</div><div class="mute" id="placeInfo"></div>
+<div class="inline"><input id="placeName" maxlength="30" aria-label="目前地點的名稱" placeholder="替目前的地點命名，例如 家、公司"><button class="b main" onclick="namePlace(0,$('placeName').value)">儲存</button></div>
+<details class="more"><summary id="placeSum">存過的地點</summary><div id="placeList"></div><p class="note">停留約 5 分鐘以上的地方才會存起來，最多 32 個，滿了先移除最久沒去、沒有命名的。板子只存基地台的雜湊，不能直接拿去基地台資料庫查詢，但取得板子的人仍可能比對公開的基地台清單推出位置。名稱存在板子上，會出現在警示歷史與摘要，不寫進 flash 記錄</p></details></div>
+<div class="row"><div class="lbl">掃描間隔</div><div class="mute">間隔越短反應越快，但比較耗電</div><div class="seg" id="seg_interval"></div></div>
+<div class="row"><div class="lbl">每次掃描長度</div><div class="seg" id="seg_duration"></div></div>
+<div class="row set"><div><div class="lbl">統計模式</div><div class="mute" id="statsInfo"></div></div><button class="sw" role="switch" id="sw_stats" onclick="tog('stats')"></button></div>
+</div>
+
+<h2>警示與發聲</h2>
+<div class="rows">
+<div class="row"><div class="lbl">自動發聲</div><div class="mute" id="autoInfo"></div><div class="seg" id="seg_auto"></div>
+<div id="helpBox" hidden><p class="mute"><b>也協助周圍的人</b>：除了跟著你的追蹤器，附近與主人分開的 DULT 追蹤器在很近的距離（訊號強於 -70 dBm）出現超過 10 分鐘，也會讓它響一次，幫帶著它的人發現。會響的只有主人手機不在旁邊的追蹤器，但聽到聲音的人不一定知道原因，也可能只是借來的東西，或主人的手機剛好沒電。等於由你替旁人決定讓他的包包響起來，請確認了解再開啟。</p>
+<div class="inline"><button class="b main" onclick="$('helpBox').hidden=true;setv('autosound',2)">我了解，開啟</button><button class="b" onclick="$('helpBox').hidden=true">取消</button></div></div></div>
+<div class="row set"><div><div class="lbl">安靜模式</div><div class="mute">警示時蜂鳴器不響</div></div><button class="sw" role="switch" id="sw_quiet" onclick="tog('quiet')"></button></div>
+<div class="row set"><div><div class="lbl">板子的燈號</div><div class="mute" id="ledInfo"></div></div><button class="sw" role="switch" id="sw_led" onclick="setLed()"></button></div>
+</div>
+
+<h2>名稱與密碼</h2>
+<div class="rows">
+<div class="row"><div class="lbl">熱點與藍牙名稱</div><div class="mute">目前是 <b id="apName"></b>。周圍的人都看得到這個名稱，換成不起眼的名稱，旁人就不容易看出你帶著偵測器</div>
+<div class="names" id="namePresets"></div>
+<div class="inline"><input id="newName" maxlength="29" aria-label="新的熱點與藍牙名稱" placeholder="自訂名稱，最多 29 bytes"><button class="b main" onclick="saveIdentity('name')">儲存</button></div></div>
+<div class="row"><div class="lbl">熱點密碼</div><div class="mute" id="passInfo"></div>
+<div class="inline"><input id="newPass" type="password" maxlength="63" aria-label="新的熱點密碼" placeholder="8 到 63 個英數字或符號"><button class="b main" onclick="saveIdentity('pass')">儲存</button></div></div>
+<div class="row set"><div><div class="lbl">連上熱點時自動跳出面板</div><div class="mute">iPhone 關掉跳出的視窗會斷線。關閉這個選項後，改用瀏覽器開 http://192.168.4.1，可以一直連著</div></div><button class="sw" role="switch" id="sw_captive" onclick="tog('captive')"></button></div>
+</div>
+
+<h2>flash 記錄</h2>
+<div class="rows">
+<div class="row set"><div><div class="lbl">寫入記錄</div><div class="mute" id="logInfo"></div></div><button class="sw" role="switch" id="sw_log" onclick="tog('log')"></button></div>
+<div class="row" id="logBox"><div class="inline" style="margin-top:0"><button class="b main" onclick="location.href='/log.txt'">下載</button><button class="b" onclick="tail()">看最後幾行</button><button class="b danger" id="clearBtn" onclick="twice(this,'刪除',()=>{act('/api/clear');$('tail').hidden=true})">刪除</button></div>
+<pre id="tail" hidden></pre><div class="note">在自動跳出的小視窗裡可能無法下載，請改用瀏覽器開 http://192.168.4.1</div></div>
+</div>
+
+<h2>韌體</h2>
+<div class="rows">
+<div class="row"><div class="lbl">韌體更新</div><div class="mute">目前的版本是 <b id="rev"></b>，建置於 <span id="build"></span>，執行中的程式槽 <span id="part"></span></div><div class="mute num" id="memInfo"></div>
+<div id="otaIdle"><div id="autoNow" hidden><div class="lbl sub">從網路更新</div><div class="mute">自動更新開著，不必按 BOOT。連上 assets.anoni.net，有比較新的版本才下載安裝</div><div class="inline"><button class="b main" id="netNowBtn" onclick="netAsked=true;act('/api/net/update')">檢查並安裝新版</button></div></div>
+<div id="netSlotIdle"></div>
+<div id="armBox"><div class="lbl sub" id="armLbl" hidden>上傳檔案</div><div class="inline"><button class="b" id="armBtn" onclick="act('/api/ota/arm')">開放更新</button></div><div class="note" id="armNote"></div></div></div>
+<div id="otaWait" hidden><p><b>請短按一下板子的 BOOT 鍵</b>，燈號正在快閃紫色，剩下 <span id="otaWaitLeft" class="num"></span> 秒</p></div>
+<div id="otaReady" hidden><p class="mute">已開放更新，剩下 <span id="otaReadyLeft" class="num"></span> 秒。可以從網路更新，或上傳手機裡的檔案。</p>
+<div class="lbl sub">從網路更新</div><div class="mute" id="netHint"></div>
+<div class="inline"><button class="b main" id="netBtn" onclick="netAsked=true;act('/api/net/update')">檢查並安裝新版</button></div><div id="netSlotReady"></div>
+<div class="lbl sub">上傳檔案</div><div class="mute">選擇建置好的 firmware.bin</div>
+<input type="file" id="fw" accept=".bin" aria-label="韌體檔" style="margin-top:8px"><div class="inline"><button class="b" onclick="otaUpload()">上傳並安裝</button></div>
+<div class="bar" id="otaBarBox" hidden style="margin-top:8px"><i id="otaBar" style="width:0;background:var(--act)"></i></div><p class="mute" id="otaMsg"></p></div>
+<div id="netBox" hidden><div class="bar" style="margin-top:8px"><i id="netBar" style="width:0;background:var(--act)"></i></div><p class="mute" id="netMsg"></p></div></div>
+<div class="row"><div class="lbl">更新用的 Wi-Fi</div><div class="mute" id="netWifiInfo"></div>
+<div class="inline"><input id="netSsid" maxlength="32" aria-label="更新用的 Wi-Fi 名稱" placeholder="2.4 GHz 的 Wi-Fi 名稱"></div>
+<div class="inline"><input id="netPass" type="password" maxlength="63" aria-label="更新用的 Wi-Fi 密碼" placeholder="Wi-Fi 密碼，開放的網路留空"><button class="b main" onclick="saveNetWifi()">儲存</button></div></div>
+<div class="row set"><div><div class="lbl">接收測試版</div><div class="mute">測試版是每次修改都發布、還沒經過實機測試的版本，給開發用的板子。實機測試通過的版本才會複製到正式版。一般使用維持關閉。打開時要短按板子的 BOOT 鍵確認</div></div><button class="sw" role="switch" id="sw_testchan" onclick="tog('testchan')"></button></div>
+<div class="note confirm" id="cf_testchan" hidden></div>
+<div class="row set"><div><div class="lbl">自動更新</div><div class="mute" id="autoUpdInfo"></div></div><button class="sw" role="switch" id="sw_autoupd" onclick="tog('autoupd')"></button></div>
+<div class="note confirm" id="cf_autoupd" hidden></div>
+<div class="row set"><div><div class="lbl danger">恢復原廠設定</div><div class="mute">名稱、密碼、門檻、存過的地點與所有設定回到預設值。flash 記錄與警示歷史保留，但警示歷史裡的地點名稱會清掉。忘記密碼時，也可以長按 BOOT 10 秒，燈號快閃白色後放開</div></div><button class="b danger" onclick="twice(this,'恢復',()=>act('/api/factory'))">恢復</button></div>
+</div>
+<h2>BOOT 鍵與燈號</h2>
+<div class="rows">
+<details class="row more"><summary>BOOT 鍵的按法</summary><table class="keys boot"><tr><td>短按</td><td>沒有警示時打一個記號，有警示時確認警示。放開 0.35 秒後才執行，記號的時間用按下的那一刻。房間檢查中是取消檢查，燈號快閃紫色時是確認：允許更新韌體，或打開自動更新、接收測試版</td></tr><tr><td>雙擊</td><td>開始尋找警示中的追蹤器，沒有警示時找訊號最強的。越近嗶得越快、燈號閃得越快，尋找中再雙擊就結束</td></tr><tr><td>長按 2 秒</td><td>Wi-Fi 沒開就打開熱點，開著就全部關閉。按下時燈號變白，切換時新狀態的顏色恆亮 2 秒，這時放開</td></tr><tr><td>長按 10 秒</td><td>恢復原廠設定。5 秒起燈號快閃黃色，10 秒後改成快閃白色，這時放開才執行</td></tr></table></details>
+<details class="row more"><summary>燈號的意思</summary><table class="keys"><tr><td><i class="dot" style="background:#2E9E5B"></i>綠燈恆亮</td><td>附近沒有追蹤器</td></tr><tr><td><i class="dot" style="background:#E0A800"></i>黃燈慢慢呼吸</td><td>附近有追蹤器，還沒達到警示門檻</td></tr><tr><td><i class="dot" style="background:#D7263D"></i>紅燈快閃三下、停一下</td><td>有還沒確認的警示，短按 BOOT 確認</td></tr><tr><td><i class="dot" style="background:#2F6FDE"></i>藍燈恆亮</td><td>掃描中</td></tr><tr><td><i class="dot" style="background:#27B8C9"></i>每 3 秒亮一下</td><td>手機連線開著：青色只有 Wi-Fi，白色 Wi-Fi 加藍牙，紫色只有藍牙</td></tr><tr><td><i class="dot" style="background:#C9CED4"></i>白燈閃一下</td><td>打了一個記號</td></tr><tr><td><i class="dot" style="background:#C9CED4"></i>白燈閃爍，越來越快</td><td>尋找中，越近閃得越快</td></tr><tr><td><i class="dot" style="background:#2F6FDE"></i>藍燈慢慢呼吸（尋找中）</td><td>尋找的追蹤器 8 秒以上沒收到訊號</td></tr><tr><td><i class="dot" style="background:#D7263D"></i>紅燈閃兩下</td><td>雙擊時附近沒有可以找的追蹤器</td></tr><tr><td><i class="dot" style="background:#C9CED4"></i>白燈慢慢呼吸</td><td>房間檢查中</td></tr><tr><td><i class="dot" style="background:#2E9E5B"></i>綠燈連閃兩下、停一下</td><td>房間檢查完成，連回熱點看報告</td></tr><tr><td><i class="dot" style="background:#9B4DCA"></i>紫燈快閃</td><td>等待短按 BOOT 確認：更新韌體、打開自動更新或接收測試版</td></tr></table><p class="note">設定裡關掉「板子的燈號」時，只剩按鍵、切換連線、房間檢查與韌體更新的燈號會亮。</p></details>
+</div>
+</section>
+<p class="foot num" id="foot"></p>
+</main>
+
+<div id="find" role="dialog" aria-modal="true" aria-label="尋找追蹤器">
+<div class="mute" id="findWhat"></div>
+<div class="dbm num" id="findRssi">-</div>
+<div class="meter"><i id="findBar" style="width:0"></i></div>
+<p class="hint mute" id="findNote"></p>
+<p class="mute" id="findSound"></p>
+<div class="btns"><button class="b main" id="findSoundBtn" onclick="sound(S.findAddr)">讓它響</button><button class="b" id="findEnd" onclick="find('')">結束尋找</button></div>
+<p class="note">拿著板子慢慢走，數字越接近 0（例如從 -90 變成 -50）代表越近。每秒更新一次。板子的嗶聲與燈號也會越近越快，雙擊 BOOT 可以結束尋找。</p>
+</div>
+
+<nav role="tablist"><button role="tab" id="tab-scan" aria-controls="t-scan" data-t="scan" aria-selected="true">偵測</button><button role="tab" id="tab-hist" aria-controls="t-hist" data-t="hist">歷史<span class="badge" id="histBadge" hidden></span></button><button role="tab" id="tab-mark" aria-controls="t-mark" data-t="mark">記號</button><button role="tab" id="tab-room" aria-controls="t-room" data-t="room">空間</button><button role="tab" id="tab-set" aria-controls="t-set" data-t="set">設定</button></nav>
+<div id="toast" role="status"></div>
+<div id="sr" class="sr" aria-live="polite"></div><div id="srAlert" class="sr" role="alert"></div>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const TYPE={AplDv:'Apple 自家裝置',Apple:'Apple Find My',SmTag:'Samsung SmartTag',Tile:'Tile',Googl:'Google 尋找我的裝置',DULT:'DULT 追蹤器',Chipo:'Chipolo',Pebbl:'Pebblebee'};
+const PRESET=[['敏感','5 分鐘、4 次、-90 dBm、60%'],['標準','10 分鐘、6 次、-85 dBm、70%'],['保守','15 分鐘、9 次、-80 dBm、80%'],['快速測試','2 分鐘、3 次、-85 dBm、70%']];
+const SOUND=['成功送出發聲指令','找不到（可能已經換了位址或離開範圍）','連不上','連上了，但沒有支援的發聲服務','送出指令失敗','送出指令後沒有回覆','追蹤器拒絕（可能主人就在附近）','目前的廣播不接受連線','自動發聲跳過：只對 DULT、AirTag、Pebblebee 而且接受連線的追蹤器自動發聲'];
+var H=null,curH=null,P=[],sess=0;let fails=0,lastOk=0,S={},histVer=-1,tlHours=0,timer=null,synced=false,lastAlert=false;
+
+// 分頁
+const tabs=[...document.querySelectorAll('nav button')];
+function showTab(t){document.body.classList.toggle('sub',t!='scan');tabs.forEach(b=>{b.setAttribute('aria-selected',b.dataset.t==t);b.tabIndex=b.dataset.t==t?0:-1;});document.querySelectorAll('main section').forEach(s=>s.hidden=s.id!='t-'+t);if(t=='hist'){$('histBadge').hidden=true;if(window.H)drawTimeline();loadPrev();}try{localStorage.tab=t}catch(e){}scrollTo(0,0);}
+tabs.forEach(b=>b.onclick=()=>showTab(b.dataset.t));
+tabs.forEach(b=>b.tabIndex=b.getAttribute('aria-selected')=='true'?0:-1);
+// 分頁的鍵盤操作：左右方向鍵切換到前後一個（頭尾相接），Home、End 到第一個與最後一個
+$('tab-scan').parentNode.addEventListener('keydown',e=>{const i=tabs.indexOf(document.activeElement);if(i<0)return;
+  const n=tabs.length,k={ArrowRight:(i+1)%n,ArrowLeft:(i+n-1)%n,Home:0,End:n-1}[e.key];if(k===undefined)return;
+  e.preventDefault();showTab(tabs[k].dataset.t);tabs[k].focus();});
+try{if(localStorage.tab)showTab(localStorage.tab)}catch(e){}
+
+function toast(t){const e=$('toast');e.textContent=t;e.style.opacity=1;clearTimeout(e._t);e._t=setTimeout(()=>e.style.opacity=0,2200);}
+async function post(u,d){const r=await fetch(u,{method:'POST',body:new URLSearchParams(d||{})});return r.text();}
+async function act(u,d){try{toast(await post(u,d));setTimeout(poll,600);}catch(e){toast('送出失敗，板子可能正在掃描 Wi-Fi，請再按一次');}}
+function twice(btn,label,fn){if(btn._armed&&Date.now()-btn._armed<5000){btn._armed=0;btn.textContent=label;fn();return;}btn._armed=Date.now();btn.textContent='再按一次確認';setTimeout(()=>{if(btn._armed){btn._armed=0;btn.textContent=label}},5000);}
+const mark=l=>{act('/api/mark',{label:l||''});$('label').value='';};
+const find=a=>act('/api/find',{addr:a});
+const sound=a=>act('/api/sound',{addr:a});
+const tog=k=>act('/api/set',{key:k,on:S[k]?0:1});
+const setv=(k,v)=>act('/api/set',{key:k,v:v});
+const setLed=()=>act('/api/led',{on:S.led?0:1});
+// 每個開關、分段按鈕都接到同一列的標題，螢幕閱讀器才念得出「移動判斷，開關，開啟」
+function labelControls(){let n=0;document.querySelectorAll('.sw[role=switch],.seg').forEach(e=>{const row=e.closest('.row');const l=row&&row.querySelector('.lbl');if(!l)return;if(!l.id)l.id='lbl'+(n++);
+  if(e.classList.contains('seg')){e.setAttribute('role','group');}e.setAttribute('aria-labelledby',l.id);
+  const m=row.querySelector('.mute');if(m&&e.classList.contains('sw')){if(!m.id)m.id='dsc'+(n++);e.setAttribute('aria-describedby',m.id);}});}
+labelControls();
+// 尋找畫面蓋住整個頁面：打開時焦點移到「結束尋找」，後面的頁面暫時不能操作，關閉後焦點回到原處
+let findReturn=null;
+function showFind(on){const f=$('find');if(f.classList.contains('on')==on)return;f.classList.toggle('on',on);
+  document.querySelectorAll('body>header,body>main,body>nav').forEach(e=>{if(on)e.setAttribute('inert','');else e.removeAttribute('inert');});
+  if(on){findReturn=document.activeElement;$('findEnd').focus();}
+  else if(findReturn&&document.contains(findReturn)&&!findReturn.closest('[inert]')){findReturn.focus();findReturn=null;}}
+// 螢幕閱讀器的讀出：狀態改變、更新的進度與結果。警示用 role=alert 立刻讀出，其他的等目前的朗讀結束。
+// 同一段文字要先清空再填入，才會再讀一次。尋找畫面的訊號數字每秒在變，不讀出
+function announce(t,urgent){const e=$(urgent?'srAlert':'sr');e.textContent='';setTimeout(()=>{e.textContent=t;},60);}
+let lastSt=null,lastNs=0,netAsked=false;
+function noteState(c){if(c===lastSt)return;const first=lastSt===null;lastSt=c;
+  if(first&&c!='alert')return;  // 剛打開面板時畫面上就看得到，警示以外不必另外讀
+  announce($('state').textContent+'。'+$('say').textContent,c=='alert');}
+function setState(c){['alert','acked','watch','off'].forEach(k=>document.body.classList.toggle(k,k==c));}
+const alerting=()=>(S.trk||[]).find(t=>t.alerted&&!t.acked)||(S.trk||[]).find(t=>t.alerted);
+const alertFind=()=>{const t=alerting();if(t)find(t.addr);};
+const alertSound=()=>{const t=alerting();if(t)sound(t.addr);};
+async function syncTime(manual){try{const t=await post('/api/time',{epoch:Math.floor(Date.now()/1000)});synced=true;if(manual)toast(t);}catch(e){}}
+const fmt=e=>new Date(e*1000).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',hour12:false});
+const mins=s=>s<60?s+' 秒':Math.floor(s/60)+' 分';
+const pct=(v,n)=>Math.min(100,Math.round(v*100/Math.max(n,1)));
+function sw(id,on,dis){const b=$(id);b.setAttribute('aria-checked',!!on);b.disabled=!!dis;}
+function seg(id,key,opts,cur){$(id).innerHTML=opts.map(o=>'<button aria-pressed="'+(o[0]==cur)+'" onclick="setv(\''+key+'\','+o[0]+')">'+o[1]+'</button>').join('');}
+
+// 追蹤器離警示還差多少：取各條件進度的最小值
+function progress(t){let p=[pct(t.span,S.needSpan),pct(t.near,S.needNear),pct(t.pres,S.needPresence)];if(S.needPlaces)p.push(pct(t.places,S.needPlaces));return Math.min(...p);}
+function color(t){return t.alerted?'var(--alert)':'var(--watch)';}
+const ink=t=>t.alerted?'var(--alert)':'var(--watchInk)';
+// 掃描的節拍：狀態帶著「上一次掃描開始到現在幾毫秒」，面板自己每半秒往下算，不必一直讀取
+let beat=null,beatOff=false;try{beatOff=localStorage.beatOff=='1';}catch(e){}
+// 倒數、進度條與掃過的光可以暫停（WCAG 2.2.2），選擇記在這支手機上
+function toggleBeat(){beatOff=!beatOff;try{localStorage.beatOff=beatOff?'1':'0';}catch(e){}tickBeat();}
+const calmMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(!calmMotion)$('sweep').innerHTML='<animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="2.5s" repeatCount="indefinite"/>';
+function tickBeat(){
+  const bt=$('beat');bt.setAttribute('aria-pressed',beatOff);
+  if(!beat||document.body.classList.contains('off')){bt.textContent='';bt.hidden=true;$('sweep').style.display='none';return;}
+  bt.hidden=false;
+  if(beatOff){bt.textContent='倒數已暫停';$('sweep').style.display='none';$('beatBar').style.width='0';return;}
+  const ago=(beat.ago+Date.now()-beat.at)/1000,scanning=ago<beat.dur;
+  $('sweep').style.display=scanning?'':'none';
+  bt.textContent=scanning?'正在掃描':ago<beat.iv?Math.ceil(beat.iv-ago)+' 秒後下一次':'等待下一次掃描';
+  $('beatBar').style.width=(scanning?100:Math.min(100,(ago-beat.dur)/Math.max(1,beat.iv-beat.dur)*100))+'%';
+}
+setInterval(tickBeat,500);
+// 最近幾次出現的訊號強度畫成一條線，-100 到 -40 dBm。訊號變強多半是越來越近，但牆壁、包包也會影響
+function trend(t){const r=t.rh||[];if(r.length<2)return '';
+  const W=72,H=18,y=v=>(H-1-(Math.max(-100,Math.min(-40,v))+100)*(H-2)/60).toFixed(1),x=i=>(1+(i+10-r.length)*(W-2)/9).toFixed(1);
+  const avg=a=>a.reduce((p,c)=>p+c,0)/a.length;let lab='';
+  if(r.length>=6){const d=avg(r.slice(-3))-avg(r.slice(-6,-3));lab=d>=4?'訊號變強':d<=-4?'訊號變弱':'訊號穩定';}
+  return '<div class="trend"><svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" aria-hidden="true"><polyline points="'+r.map((v,i)=>x(i)+','+y(v)).join(' ')+'" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><span>最近 '+r.length+' 次出現'+(lab?'，'+lab:'')+'</span></div>';}
+// 位址換成固定的角度，同一個追蹤器每次都在同一個方向
+function angle(a){let h=0;for(const c of a)h=(h*31+c.charCodeAt(0))>>>0;return (h%360)*Math.PI/180;}
+function drawRadar(list){
+  let g='';[22,42,62].forEach(r=>g+='<circle class="ring" cx="0" cy="0" r="'+r+'"/>');
+  list.forEach(t=>{const r=Math.max(8,Math.min(62,(-40-t.rssi)*62/60)),a=angle(t.addr);
+    g+='<circle class="dot" cx="'+(r*Math.cos(a)).toFixed(1)+'" cy="'+(r*Math.sin(a)).toFixed(1)+'" r="'+(t.alerted?7:5)+'" fill="'+(t.alerted?'#fff':'rgba(255,255,255,'+(0.35+progress(t)/160)+')')+'"/>';});
+  $('radarG').innerHTML=g;
+}
+function cond(name,v,n,txt){const p=pct(v,n);return '<span>'+name+'</span><span class="bar"><i class="'+(p>=100?'done':'')+'" style="width:'+p+'%"></i></span><span class="num">'+txt+'</span>';}
+function soundLine(t){return S.soundAddr==t.addr&&(S.soundBusy||S.soundAgo<60)?'<div class="meta">'+(S.soundBusy?'正在連線… ':'')+esc(S.soundMsg)+'</div>':'';}
+function drawList(){
+  const list=S.trk||[];
+  $('trkList').innerHTML=list.length?list.map(t=>{
+    const tag=t.alerted?(t.acked?'已確認':'警示中'):'觀察中';
+    return '<div class="row trk'+(t.alerted?'':' calm')+'" data-a="'+t.addr+'"><span class="bullet" style="background:'+color(t)+'"></span>'+
+      '<span class="name">'+esc(TYPE[t.type]||t.type)+'</span><span class="tag" style="color:'+ink(t)+'">'+tag+'</span>'+
+      '<div class="meta num">'+t.addr+'，'+t.rssi+' dBm，'+(t.ago<5?'剛剛出現':mins(t.ago)+'前')+'</div>'+trend(t)+
+      '<div class="prog">'+cond('出現時間',t.span,S.needSpan,mins(t.span))+cond('近距離',t.near,S.needNear,t.near+'/'+S.needNear+' 次')+cond('出現比例',t.pres,S.needPresence,t.pres+'%')+(S.needPlaces?cond('經過地點',t.places,S.needPlaces,t.places+'/'+S.needPlaces+' 個'):'')+'</div>'+
+      '<div class="btns"><button class="b" data-find="'+t.addr+'">尋找</button><button class="b" data-sound="'+t.addr+'"'+(S.soundBusy?' disabled':'')+'>讓它響</button></div>'+soundLine(t)+'</div>';}).join('')
+    :'<div class="empty">附近沒有追蹤器</div>';
+}
+$('trkList').onclick=e=>{const f=e.target.dataset.find,s=e.target.dataset.sound;if(f)find(f);else if(s)sound(s);};
+$('radar').onclick=()=>showTab('scan');
+
+function render(){
+  const s=S,alert=s.alert,list=s.trk||[],acked=!alert&&list.some(t=>t.alerted);
+  setState(alert?'alert':acked?'acked':list.length?'watch':'');
+  $('state').textContent=alert?'警示':acked?'已確認':list.length?'觀察中':'沒有發現';
+  $('say').textContent=alert?'有追蹤器一直跟著你，符合全部警示條件。按下方按鈕，或短按板子的 BOOT 確認。':acked?'你確認過的追蹤器還在附近，可以尋找它或讓它響。':list.length?'附近有 '+list.length+' 個追蹤器，還沒達到警示條件。':'附近沒有發現追蹤器。';
+  noteState(alert?'alert':acked?'acked':list.length?'watch':'safe');
+  if(alert&&!lastAlert&&navigator.vibrate)navigator.vibrate([200,100,200,100,200]);lastAlert=alert;
+  $('dev').textContent=s.apName||'';$('scanNo').textContent='已掃描 '+s.scan+' 次';
+  beat=s.scan?{ago:s.scanAgo||0,at:Date.now(),iv:s.every||s.interval||30,dur:s.duration||5}:null;tickBeat();
+  // 周圍環境：上一次掃描收到幾個藍牙裝置（只計數，不記位址），開著移動判斷時加上基地台
+  $('env').textContent=s.scan?'上一次掃描收到藍牙裝置 '+s.bleNow+' 個'+(s.wifiscan?'、Wi-Fi 基地台 '+s.wifiNow+' 個':''):'';
+  $('linkInfo').textContent='Wi-Fi 開啟，藍牙'+(s.bleOn?(s.bleSecure?'已配對連線':s.bleConnected?'等待配對':'開啟'):'關閉');
+  sw('sw_ble',s.bleOn);$('pinRow').hidden=!s.bleOn;
+  $('bleInfo').textContent=!s.bleOn?'關閉。開啟後可以用藍牙終端機 App 連線送指令，不佔用手機的 Wi-Fi':s.bleSecure?'已配對連線':s.bleConnected?'手機連上了，等待輸入配對碼':'開啟中，等待手機連線';
+  $('wifiInfo').textContent='開啟中，這個面板就是經由它連線。'+(s.bleOn?'關閉後只留藍牙':'關閉後全部關閉')+'，面板會斷線，要再打開請長按 BOOT 2 秒';
+  const chips=[];
+  if(s.mode&&s.mode!='偵測')chips.push(s.mode+'模式');
+  if(s.needPlaces)chips.push((s.moving?'移動中':'停留中')+'，'+(!s.placeId?'還沒掃描到基地台':s.placeName||'地點 #'+s.placeId));
+  if(s.preset==3)chips.push('<span class="chip warn">快速測試門檻，容易誤報</span>');
+  if(s.quiet)chips.push('安靜模式');if(!s.led)chips.push('燈號全關');
+  if(s.meetPhase)chips.push(s.meetAlert?'<span class="chip warn">會議室檢查：有多出來的裝置</span>':s.meetCaution?'會議室檢查：留意 Wi-Fi 的動靜':'會議室檢查中');
+  if(s.automode)chips.push(s.automode==1&&!s.wifiscan?'<span class="chip warn">自動發聲沒作用，移動判斷關著</span>':s.automode==2?'自動發聲，含協助周圍':'自動發聲');if(!s.timeKnown)chips.push('還沒對時');
+  $('chips').innerHTML=chips.map(c=>c.startsWith('<')?c:'<span class="chip">'+c+'</span>').join('');
+  drawRadar(list);drawList();
+  $('rule').textContent=(s.needPlaces?'四':'三')+'個條件都達到才警示：出現時間相隔 '+Math.round(s.needSpan/60)+' 分鐘以上、訊號強於 '+s.needRssi+' dBm 的掃描 '+s.needNear+' 次以上、出現比例 '+s.needPresence+'% 以上'+(s.needPlaces?'、跟著你經過 '+s.needPlaces+' 個不同的地點':'')+'。30 分鐘沒再出現就移除。';
+  $('appleNote').textContent=s.appleDevices?'另有 '+s.appleDevices+' 個與主人分開的 Apple 自家裝置（iPhone、iPad、Mac）沒有列出。路上到處都是，iOS 也不會對它們警示，'+(s.needPlaces?'跟著你經過 '+s.needPlaces+' 個不同的地點才會警示。':'打開移動判斷後，確認一直跟著你才會警示。'):'';
+  // 尋找
+  showFind(s.findOn);
+  if(s.findOn){$('findWhat').textContent='尋找 '+(s.findLabel||(TYPE[s.findType]||'追蹤器')+' '+s.findAddr);$('findSoundBtn').hidden=!!s.findLabel;
+    $('findRssi').innerHTML=s.findSeen?s.findRssi+'<small>dBm</small>':'<small>等待訊號</small>';
+    $('findBar').style.width=s.findSeen?Math.max(0,Math.min(100,(s.findRssi+100)*100/60))+'%':'0';
+    $('findNote').textContent=(s.findSeen?(s.findAgo<=2?'訊號持續更新中':'已經 '+s.findAgo+' 秒沒收到，可能離開範圍或換了位址'):(s.findWifi?'還沒收到它送出的訊號。Wi-Fi 裝置正在傳資料時才能收到，攝影機通常幾秒就會送一次':'還沒收到這個位址的廣播'))+'，'+mins(s.findLeft)+'後自動結束';
+    $('findSound').innerHTML=soundLine({addr:s.findAddr});$('findSoundBtn').disabled=s.soundBusy;}
+  // 記號
+  $('markNote').textContent=s.logOn?'按下的時間與文字寫進 flash 記錄，之後用來對照追蹤器何時出現。':'flash 記錄暫停中，記號只留在記憶體，重新開機就消失。要保存請到設定打開「寫入記錄」。';
+  $('recent').innerHTML=(s.recent||[]).length?s.recent.slice().reverse().map(m=>'<li><span class="t num">'+(m.epoch?fmt(m.epoch):'開機後 '+Math.floor(m.uptime/60)+' 分')+'</span><span>'+esc(m.label||'記號 #'+m.n)+'</span></li>').join(''):'<li class="mute">還沒有記號</li>';
+  $('clock').textContent=s.timeKnown?'板子的時間 '+fmt(s.epoch):'還沒對時';
+  if(!s.timeKnown&&!synced)syncTime(false);
+  // 設定
+  seg('seg_preset','preset',PRESET.map((p,i)=>[i,p[0]]),s.preset);$('presetInfo').textContent=(PRESET[s.preset]||['',''])[1]+'，切換後追蹤器重新累計';
+  seg('seg_interval','interval',[[15,'15 秒'],[30,'30 秒'],[60,'60 秒']],s.interval);
+  seg('seg_duration','duration',[[3,'3 秒'],[5,'5 秒']],s.duration);
+  seg('seg_idle','idle',[[5,'5 分'],[10,'10 分'],[30,'30 分'],[0,'不關閉']],s.idle);
+  $('seg_auto').innerHTML=[[0,'關閉'],[1,'跟著我移動時'],[2,'也協助周圍的人']].map(o=>'<button aria-pressed="'+(o[0]==s.automode)+'" onclick="'+(o[0]==2&&s.automode!=2?"$('helpBox').hidden=false":"setv('autosound',"+o[0]+")")+'">'+o[1]+'</button>').join('');
+  $('autoInfo').textContent=(s.automode==0?'只有手動按「讓它響」才會發聲。':s.automode==1?'追蹤器跟著你經過好幾個地點、觸發警示時，自動讓它響。':'跟著你的追蹤器，以及附近與主人分開、很近又出現夠久的 DULT 追蹤器，都會自動響一次。')+(s.automode&&!s.wifiscan?'移動判斷目前關著，自動發聲不會作用，請到上方打開「移動判斷」。':'')+'只對收過 DULT 廣播的追蹤器、AirTag、Pebblebee 嘗試，每個追蹤器最多自動響一次，響之前板子會嗶兩聲提醒你留意四周。';
+  $('placeBox').hidden=!s.wifiscan;
+  $('placeInfo').textContent=!s.placeId?'還沒掃描到 Wi-Fi 基地台':'目前在「'+(s.placeName||'地點 #'+s.placeId)+'」'+(s.placeName?'':'，還沒命名')+'。回到存過的地點時會認出來，警示歷史會寫出追蹤器跟著你經過哪些地點';
+  if(s.wifiscan&&placeKey!=s.placeId+'|'+s.placeName+'|'+s.placeCount){placeKey=s.placeId+'|'+s.placeName+'|'+s.placeCount;loadPlaces();}
+  sw('sw_wifiscan',s.wifiscan);sw('sw_stats',s.stats,!s.statsAllowed);sw('sw_quiet',s.quiet);sw('sw_led',s.led);sw('sw_captive',s.captive);sw('sw_log',s.log,!s.logMounted);
+  $('statsInfo').textContent=!s.statsAllowed?'人流計數模式下不能開啟':s.statsOn?'目前 '+s.statNow+' 個裝置，20 分鐘以上 '+s.statPersist+' 個，累計 '+s.statTotal+' 個位址':'記錄周圍所有藍牙裝置的位址，研究用，每小時約 250 KB';
+  $('ledInfo').textContent=!s.led&&s.quiet?'燈號與蜂鳴器都關閉，板子本身不會提示警示。藍牙連線開著時，警示會推送到藍牙終端機':'關閉後燈號完全不亮，只靠手機面板看狀態';
+  $('apName').textContent=s.apName;
+  $('passInfo').textContent=s.defaultPass?'目前是預設密碼，README 公開寫著這組密碼，知道的人都能連上你的面板，建議修改':'已改成自訂密碼';
+  $('blePin').textContent=s.blePin;$('bleBonds').textContent=s.bleBonds;
+  $('logInfo').textContent=!s.logMounted?'FAT 分區無法使用':(s.logOn?(s.logFull?'已滿，停止寫入':'寫入中'):'暫停')+'，目前 '+s.logKB+' KB，上限 8 MB';
+  $('logBox').hidden=!s.logMounted;
+  $('build').textContent=s.build;$('part').textContent=s.part;$('rev').textContent=s.rev;
+  // 記憶體：網址更新的 TLS 交握要約 40 KB 的連續空間，排查更新失敗時看這一行
+  const mm=s.mem||[];$('memInfo').textContent=mm.length?'記憶體：內部剩 '+Math.round(mm[0]/1024)+' KB（最大連續 '+Math.round(mm[1]/1024)+' KB，開機以來最低 '+Math.round(mm[2]/1024)+' KB），PSRAM 剩 '+(mm[3]/1048576).toFixed(1)+' MB'+(mm[4]||mm[5]?'。上次網址更新的加密連線用了 PSRAM '+Math.round(mm[4]/1024)+' KB、內部 '+Math.round(mm[5]/1024)+' KB':''):'';
+  // 名稱一行，版本與建置時間各自不拆開，寬度不夠時只在兩段之間換行
+  $('foot').innerHTML='<span>'+esc(s.apName)+'</span><br><span>韌體版本 '+esc(s.rev)+'</span>，<span>建置於 '+esc(s.build)+'</span>';
+  // 等 BOOT 確認打開自動更新或接收測試版時，提示顯示在那個開關下方，韌體更新那一列照常
+  const otaSt=s.bootWhat?0:s.otaState,cf='請在 '+s.otaLeft+' 秒內短按一下板子的 BOOT 鍵確認，燈號正在快閃紫色。沒有按就維持關閉';
+  $('cf_autoupd').hidden=s.bootWhat!=1;$('cf_testchan').hidden=s.bootWhat!=2;if(s.bootWhat)$('cf_'+(s.bootWhat==1?'autoupd':'testchan')).textContent=cf;
+  $('otaIdle').hidden=otaSt!=0;$('otaWait').hidden=otaSt!=1;$('otaReady').hidden=!(otaSt==2||$('otaMsg').textContent);
+  $('otaWaitLeft').textContent=s.otaLeft;$('otaReadyLeft').textContent=s.otaLeft;
+  const ns=s.netState||0,busy=ns>=1&&ns<=3;
+  $('netWifiInfo').textContent=(s.netSsid?'目前是「'+s.netSsid+'」。':'還沒設定。')+'從網路更新時，板子用這個 Wi-Fi 上網下載，密碼只存在板子上。連線期間熱點會換到這個 Wi-Fi 的頻道，手機可能斷線幾秒';
+  $('netHint').textContent=(s.testchan?'測試通道。':'')+(s.netSsid?'用 Wi-Fi「'+s.netSsid+'」連上網，比對建置時間，有新版才下載，SHA-256 相符才換上':'先在下方設定更新用的 Wi-Fi（2.4 GHz）');
+  $('netBtn').disabled=!s.netSsid||busy;$('netNowBtn').disabled=!s.netSsid||busy;
+  $('autoNow').hidden=!s.autoupd;
+  // 下載的進度與結果緊接在按下的按鈕下方。檢查或下載中先收起「開放上傳」，避免看不出提示屬於哪個按鈕
+  const nb=$('netBox'),slot=s.otaState==2?$('netSlotReady'):$('netSlotIdle');if(nb.parentNode!==slot)slot.appendChild(nb);
+  const netBusy=ns>=1&&ns<=4;
+  $('armBox').hidden=netBusy;
+  sw('sw_autoupd',s.autoupd);sw('sw_testchan',s.testchan);$('sw_autoupd').disabled=!s.netSsid&&!s.autoupd;
+  // 自動更新開著時，從網路更新不必按 BOOT，這顆按鈕只剩開放上傳檔案
+  $('armLbl').hidden=!s.autoupd;$('armBtn').textContent=s.autoupd?'開放上傳':'開放更新';
+  $('armNote').textContent='按下後在 60 秒內短按一下板子的 BOOT 鍵，開放 5 分鐘'+(s.autoupd?'上傳手機裡的韌體檔':'，可以從網路更新或上傳手機裡的檔案')+'。要按板子上的鍵，附近的人就無法換掉韌體';
+  $('autoUpdInfo').textContent=(s.autoFrom?'這次開機是從 '+s.autoFrom+' 自動更新上來的。':'')+(!s.netSsid?'先在上方設定更新用的 Wi-Fi。':'')+'打開時要短按板子的 BOOT 鍵確認，之後更新不必再按：板子每 6 小時被動掃描一次，附近有更新用的 Wi-Fi 才連上 assets.anoni.net，有比較新的版本就下載，SHA-256 相符才換上並重新開機。有警示、追蹤器快達到門檻、房間檢查、尋找中或手機連著熱點時延後。上傳檔案仍要按 BOOT'+(s.autoupd&&s.netSsid&&s.autoNext?'。下次檢查約在 '+(s.autoNext>=3600?Math.round(s.autoNext/3600)+' 小時':mins(s.autoNext))+'後':'');
+  $('netBox').hidden=!ns;
+  $('netBar').style.width=(s.netTotal?s.netGot*100/s.netTotal:ns==4||ns==5?100:0)+'%';
+  $('netMsg').textContent=(s.netLastAuto&&ns>=4?'自動檢查（'+mins(s.netAgo)+'前）：':'')+(ns==7?'附近沒有 Wi-Fi「'+s.netSsid+'」，稍後再試':ns==1?'連線到 Wi-Fi「'+s.netSsid+'」，手機可能斷線幾秒':ns==2?'讀取版本資訊':ns==3?'下載 '+(s.netRev||s.netBuild||'新版')+'：'+Math.round(s.netGot/1024)+' / '+Math.round(s.netTotal/1024)+' KB':ns==4?'下載完成，正在重新開機換成 '+(s.netRev||s.netBuild):ns==5?((s.netMsg||'').indexOf('比目前的舊')>=0?s.netMsg:'已經是最新版（'+(s.netRev||s.netBuild)+'）'):ns==6?'沒有更新：'+s.netMsg:'');
+  // 自己按了更新才讀出進度與結果，背景的自動檢查不打斷
+  if(ns!=lastNs){lastNs=ns;if(netAsked&&ns)announce(ns==3?'開始下載新版':$('netMsg').textContent);if(ns>=4)netAsked=false;}
+  // 房間
+  sw('sw_roomlog',s.roomlog);$('roomBtn').disabled=s.roomState>0;
+  $('roomMsg').textContent=s.roomState==1?'藍牙掃描中，約 '+Math.max(0,s.roomLeft-(s.roomEst-15))+' 秒後熱點關閉，剩下約 '+mins(s.roomLeft):s.roomState>1?'熱點關閉中，Wi-Fi 監聽約 '+mins(s.roomLeft)+'後完成':'';
+}
+const NAMES=['iPhone','Galaxy S24','DIRECT-5E-HP LaserJet','TP-Link_Extender'];
+$('namePresets').innerHTML=NAMES.map(n=>'<button onclick="$(\'newName\').value=\''+n+'\'">'+n+'</button>').join('');
+const PADS=['出門','上車','下車','進站','出站','轉乘','到達','回家','其他'];
+$('presets').innerHTML=PADS.map(p=>'<button onclick="mark(\''+p+'\')">'+p+'</button>').join('');
+async function saveIdentity(k){const d={};
+  if(k=='name'){const n=$('newName').value.trim();if(!n){toast('請輸入名稱');return;}if(new TextEncoder().encode(n).length>29){toast('名稱太長，最多 29 bytes，中文約 9 個字');return;}d.name=n;}
+  else{const p=$('newPass').value;if(p.length<8||p.length>63||/[^\x20-\x7e]/.test(p)){toast('密碼要 8 到 63 個英數字或符號');return;}d.pass=p;}
+  try{toast(await post('/api/identity',d));$('newName').value='';$('newPass').value='';}catch(e){toast('送出失敗，請再試一次');}}
+let placeKey='';
+async function loadPlaces(){let j;try{j=await (await fetch('/api/places',{cache:'no-store'})).json();}catch(e){return null;}
+  try{
+  $('placeSum').textContent='存過的地點（'+j.list.length+' / '+j.max+'）';
+  $('placeList').innerHTML=j.list.length?j.list.map(p=>'<div class="inline"><input id="pn'+p.id+'" maxlength="30" aria-label="地點 #'+p.id+' 的名稱" value="'+esc(p.name)+'" placeholder="地點 #'+p.id+'（未命名）"><button class="b" onclick="namePlace('+p.id+',$(\'pn'+p.id+'\').value)">改名</button><button class="b danger" onclick="twice(this,\'刪除\',()=>forgetPlace('+p.id+'))">刪除</button></div><div class="note">'+(p.id==j.cur?'目前在這裡，':'')+'來過 '+p.visits+' 次</div>').join(''):'<div class="note">還沒有存過的地點</div>';}catch(e){}return j;}
+async function namePlace(id,n){n=n.trim();if(new TextEncoder().encode(n).length>30){toast('名稱太長，最多 30 bytes，中文約 10 個字');return;}
+  try{await post('/api/places/name',{id:id,name:n});}catch(e){toast('送出失敗，請再試一次');return;}
+  setTimeout(async()=>{const j=await loadPlaces();if(!j)return;const want=id||j.cur,p=j.list.find(x=>x.id==want);
+    if(p&&p.name==n){toast(n?'已儲存「'+n+'」':'已清除名稱');if(!id)$('placeName').value='';}
+    else toast(!j.cur?'還沒掃描到 Wi-Fi 基地台，等一下再試':'沒有儲存。32 個地點都已命名時，先刪除用不到的');},800);}
+async function forgetPlace(id){try{toast(await post('/api/places/forget',{id:id}));setTimeout(loadPlaces,600);}catch(e){toast('送出失敗，請再試一次');}}
+async function saveNetWifi(){const n=$('netSsid').value.trim();if(new TextEncoder().encode(n).length>32){toast('Wi-Fi 名稱最多 32 bytes');return;}
+  try{toast(await post('/api/net/wifi',{ssid:n,pass:$('netPass').value}));$('netSsid').value='';$('netPass').value='';setTimeout(poll,600);}catch(e){toast('送出失敗，請再試一次');}}
+async function tail(){try{const t=await (await fetch('/api/tail',{cache:'no-store'})).text();$('tail').textContent=t||'（沒有內容）';$('tail').hidden=false;$('tail').scrollTop=1e9;}catch(e){toast('讀取失敗');}}
+function otaUpload(){const f=$('fw').files[0];if(!f){toast('先選擇 .bin 檔');return;}
+  const fd=new FormData();fd.append('fw',f,f.name);const x=new XMLHttpRequest();x.open('POST','/update');
+  x.upload.onprogress=e=>{if(e.lengthComputable){$('otaBar').style.width=(e.loaded/e.total*100)+'%';$('otaMsg').textContent=Math.round(e.loaded/1024)+' / '+Math.round(e.total/1024)+' KB';}};
+  x.onload=()=>{$('otaMsg').textContent=x.responseText;announce(x.responseText);};x.onerror=()=>{$('otaMsg').textContent='連線中斷，板子可能已經重新開機';announce($('otaMsg').textContent);};
+  $('otaMsg').textContent='上傳中';$('otaBarBox').hidden=false;x.send(fd);}
+
+// 歷史
+const at=sec=>H&&H.epoch?fmt(H.epoch-(H.uptime-sec)):'開機後 '+Math.floor(sec/60)+' 分';
+function atFull(sec){if(H&&H.epoch){const d=new Date((H.epoch-(H.uptime-sec))*1000);return d.toLocaleDateString('zh-TW')+' '+fmt(d/1000);}return '開機後 '+Math.floor(sec/60)+' 分';}
+const soundText=t=>t.sound>=0?(SOUND[t.sound]||'未知'):(t.autoOff?'觸發警示時自動發聲沒有作用（關閉，或移動判斷沒開），沒有嘗試':'還沒嘗試');
+async function loadHistory(){try{curH=await (await fetch('/api/history',{cache:'no-store'})).json();if(!sess){H=curH;drawHistory();drawTimeline();}}catch(e){}}
+// 之前的開機：存在 flash 的 JSON 陣列，新的在前
+async function loadPrev(){try{P=await (await fetch('/api/history/prev',{cache:'no-store'})).json();}catch(e){P=[];}if(sess>P.length)sess=0;drawSess();}
+const startOf=h=>h.epoch?new Date((h.epoch-h.uptime)*1000):null;
+function sessLabel(h,i){const d=startOf(h);return d?(d.getMonth()+1)+'/'+d.getDate()+' '+fmt(d/1000):'前 '+(i+1)+' 次';}
+function drawSess(){$('sessBox').hidden=!P.length;$('prevClear').hidden=!P.length;if(!P.length)return;
+  $('histSess').innerHTML=[[0,'這次開機']].concat(P.map((h,i)=>[i+1,sessLabel(h,i)])).map(o=>'<button aria-pressed="'+(o[0]==sess)+'" onclick="pickSess('+o[0]+')">'+o[1]+'</button>').join('');
+  const h=sess?P[sess-1]:null,al=h?(h.trk||[]).filter(t=>t.alert>=0).length:0;
+  $('sessNote').textContent=h?(startOf(h)?'那次開機從 '+sessLabel(h,sess-1)+' 開始，':'那次開機沒有對時，時間以開機後計算，')+'紀錄了約 '+mins(h.uptime)+'，觸發警示 '+al+' 個。最後一次存檔之後的幾分鐘可能沒存到。':'板子上存了之前 '+P.length+' 次開機的紀錄，點日期切換。';}
+function pickSess(i){sess=i;H=i?P[i-1]:curH;$('summary').hidden=true;$('copyBtn').hidden=true;drawSess();if(H){drawHistory();drawTimeline();}}
+async function clearPrev(){try{toast(await post('/api/history/clear'));}catch(e){toast('送出失敗，請再試一次');return;}P=[];pickSess(0);}
+// 依序經過的地點，用那次存檔時的名稱
+const plPath=t=>(t.pl||[]).map(id=>(H.places||{})[id]||'地點 #'+id).join(' → ');
+function drawHistory(){const al=(H.trk||[]).filter(t=>t.alert>=0);
+  $('histList').innerHTML=al.length?al.map(t=>'<div class="row trk"><span class="bullet" style="background:var(--alert)"></span><span class="name">'+esc(TYPE[t.type]||t.type)+'</span><span class="tag">'+(t.acked?'已確認':'未確認')+'</span>'+
+    '<div class="meta num">'+t.addr+'，最強 '+t.maxRssi+' dBm，出現在 '+t.scans+' 次掃描</div><div class="meta">'+at(t.first)+' 出現，'+at(t.alert)+' 警示，'+at(t.last)+' 最後一次</div>'+(t.pl&&t.pl.length>1?'<div class="meta">經過的地點：'+esc(plPath(t))+'</div>':'')+'<div class="meta">發聲：'+soundText(t)+'</div></div>').join('')
+    :'<div class="empty">自開機以來沒有觸發過警示</div>';}
+const TL=[[1,'1 小時'],[3,'3 小時'],[0,'全部']];
+function drawRange(){$('tlRange').innerHTML=TL.map(o=>'<button aria-pressed="'+(o[0]==tlHours)+'" onclick="tlHours='+o[0]+';drawRange();drawTimeline()">'+o[1]+'</button>').join('');}
+drawRange();
+function drawTimeline(){if(!H)return;
+  const now=H.uptime,from=tlHours?Math.max(0,now-tlHours*3600):Math.min(now,...(H.trk||[]).map(t=>t.first),...(H.marks||[]).map(m=>m.t));
+  const span=Math.max(60,now-from),W=Math.max(300,($('timeline').clientWidth||480)-20),L=124,R=8,rowH=22,top=40;
+  const rows=(H.trk||[]).filter(t=>t.last>=from&&(t.type!='AplDv'||t.alert>=0)).sort((a,b)=>(b.alert>=0)-(a.alert>=0)||b.scans-a.scans).slice(0,12);
+  const x=s=>L+(Math.max(s,from)-from)/span*(W-L-R),h=top+rows.length*rowH+22;let g='';
+  for(let i=0;i<=3;i++){const s=from+span*i/3,xx=x(s);g+='<line x1="'+xx+'" y1="'+(top-4)+'" x2="'+xx+'" y2="'+(h-18)+'" stroke="var(--line)"/><text x="'+xx+'" y="'+(h-4)+'" font-size="12" text-anchor="'+(i==0?'start':i==3?'end':'middle')+'" fill="var(--mute)">'+at(s)+'</text>';}
+  rows.forEach((t,i)=>{const y=top+i*rowH,c=t.alert>=0?'var(--alert)':'var(--watch)';
+    t.iv.forEach(v=>{if(v[1]<from)return;g+='<rect x="'+x(v[0])+'" y="'+(y+4)+'" width="'+Math.max(3,x(v[1])-x(v[0]))+'" height="'+(rowH-8)+'" rx="3" fill="'+c+'"/>';});
+    g+='<text x="0" y="'+(y+rowH/2+4)+'" font-size="12" fill="var(--ink)">'+(t.alert>=0?'<tspan font-weight="700" fill="var(--alert)">警示 </tspan>':'')+t.type+' '+t.addr.slice(-5)+'</text>';});
+  let lastX=-99,alt=0;(H.marks||[]).filter(m=>m.t>=from).forEach(m=>{const xx=x(m.t);alt=xx-lastX<64?1-alt:0;lastX=xx;
+    g+='<line x1="'+xx+'" y1="'+(alt?20:8)+'" x2="'+xx+'" y2="'+(h-18)+'" stroke="var(--act)" stroke-dasharray="3 3"/><text x="'+xx+'" y="'+(alt?30:18)+'" font-size="12" text-anchor="'+(xx>W-40?'end':'middle')+'" fill="var(--act)">'+esc(m.label||'#'+m.n)+'</text>';});
+  $('timeline').innerHTML=rows.length||(H.marks||[]).length?'<svg class="tl" viewBox="0 0 '+W+' '+h+'" role="img" aria-label="追蹤器出現的時段">'+g+'</svg>':'這段時間沒有追蹤器出現';}
+function makeSummary(){if(!H){toast('資料還沒載入');return;}
+  const al=(H.trk||[]).filter(t=>t.alert>=0),other=(H.trk||[]).filter(t=>t.alert<0&&t.type!='AplDv'&&t.last-t.first>=600);
+  const marksIn=t=>(H.marks||[]).filter(m=>m.t>=t.first-300&&m.t<=t.last+300).map(m=>at(m.t)+' '+(m.label||'記號 #'+m.n)).join('、')||'無';
+  const P=PRESET[S.preset]||['',''],ivText=t=>t.iv.map(v=>at(v[0])+'–'+at(v[1])).join('、');
+  let r='追蹤器偵測紀錄摘要\n裝置：'+H.name+(sess?'\n之前的開機，最後一次存檔：':'\n產生時間：')+atFull(H.uptime)+(H.epoch?'':'（板子還沒對時，時間以開機後計算）')+'\n紀錄範圍：自開機（'+atFull(0)+'）以來，約 '+Math.round(H.uptime/60)+' 分鐘\n警示門檻：'+P[0]+'（'+P[1]+'）'+(S.needPlaces?'，並要求跟著經過 '+S.needPlaces+' 個地點':'')+(sess?'（現在的設定，當時可能不同）':'')+'\n\n觸發警示的追蹤器：'+al.length+' 個\n';
+  al.forEach((t,i)=>{r+=(i+1)+'. '+(TYPE[t.type]||t.type)+'，位址 '+t.addr+'\n   第一次出現 '+at(t.first)+'，觸發警示 '+at(t.alert)+'，最後一次出現 '+at(t.last)+(t.acked?'（已確認）':'')+'\n   出現時段：'+ivText(t)+'\n   最強訊號 '+t.maxRssi+' dBm，出現在 '+t.scans+' 次掃描'+(t.pl&&t.pl.length?'\n   經過的地點：'+plPath(t):'')+'\n   發聲：'+soundText(t)+'\n   期間的記號：'+marksIn(t)+'\n';});
+  if(other.length){r+='\n出現超過 10 分鐘、沒有觸發警示的追蹤器：'+other.length+' 個\n';other.slice(0,10).forEach(t=>{r+='- '+(TYPE[t.type]||t.type)+' '+t.addr+'，'+at(t.first)+'–'+at(t.last)+'，最強訊號 '+t.maxRssi+' dBm\n';});}
+  if((H.marks||[]).length)r+='\n記號：'+H.marks.map(m=>at(m.t)+' '+(m.label||'#'+m.n)).join('、')+'\n';
+  r+='\n判斷方式與限制：\n- 板子只被動接收藍牙廣播，辨識 Apple Find My、Samsung SmartTag、Tile、Google 尋找我的裝置、Chipolo、Pebblebee 的配件，以及支援 DULT 規格（Apple 與 Google 共同提出的防止不當追蹤規格）的追蹤器\n- 與主人分開的 AirPods 也使用 Find My 的廣播格式，會被列入。Tile、Chipolo、Pebblebee 的廣播不標示是否與主人分開，主人帶在身上的也可能被列入\n- iPhone、iPad、Mac 等 Apple 自家裝置與主人分開時也會發送同樣的廣播，'+(S.needPlaces?'只有跟著經過好幾個地點才列入':'沒有列入')+'\n- '+(S.needPlaces?'地點的變化是用周圍 Wi-Fi 基地台推算的，不是 GPS':'板子沒有 GPS，無法分辨追蹤器跟著你移動，還是你待在追蹤器附近（例如住家、辦公室、同一班車上的其他乘客）')+'\n- 藍牙廣播沒有經過認證，任何裝置都可以假裝成某種追蹤器。位址是藍牙廣播用的位址，不代表追蹤器的序號或擁有者\n- 這份摘要只涵蓋同一次開機的紀錄，板子的 flash 另外保留最近 8 次開機的警示歷史。開啟 flash 記錄時，完整的原始紀錄另外存在板子上\n';
+  $('summary').value=r;$('summary').hidden=false;$('copyBtn').hidden=false;}
+function copySummary(){const t=$('summary');t.select();t.setSelectionRange(0,1e6);let ok=false;try{ok=document.execCommand('copy');}catch(e){}
+  if(!ok&&navigator.clipboard){navigator.clipboard.writeText(t.value).then(()=>toast('已複製'),()=>toast('無法自動複製，請長按文字框選取'));return;}
+  toast(ok?'已複製':'無法自動複製，請長按文字框選取');}
+
+// 房間檢查
+let roomVer=-1,R=null;
+const ROOMKIND={sta:'Wi-Fi 連網裝置',ap:'Wi-Fi 基地台',ble:'藍牙裝置'};
+// 按下開始時記下預計完成的時間與當時的報告版本，版本變大才是這次的結果
+function roomWait(){try{const v=(localStorage.roomWait||'').split(',');return v.length==2?{until:+v[0],ver:+v[1]}:null}catch(e){return null}}
+function setRoomWait(w){try{if(w)localStorage.roomWait=w.until+','+w.ver;else localStorage.removeItem('roomWait')}catch(e){}}
+const roomUntil=()=>(roomWait()||{until:0}).until;
+async function roomStart(){try{const t=await post('/api/room/start');toast(t);if(t.startsWith('開始'))setRoomWait({until:Date.now()+(S.roomEst||135)*1000,ver:S.roomVer});setTimeout(poll,600);}catch(e){toast('送出失敗，請再按一次');}}
+function checkRoomWait(){const w=roomWait();if(!w)return;
+  // 板子拒絕了（沒有開始）或過了很久：不再等
+  if(S.roomVer==w.ver&&!S.roomState&&Date.now()>w.until-(S.roomEst||135)*1000+10000||Date.now()-w.until>10*60000)setRoomWait(null);}
+// 會議室檢查：板子每 2 秒更新一次，面板看到 meetVer 變了才讀取
+let meetVer=-1,MT=null,meetR=70;try{meetR=+(localStorage.meetR||70);}catch(e){}
+const MEET_R=[[60,'近，-60 dBm'],[70,'中，-70 dBm'],[80,'遠，-80 dBm']];
+function drawMeetSeg(){const cur=MT&&MT.phase?-MT.rssi:meetR;$('seg_meet').innerHTML=MEET_R.map(o=>'<button aria-pressed="'+(o[0]==cur)+'"'+(MT&&MT.phase?' disabled':'')+' onclick="meetR='+o[0]+';try{localStorage.meetR='+o[0]+'}catch(e){};drawMeetSeg()">'+o[1]+'</button>').join('');}
+async function loadMeeting(){try{MT=await (await fetch('/api/meeting',{cache:'no-store'})).json();drawMeeting();}catch(e){}}
+async function meetToggle(){try{toast(await post(S.meetPhase?'/api/meeting/stop':'/api/meeting/start',{rssi:meetR}));setTimeout(poll,600);}catch(e){toast('送出失敗，請再試一次');}}
+let meetWasAlert=false;
+// 打開「為什麼手機會送出這些名稱」並捲過去
+function openProbeWhy(){const d=$('probeWhy');d.hidden=false;d.open=true;d.scrollIntoView({block:'start'});d.querySelector('summary').focus();}
+function meetTags(d){const t=[];
+  if(d.use>=0)t.push(d.use<=60?'<b style="color:var(--alert)">正在使用</b>':'會議中用過（'+mins(d.use)+'前）');
+  if(d.air>=0&&d.air<=60)t.push('AirDrop 開著');if(d.fl&4)t.push('可以分享行動網路');if(d.fl&8)t.push('與主人分開');
+  if(d.act)t.push('狀態：'+esc(d.act)+'（估計）');return t.join('，');}
+// 時間軸：會議開始到現在，每個多出來的裝置一列，出現到最後一次收到畫成一段，現在還在的用紅色
+function meetTimeline(m,rows){if(!rows.length)return '';const W=Math.max(300,($('meetList').clientWidth||480)-20),L=110,R=8,rowH=20,top=8,span=Math.max(60,m.sec);
+  const x=s=>L+Math.min(s,span)/span*(W-L-R),h=top+rows.length*rowH+20;let g='';
+  [0,0.5,1].forEach((f,k)=>{const xx=L+f*(W-L-R);g+='<line x1="'+xx+'" y1="'+top+'" x2="'+xx+'" y2="'+(h-16)+'" stroke="var(--line)"/><text x="'+xx+'" y="'+(h-3)+'" font-size="11" text-anchor="'+(k==0?'start':k==2?'end':'middle')+'" fill="var(--mute)">'+(k==0?'開始':k==2?'現在':mins(Math.round(span/2)))+'</text>';});
+  rows.forEach((r,k)=>{const y=top+k*rowH;g+='<text x="0" y="'+(y+14)+'" font-size="11" fill="var(--ink)">'+esc(r.t.slice(0,9))+'</text><rect x="'+x(r.a)+'" y="'+(y+4)+'" width="'+Math.max(3,x(r.b)-x(r.a))+'" height="'+(rowH-8)+'" rx="3" fill="'+(r.now?'var(--alert)':'var(--mute)')+'"/>';});
+  return '<div class="row"><div class="lbl">時間軸</div><svg class="tl" viewBox="0 0 '+W+' '+h+'" role="img" aria-label="會議中多出來的裝置出現的時段">'+g+'</svg><p class="note">從開始檢查到現在。紅色是現在還收得到的，灰色是已經離開的。</p></div>';}
+function drawMeeting(){const m=MT;$('meetBtn').textContent=S.meetPhase?'結束檢查':'開始檢查';drawMeetSeg();
+  if(!m||!m.ver){$('meetSum').textContent='';$('meetList').innerHTML='';return;}
+  const devs=m.devs||[],wg=m.wg||[],nowD=devs.filter(d=>d.now),wNow=wg.filter(g=>g.now);
+  const wifi='近距離的 Wi-Fi 探測請求：最近每分鐘 '+m.rate.toFixed(1)+' 個（基準 '+m.baseRate.toFixed(1)+' 個）。';
+  const head=m.lvl==2?'多了 '+m.new+' 個藍牙裝置'+(m.groups?'，估計 '+m.groups+' 種裝置在找 Wi-Fi':''):m.lvl==1?'留意：近距離有裝置在找 Wi-Fi，可能是隔壁或門外的手機':'沒有多出來的裝置';
+  $('meetSum').innerHTML=m.phase==1?'建立基準中，剩下 '+m.baseLeft+' 秒。目前收到 '+m.base+' 個訊號強於 '+m.rssi+' dBm 的藍牙裝置。'
+    :m.phase==2?'<b style="color:'+(m.lvl==2?'var(--alert)':m.lvl==1?'var(--watchInk)':'var(--safe)')+'">'+head+'</b>。已經檢查 '+mins(m.sec)+'，基準 '+m.base+' 個裝置。'+esc(wifi)+(m.rate>0||m.groups?' <button class="b" onclick="openProbeWhy()">手機為什麼一直在找 Wi-Fi？</button>':'')
+    :'上次檢查同時最多多出 '+m.maxNew+' 個裝置，近距離的 Wi-Fi 探測請求共 '+m.probes+' 個。';
+  if(m.phase==2&&m.alert&&!meetWasAlert)announce('會議室檢查：'+head);meetWasAlert=m.phase==2&&m.alert;
+  const bt=d=>'<div class="row trk'+(d.now?'':' calm')+'"><span class="bullet" style="background:'+(d.now?'var(--alert)':'var(--line)')+'"></span><span class="name">'+esc(d.l)+(d.fl&16?'（估計）':'')+'</span><span class="tag num" style="color:'+(d.now?'var(--alert)':'var(--mute)')+'">'+(d.now?d.r+' dBm':'已經離開')+'</span>'+
+    (d.nm?'<div class="meta">廣播的名稱：<b>'+esc(d.nm)+'</b></div>':'')+(meetTags(d)?'<div class="meta">'+meetTags(d)+'</div>':'')+
+    '<div class="meta num">會議開始後 '+mins(d.first)+'出現，最強 '+d.best+' dBm'+(d.now?(d.ago>5?'，'+mins(d.ago)+'前最後一次收到':''):'，'+mins(d.ago)+'前離開')+'</div>'+trend(d)+
+    (d.now?'<div class="btns"><button class="b" data-mf="'+d.i+'">尋找</button></div>':'')+'</div>';
+  const wt=g=>'<div class="row trk'+(g.now?'':' calm')+'"><span class="bullet" style="background:'+(g.now?'var(--alert)':'var(--line)')+'"></span><span class="name">'+(g.m?esc(g.m):g.apple?'Apple 裝置（估計）':'找 Wi-Fi 的裝置')+'</span><span class="tag num">'+g.n+' 個請求</span>'+
+    (g.nm?'<div class="meta">裝置名稱：<b>'+esc(g.nm)+'</b></div>':'')+'<div class="meta num">Wi-Fi 指紋 '+g.fp.slice(0,4)+'，會議開始後 '+mins(g.first)+'出現，最強 '+g.r+' dBm'+(g.now?'':'，已經沒有再收到')+'</div></div>';
+  const rows=devs.map(d=>({t:d.nm||d.l,a:d.first,b:d.last,now:d.now})).concat(wg.map(g=>({t:g.nm||g.m||'Wi-Fi '+g.fp.slice(0,4),a:g.first,b:g.last,now:g.now}))).slice(0,16);
+  $('meetList').innerHTML=(devs.length?'<div class="row"><div class="lbl">多出來的藍牙裝置</div></div>'+nowD.map(bt).join('')+devs.filter(d=>!d.now).map(bt).join(''):'')+
+    (wg.length?'<div class="row"><div class="lbl">在找 Wi-Fi 的裝置（依指紋估計）</div><p class="note">新的手機每次都換隨機位址，這裡用封包的指紋分組，同一種型號的手機可能被算成一組。</p></div>'+wNow.map(wt).join('')+wg.filter(g=>!g.now).map(wt).join(''):'')+
+    (m.phase?meetTimeline(m,rows):'');}
+$('meetList').onclick=e=>{const i=e.target.dataset.mf;if(i!==undefined)post('/api/meeting/find',{i:i}).then(t=>{toast(t);setTimeout(poll,600);}).catch(()=>toast('送出失敗，請再試一次'));};
+// 周圍手機洩漏的 Wi-Fi 名稱：板子每 2 秒更新一次統計，面板看到 probeVer 變了才讀取
+let probeVer=-1,PR=null;
+async function loadProbes(){try{PR=await (await fetch('/api/probes',{cache:'no-store'})).json();drawProbes();}catch(e){}}
+async function probeToggle(){try{toast(await post(S.probeOn?'/api/probes/stop':'/api/probes/start'));setTimeout(poll,600);}catch(e){toast('送出失敗，請再試一次');}}
+function drawProbes(){const p=PR;$('probeBtn').textContent=S.probeOn?'停止監聽':'開始監聽';
+  $('probeWhy').hidden=!(p&&p.ver);
+  if(!p||!p.ver){$('probeSum').textContent='';$('probeList').innerHTML='';return;}
+  $('probeSum').textContent=(p.on?'監聽中，已經 '+mins(p.sec)+'，剩下約 '+mins(p.left)+'。':'監聽了 '+mins(p.sec)+'。')+'頻道 '+p.ch+'，收到 '+p.frames+' 個探測請求，來自 '+p.src+' 個位址（其中 '+p.fixed+' 個是固定位址，在不同地點都認得出是同一支手機）。'+
+    p.directed+' 個請求帶出了 Wi-Fi 名稱，共 '+p.ssids.length+' 個不同的名稱。新的手機多半每次都換隨機位址，位址數會比實際的手機多'+(p.full?'。裝置太多，有些沒有計入':'')+'。';
+  $('probeList').innerHTML=p.ssids.length?p.ssids.map(x=>'<div class="row trk"><span class="bullet" style="background:'+(x.fx?'var(--alert)':'var(--watch)')+'"></span><span class="name">'+esc(x.n)+'</span><span class="tag num">'+x.src+' 個來源</span>'+
+    '<div class="meta num">'+x.f+' 個請求，最強 '+x.r+' dBm'+(x.fx?'，有固定位址的手機送出':'')+'</div></div>').join(''):'<div class="row"><div class="empty">'+(p.on?'還沒收到帶名稱的請求':'沒有收到帶名稱的請求')+'</div></div>';}
+async function loadRoom(first){try{R=await (await fetch('/api/room',{cache:'no-store'})).json();drawRoom();const w=roomWait();
+  // 剛檢查完、手機重新連上（可能是另一個瀏覽器視窗）時直接顯示報告
+  if(w&&S.roomVer>w.ver){setRoomWait(null);showTab('room');if(R.state=='done')toast('房間檢查完成');}
+  else if(!w&&first&&R.state=='done'&&S.uptime-R.at<600)showTab('room');}catch(e){}}
+function roomRow(it){const c=it.lv==2?'var(--alert)':it.lv==1?'var(--watch)':'var(--line)',tc=it.lv==2?'var(--alert)':'var(--watchInk)';
+  return '<div class="row trk"><span class="bullet" style="background:'+c+'"></span><span class="name">'+esc(it.name)+'</span><span class="tag" style="color:'+tc+'">'+(it.lv==2?'建議找出來':it.lv==1?'可以留意':'')+'</span>'+
+    '<div class="meta num">'+ROOMKIND[it.k]+'，'+(it.rssi<=-127?'訊號不明':it.rssi+' dBm')+(it.ch?'，頻道 '+it.ch:'')+(it.up>=1024?'，上傳 '+(it.up/1024).toFixed(it.up<10240?1:0)+' KB/s':'')+(it.sub?'，'+esc(it.sub):'')+'</div>'+
+    (it.why?'<ul class="why">'+it.why.trim().split('\n').map(w=>'<li>'+esc(w)+'</li>').join('')+'</ul>':'')+
+    (it.lv>0?'<div class="btns"><button class="b" data-rf="'+it.i+'" data-k="'+it.k+'">尋找</button></div>':'')+'</div>';}
+$('roomList').onclick=e=>{const i=e.target.dataset.rf;if(i!==undefined)act('/api/room/find',{i:i,k:e.target.dataset.k});};
+function drawRoom(){if(!R)return;
+  if(R.state!='done')$('roomHow').hidden=true;
+  if(R.state=='idle'){$('roomList').innerHTML='<div class="empty">還沒有檢查過</div>';$('roomSum').textContent='';$('roomHead').textContent='檢查結果';return;}
+  if(R.state=='cancelled'){$('roomList').innerHTML='<div class="empty">上一次檢查中途取消了，沒有結果</div>';$('roomSum').textContent='';$('roomHead').textContent='檢查結果';return;}
+  const when=S.timeKnown?fmt(S.epoch-(S.uptime-R.at)):'開機後 '+Math.floor(R.at/60)+' 分';
+  $('roomHead').textContent='檢查結果（'+when+'）';
+  const hit=R.items.filter(i=>i.lv>0),rest=R.items.filter(i=>i.lv==0);
+  $('roomHow').hidden=!hit.length;
+  $('roomList').innerHTML=(hit.length?hit.map(roomRow).join(''):'<div class="empty">沒有找到符合規則的裝置</div>')+
+    (rest.length?'<details class="row more"><summary>其他 '+rest.length+' 個裝置</summary>'+rest.map(roomRow).join('')+'</details>':'');
+  $('roomSum').textContent='基地台 '+R.aps+' 個、連網裝置 '+R.stas+' 個（其中 '+R.rand+' 個是隨機位址）、藍牙裝置 '+R.ble+' 個。監聽頻道 '+R.chs.join('、')+'，花了 '+mins(R.dur)+'。'+(R.drop?'裝置太多，有 '+R.drop+' 個封包沒有記錄。':'');}
+
+function schedule(ms){clearTimeout(timer);timer=setTimeout(poll,ms);}
+async function poll(){try{S=await (await fetch('/api/status',{cache:'no-store'})).json();
+  if(S.histVer!==histVer){if(histVer>=0&&(curH?(curH.trk||[]).filter(t=>t.alert>=0).length:0)<(S.trk||[]).filter(t=>t.alerted).length)$('histBadge').hidden=false;histVer=S.histVer;loadHistory();}
+  if(S.roomVer!==roomVer){const first=roomVer<0;roomVer=S.roomVer;loadRoom(first);}checkRoomWait();
+  if(S.meetVer!==meetVer){meetVer=S.meetVer;loadMeeting();}else{$('meetBtn').textContent=S.meetPhase?'結束檢查':'開始檢查';}
+  if(S.probeVer!==probeVer){probeVer=S.probeVer;loadProbes();}else $('probeBtn').textContent=S.probeOn?'停止監聽':'開始監聽';
+  fails=0;lastOk=Date.now();render();schedule(S.findOn?1000:2500);}catch(e){offline();schedule(3000);}}
+// Wi-Fi 掃描時熱點會停約 2 秒，連續失敗而且超過 8 秒沒更新才當成斷線
+function offline(){fails++;
+  // 房間檢查時熱點關著，直接說明要等多久、怎麼連回來
+  const ru=roomUntil();if(ru&&Date.now()-ru<10*60000){const left=Math.round((ru-Date.now())/1000);setState('off');$('state').textContent='房間檢查中';
+    $('say').textContent=$('roomMsg').textContent=(left>0?'約 '+mins(left)+'後完成。':'應該已經完成了。')+'燈號綠色連閃兩下時，到手機的 Wi-Fi 設定連回「'+(S.apName||'板子的熱點')+'」，這一頁會自動顯示報告。';showFind(false);return;}
+  if(fails<3||Date.now()-lastOk<8000)return;setState('off');$('state').textContent='連線中斷';
+  $('say').textContent=(lastOk?new Date(lastOk).toLocaleTimeString('zh-TW',{hour12:false})+' 之後沒有更新。':'')+'板子可能關閉了 Wi-Fi，或手機離開熱點範圍，畫面上是最後一次的狀態。';
+  noteState('off');showFind(false);}
+poll();
+</script></body></html>

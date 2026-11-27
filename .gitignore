@@ -1,0 +1,6 @@
+.pio/
+.DS_Store
+# 發布主機的設定（主機名稱與路徑），每個人自己的
+tools/publish.local.env
+# 實機測試的輸出：序列埠記錄有附近裝置的位址，不進版控
+*/tests/hil/results/

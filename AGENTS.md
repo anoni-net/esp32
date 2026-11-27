@@ -1,0 +1,33 @@
+# AGENTS.md
+
+給在這個 repo 工作的人與程式助理的規則。工具本身的說明在各工具的 README。
+
+## 隱私
+
+這些工具會收到路人裝置的藍牙位址、Wi-Fi 名稱與廣播的名稱，寫程式與處理資料時守住以下幾點：
+
+- 實測的記錄（序列埠輸出、flash 記錄、`tests/hil/results/`）有路人裝置的位址，也可能看得出住處與行程，不進版控、不貼進 issue 或 PR，也不放進測試資料。測試資料用虛構的名稱與位址
+- 新功能需要比對裝置時，位址用加鹽的雜湊，鹽值只放在記憶體。原始位址只在功能需要時放在記憶體，不寫進 flash、不印到序列埠
+- 廣播的名稱、WPS 的裝置名稱、手機找過的 Wi-Fi 名稱常帶著主人的名字或去過的地方，只顯示在面板，不寫進 flash 記錄、不印到序列埠
+- 密碼、藍牙配對碼不寫進任何記錄
+- AirDrop 廣播裡的雜湊片段不解析
+- README 與註解寫實測結果時，不寫出可以看出住處、通勤路線或常去地點的描述
+
+## 發布與測試
+
+- 改了 `pocket-detector` 之後執行 `pocket-detector/tools/run_tests.sh`，全部通過才 commit
+- commit 之後用 `./tools/publish_firmware.sh <工具>` 發布到測試通道，打開「接收測試版」的開發用板子會裝上它
+- 正式通道只用 `./tools/promote_firmware.sh <工具>` 推，條件是開發用的板子從測試通道裝上那個版本、`tests/hil/run_hil.py --update` 全部通過。`--force` 只在使用者同意的緊急修正時使用
+- 已經燒進板子的韌體讀 `assets.anoni.net/esp32-tracker/` 與 `esp32-tracker-test/`。換網址之前，發布腳本要先同時發布新舊路徑，等板子都更新過再停掉舊路徑，否則已經在用的板子收不到更新
+
+## 寫程式
+
+- 平台與程式庫的版本固定在 `platformio.ini`。升級 Arduino 核心之後要重新確認網址更新（`lib/netupdate`）的 TLS 記憶體配置與實機的網址更新
+- `.ino` 會被自動產生函式宣告：用到自訂型別的函式，型別要定義在標頭檔，函式宣告集中放在檔案前面
+- 標頭檔裡的函式用 `static inline`，沒用到的 `static` 函式會被 `-Werror` 擋下
+- 只依賴 C++ 標準函式庫的邏輯（版本判斷、地點比對、探測請求、裝置資訊、會議室檢查）寫在獨立的標頭檔，`tests/unit/` 在電腦上編譯同一份
+- 面板網頁改 `panel.html`，PlatformIO 建置時會重新產生 `panel_gz.h`，兩個檔案一起 commit
+
+## 文字
+
+README、註解與面板文字用正體中文，照 [anoni.net 寫作風格規範](https://anoni.net/join/writing-style/)。

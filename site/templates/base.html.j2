@@ -31,7 +31,14 @@
 <div class="sheet">
 <a class="skip" href="#main">跳到主要內容</a>
 <header>
-  <a class="brand" href="{{ root }}"><img class="logo" src="{{ asset('logo.svg') }}" alt="" width="24" height="24">ESP32 小工具</a>
+  {# 同 Gears、Vessel 與新聞導讀：anoni.net 的字標、分隔線、產品名稱 #}
+  <a class="brand" href="{{ root }}">
+    <picture>
+      <source srcset="{{ asset('logo-wordmark-white.svg') }}" media="(prefers-color-scheme: dark)">
+      <img class="brand__logo" src="{{ asset('logo-wordmark-tonal.svg') }}" alt="anoni.net" width="116" height="28">
+    </picture>
+    <span class="brand__product">ESP32 小工具</span>
+  </a>
   <nav class="main" aria-label="主要">
     {% for t in nav_tools %}<a href="{{ root }}{{ t.slug }}/"{% if path == t.slug + '/' %} aria-current="page"{% endif %}>{{ t.name }}</a>
     {% endfor %}{% for p, label in [('install/', '安裝韌體'), ('connect/', '連上板子'), ('about-esp32/', 'ESP32 是什麼'), ('developers/', '給開發者')] %}<a href="{{ root }}{{ p }}"{% if path == p %} aria-current="page"{% endif %}>{{ label }}</a>

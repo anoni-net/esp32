@@ -68,8 +68,22 @@ main a { word-break: keep-all; overflow-wrap: anywhere; }
 
 /* 頁首：手機兩列（品牌、導覽列），桌機併成一列，下面一條細線 */
 header { padding-top: 1rem; border-bottom: 1px solid var(--c-hair); }
-.brand { display: inline-flex; align-items: center; gap: .45rem; font-weight: 700; color: var(--c-strong); text-decoration: none; font-size: 1.05rem; }
-.brand .logo { width: 1.6rem; height: 1.6rem; }
+/* 頁首左上：anoni.net 的字標、分隔線、產品名稱（同 anoni-net/gears 的 .site-header__home） */
+.brand { display: inline-flex; align-items: center; gap: 1rem; min-height: 3rem; color: var(--c-strong); text-decoration: none; }
+.brand picture { display: block; }
+.brand__logo { display: block; height: 1.625rem; width: auto; }
+.brand__product { font-weight: 700; font-size: 1.125rem; letter-spacing: .08em; padding-left: 1rem; border-left: 1px solid var(--c-border); }
+.brand:hover .brand__product, .brand:focus-visible .brand__product { text-decoration: underline; text-underline-offset: .3em; }
+@media (max-width: 30rem) {
+  .brand { gap: .75rem; }
+  .brand__product { padding-left: .75rem; font-size: 1rem; }
+}
+/* 320px 寬的手機：字標與間距再縮一點 */
+@media (max-width: 22.4rem) {
+  .brand__logo { height: 1.375rem; }
+  .brand { gap: .5rem; }
+  .brand__product { padding-left: .5rem; }
+}
 /* 手機上四個項目排成一列，最窄的 320px 才換行 */
 nav.main { display: flex; flex-wrap: wrap; gap: 0 .9rem; margin-top: .4rem; }
 nav.main a { padding: .45rem 0; text-decoration: none; color: var(--c-text); font-size: .9rem; white-space: nowrap; border-bottom: 2px solid transparent; margin-bottom: -1px; }

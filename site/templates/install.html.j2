@@ -1,6 +1,6 @@
 {% extends "base.html.j2" %}
 {% block description %}用電腦的 Chrome 或 Edge，接上 ESP32-S3 開發板，按一下就能安裝社群的韌體，不需要寫程式。{% endblock %}
-{% block head %}<script type="module" src="{{ root }}static/esp-web-tools/install-button.js"></script>{% endblock %}
+{% block head %}<script type="module" src="{{ root }}static/esp-web-tools/install-button.js?v={{ asset_v }}"></script>{% endblock %}
 {% block main %}
 <p class="crumb"><a href="{{ root }}">ESP32 小工具</a></p>
 <h1>安裝韌體</h1>
@@ -12,8 +12,8 @@
   <p>{{ t.summary }}</p>
   <esp-web-install-button manifest="https://assets.anoni.net/{{ t.channel }}/manifest.json">
     <button slot="activate" class="btn solid big">接上板子並安裝{{ t.name }}</button>
-    <span slot="unsupported" class="note">這個瀏覽器不能直接安裝。請改用電腦上的 Chrome 或 Edge 打開這一頁，手機、Safari、Firefox 與 Tor Browser 都沒有這個功能。</span>
-    <span slot="not-allowed" class="note">網頁安裝要在 https 的網址底下才能使用，請從 https://anoni.net/esp32/install/ 打開。</span>
+    <div slot="unsupported" class="note">這個瀏覽器不能直接安裝，手機、Safari、Firefox 與 Tor Browser 都沒有網頁燒錄的功能。請在電腦上用 Chrome 或 Edge 打開 <strong>anoni.net/esp32/install/</strong>，接上板子再按安裝。</div>
+    <div slot="not-allowed" class="note">網頁安裝要在 https 的網址底下才能使用，請從 https://anoni.net/esp32/install/ 打開。</div>
   </esp-web-install-button>
   {{ versions[t.slug] | safe }}
 </section>

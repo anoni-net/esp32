@@ -189,6 +189,9 @@ class Site:
 
     def build(self, out, target):
         cfg = TARGETS[target]
+        # 樣式與圖示的網址帶內容的雜湊，換版之後瀏覽器與 Cloudflare 不會用到快取的舊檔
+        import hashlib
+        asset_v = hashlib.sha256(b"".join(f.read_bytes() for f in sorted((SITE / "static").rglob("*")) if f.is_file())).hexdigest()[:10]
         if out.exists():
             shutil.rmtree(out)
         out.mkdir(parents=True)
@@ -197,7 +200,7 @@ class Site:
             depth = path.count("/")
             page = self.env.get_template(tpl).render(
                 root="../" * depth, path=path, base=cfg["base"], onion_location=cfg["onion_location"] and cfg["onion_location"] + path,
-                repo=REPO_URL, target=target, nav_tools=self.tools, **ctx)
+                repo=REPO_URL, target=target, nav_tools=self.tools, asset_v=asset_v, **ctx)
             for old, new in cfg["rewrite"]:
                 page = page.replace(old, new)
             dest = out / path / "index.html"
@@ -242,7 +245,7 @@ def check(out, target):
         if not frame:
             # 只允許安裝頁載入站內的 ESP Web Tools（CSP 是 script-src 'self'），不能有 inline 的 script、事件與 style
             scripts = re.findall(r"<script\b[^>]*>", text)
-            if any(not re.search(r'type="module" src="[./]*static/esp-web-tools/install-button\.js"', s) for s in scripts) \
+            if any(not re.search(r'type="module" src="[./]*static/esp-web-tools/install-button\.js(\?v=\w+)?"', s) for s in scripts) \
                     or re.search(r"<script\b[^>]*>[^<]", text) or re.search(r'\son[a-z]+=|style="', text):
                 problems.append(f"{target}/{rel}：頁面有 inline 的 script、事件或 style，CSP 會擋下")
             if scripts and rel.as_posix() != "install/index.html":

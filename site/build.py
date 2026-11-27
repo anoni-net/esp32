@@ -16,6 +16,7 @@
     <!-- demo -->        「在網頁上試試看」的按鈕，連到模擬面板
     <!-- install -->     「前往安裝」的按鈕
     <!-- version -->     正式通道目前的版本（建置時讀 latest.json）
+    <!-- oled -->        site.toml 的 [[oled]] 列出的 OLED 畫面
     {root}               網站根目錄的相對路徑，連到站內其他頁面時用
 
 頁面裡的站內連結一律是相對路徑，clearnet（anoni.net/esp32/）與 onion（esp32.<onion>/）掛在
@@ -138,6 +139,7 @@ class Site:
             out = re.sub(r"(<p>)?<!-- demo -->(</p>)?", lambda m: self.demo_button(tool, root), out)
             out = re.sub(r"(<p>)?<!-- install -->(</p>)?", lambda m: self.install_button(tool, root), out)
             out = re.sub(r"(<p>)?<!-- version -->(</p>)?", lambda m: self.version_block(tool), out)
+            out = re.sub(r"(<p>)?<!-- oled -->(</p>)?", lambda m: self.oled(tool, root), out)
         # 表格包一層，窄螢幕時可以左右捲動
         out = out.replace("<table>", '<div class="table"><table>').replace("</table>", "</table></div>")
         return out.replace("{root}", root)
@@ -154,6 +156,12 @@ class Site:
         return (f'<figure class="phone"><a href="{root}demo/{tool["slug"]}/#{key}">'
                 f'<img src="{root}shots/{tool["slug"]}/{key}.png" width="390" height="844" alt="{html.escape(alt)}" loading="lazy"></a>'
                 f'<figcaption>{html.escape(s["title"])}（示範資料）</figcaption></figure>')
+
+    def oled(self, tool, root):
+        items = "".join(f'<figure><img src="{root}oled/{tool["slug"]}/{html.escape(o["file"])}" width="512" height="256" '
+                        f'alt="OLED 畫面：{html.escape(o["caption"])}" loading="lazy"><figcaption>{html.escape(o["caption"])}</figcaption></figure>'
+                        for o in tool.get("oled", []))
+        return f'<div class="oled">{items}</div>'
 
     def demo_button(self, tool, root):
         return f'<p class="actions"><a class="btn" href="{root}demo/{tool["slug"]}/">在網頁上試試看面板</a></p>'
@@ -192,9 +200,10 @@ class Site:
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_text(page, encoding="utf-8")
         for t in self.tools:
-            shots = t["dir"] / "site" / "shots"
-            if shots.exists():
-                shutil.copytree(shots, out / "shots" / t["slug"])
+            for kind in ("shots", "oled"):
+                src = t["dir"] / "site" / kind
+                if src.exists():
+                    shutil.copytree(src, out / kind / t["slug"])
             if t["scenarios"]:
                 self.build_frames(t, out / "demo" / t["slug"] / "frame")
 

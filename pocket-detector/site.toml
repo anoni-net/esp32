@@ -11,3 +11,21 @@ install = "web"
 [demo]
 page = "pocket_detector/panel.html"
 scenarios = "tests/panel/scenarios.py"
+
+# OLED 的畫面（site.md 的 <!-- oled -->）。圖片在 site/oled/，由 oled demo 印出的緩衝區用
+# tools/oled_to_png.py 轉成，用的是韌體裡寫死的假資料，不要換成 oled dump 的實際畫面
+[[oled]]
+file = "oled_normal.png"
+caption = "平常：附近的追蹤器、訊號與出現比例"
+
+[[oled]]
+file = "oled_alert.png"
+caption = "警示：第一列是觸發警示的追蹤器"
+
+[[oled]]
+file = "oled_find.png"
+caption = "尋找：訊號越強，嗶聲越快"
+
+[[oled]]
+file = "oled_roomdone.png"
+caption = "房間檢查完成：建議找出來與可以留意的數量"

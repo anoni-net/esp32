@@ -153,6 +153,12 @@ figure.phone figcaption { font-size: .85rem; color: var(--c-muted); text-align: 
   figure.phone { float: right; margin: .25rem 0 1.5rem 2rem; }
 }
 
+/* OLED 的畫面：128×64 的點陣放大，保持銳利 */
+.oled { display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: 1rem; margin: 1rem 0 1.5rem; clear: both; }
+.oled figure { margin: 0; }
+.oled img { display: block; width: 100%; height: auto; image-rendering: pixelated; border-radius: 4px; background: #000; }
+.oled figcaption { font-size: .85rem; color: var(--c-muted); margin-top: .3rem; }
+
 /* 版本資訊 */
 .version { display: grid; grid-template-columns: max-content 1fr; gap: .2rem 1rem; background: var(--c-surface); border-radius: var(--radius); padding: .75rem 1rem; font-size: .92rem; }
 .version dt { color: var(--c-muted); }

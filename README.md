@@ -66,7 +66,7 @@ uv run site/build.py --check    # 產生到暫存目錄並檢查站內連結與 
 uv run site/shots.py            # 重新拍模擬面板的截圖（需要 Chromium 系的瀏覽器）
 ```
 
-模擬面板是真正的面板網頁加上虛構的資料，情境跟面板測試共用（`pocket-detector/tests/panel/scenarios.py`）。改了面板或情境之後執行 `site/shots.py`，截圖連同 PNG 一起 commit。網頁由主機的 cron 拉 main 之後建置（`tools/deploy-m6.sh`），nginx 的設定與兩組 CSP 在 `tools/nginx-esp32.conf`。
+模擬面板是真正的面板網頁加上虛構的資料，情境跟面板測試共用（`pocket-detector/tests/panel/scenarios.py`）。改了面板或情境之後執行 `site/shots.py`，截圖連同 PNG 一起 commit。OLED 的畫面要接著板子，用序列埠的 `oled demo 名稱` 印出韌體裡寫死的假畫面，再用 `pocket-detector/tools/oled_to_png.py` 轉成 PNG，放在 `pocket-detector/site/oled/`。網頁由主機的 cron 拉 main 之後建置（`tools/deploy-m6.sh`），nginx 的設定與兩組 CSP 在 `tools/nginx-esp32.conf`。
 
 ## 授權
 

@@ -61,7 +61,11 @@
 | 蜂鳴器（選用） | 有源蜂鳴器，警示時嗶聲 |
 | OLED（選用） | 0.96 吋 SSD1306，I2C 介面，顯示狀態與熱點的 QR code |
 
-只有開發板也能用，板上的燈號顯示狀態，其他資訊都在手機面板。接線方式寫在[原始碼的說明](https://github.com/anoni-net/esp32/tree/main/pocket-detector#接線)。
+只有開發板也能用，板上的燈號顯示狀態，其他資訊都在手機面板。接上 OLED 之後，不打開手機也看得到狀態：
+
+<!-- oled -->
+
+接線方式寫在[原始碼的說明](https://github.com/anoni-net/esp32/tree/main/pocket-detector#接線)。
 
 ## 做什麼、不做什麼
 

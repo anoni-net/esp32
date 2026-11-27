@@ -161,7 +161,7 @@ section[hidden]{display:none}
 <div id="sessBox" hidden><h2>哪一次開機</h2><div class="seg" id="histSess"></div><p class="note" id="sessNote"></p></div>
 <h2>觸發過警示的追蹤器</h2>
 <div class="rows" id="histList"><div class="empty">自開機以來沒有觸發過警示</div></div>
-<p class="note">追蹤器 30 分鐘沒出現會從「附近的追蹤器」移除，這裡保留整次開機的紀錄。紀錄也存在板子的 flash，重新開機（例如接上電腦讀資料）後，到上方切換之前的開機查看，最多保留 8 次。</p>
+<p class="note">追蹤器 30 分鐘沒出現會從「附近的追蹤器」移除，這裡保留整次開機的紀錄。紀錄也存在偵測器的 flash，重新開機（例如接上電腦讀資料）後，到上方切換之前的開機查看，最多保留 8 次。</p>
 <h2>出現的時段</h2>
 <div class="seg" id="tlRange"></div>
 <div class="rows" style="margin-top:8px;padding:10px"><div id="timeline" class="mute">讀取中</div></div>
@@ -186,7 +186,7 @@ section[hidden]{display:none}
 
 <section id="t-room" role="tabpanel" aria-labelledby="tab-room" hidden>
 <h2>會議室檢查</h2>
-<div class="rows"><div class="row"><p class="mute" style="margin:0">收走手機之後，監看房間裡有沒有還開著藍牙或 Wi-Fi 的裝置。開始後 2 分鐘建立基準，記下隔壁、走廊與房間裡固定的設備。之後基準之外出現訊號夠強的藍牙裝置就在這裡提醒，近距離有裝置在找 Wi-Fi 時標成留意。板子不出聲、不亮警示燈。只開行動網路、Wi-Fi 與藍牙都關掉的手機偵測不到，沒有無線功能的錄音設備也偵測不到。</p>
+<div class="rows"><div class="row"><p class="mute" style="margin:0">收走手機之後，監看房間裡有沒有還開著藍牙或 Wi-Fi 的裝置。開始後 2 分鐘建立基準，記下隔壁、走廊與房間裡固定的設備。之後基準之外出現訊號夠強的藍牙裝置就在這裡提醒，近距離有裝置在找 Wi-Fi 時標成留意。偵測器不出聲、不亮警示燈。只開行動網路、Wi-Fi 與藍牙都關掉的手機偵測不到，沒有無線功能的錄音設備也偵測不到。</p>
 <div class="lbl sub">範圍</div><div class="seg" id="seg_meet"></div>
 <div class="inline"><button class="b main" id="meetBtn" onclick="meetToggle()">開始檢查</button></div>
 <p class="num" id="meetSum"></p></div>
@@ -200,7 +200,7 @@ section[hidden]{display:none}
 <p class="note" id="roomSum"></p>
 <div id="roomHow" hidden><h2>怎麼找、找到之後怎麼做</h2>
 <div class="rows"><div class="row"><ul class="lim">
-<li>按裝置旁的「尋找」，拿著板子在房間裡慢慢走，數字越接近 0 越近，板子的嗶聲與燈號也會越來越快。Wi-Fi 裝置要正在傳資料，才能收到它的訊號。</li>
+<li>按裝置旁的「尋找」，拿著偵測器在房間裡慢慢走，數字越接近 0 越近，偵測器的嗶聲與燈號也會越來越快。Wi-Fi 裝置要正在傳資料，才能收到它的訊號。</li>
 <li>攝影機常藏在煙霧偵測器、時鐘、充電器、延長線、面紙盒、電視盒、冷氣與喇叭的開孔，特別留意對著床、浴室與衣櫃的位置。</li>
 <li>關燈後，手電筒貼近眼睛的高度慢慢掃過可疑的地方，鏡頭會反射出一個小亮點。</li>
 <li>找到之後不要拆開或丟掉，先拍照記下位置，再聯絡業者或報警。不放心的話換房間，或改用別的住宿。</li>
@@ -209,16 +209,16 @@ section[hidden]{display:none}
 <h2>能找到與找不到的</h2>
 <div class="rows"><div class="row"><ul class="lim">
 <li>只能找到使用無線網路的攝影機。接網路線、只錄在記憶卡、或關著 Wi-Fi 的找不到。</li>
-<li>板子只能接收 2.4 GHz，只用 5 GHz 的裝置不會出現。</li>
+<li>偵測器只能接收 2.4 GHz，只用 5 GHz 的裝置不會出現。</li>
 <li>很多攝影機只在偵測到動作、或有人在看的時候才上傳。檢查時沒在上傳的，只能靠廠商與名稱判斷。</li>
-<li>新的手機、筆電常用的高速傳輸模式（Wi-Fi 6、兩支天線同時傳）板子解不開，這類裝置的上傳量會算少。</li>
+<li>新的手機、筆電常用的高速傳輸模式（Wi-Fi 6、兩支天線同時傳）偵測器解不開，這類裝置的上傳量會算少。</li>
 <li>隔壁房間、走廊的裝置也會列出來。訊號強度越接近 0（例如 -45 dBm）代表越近。</li>
 <li>廠商的比對來自 IEEE 與藍牙 SIG 公開的登記資料，比對到的不一定是攝影機，改過位址或名稱的裝置也比對不出來。</li>
 <li>找到可疑的裝置，先拍照記下位置，不要自行拆除，聯絡業者或報警處理。</li>
 </ul></div></div>
 <div class="rows" style="margin-top:8px"><div class="row set"><div><div class="lbl">記錄裝置的位址</div><div class="mute">監聽會收到同住的人、隔壁房客手機的 MAC 位址。報告只顯示廠商、名稱與判斷理由，打開這個選項才把位址寫進 flash 記錄</div></div><button class="sw" role="switch" id="sw_roomlog" onclick="tog('roomlog')"></button></div></div>
 <h2>周圍手機洩漏的 Wi-Fi 名稱</h2>
-<div class="rows"><div class="row"><p class="mute" style="margin:0">手機找 Wi-Fi 時會送出探測請求，有些會直接問存過的網路，名稱（家、公司、住過的旅館）就跟著送出來，附近的人都收得到。這裡統計這個空間有多少這樣的資訊：監聽 5 分鐘，熱點與面板照常可以用。位址只在板子的記憶體裡計數，名稱只顯示在這裡，都不寫進記錄。停止後結果留在這裡，下次開始或重新開機時清除。</p>
+<div class="rows"><div class="row"><p class="mute" style="margin:0">手機找 Wi-Fi 時會送出探測請求，有些會直接問存過的網路，名稱（家、公司、住過的旅館）就跟著送出來，附近的人都收得到。這裡統計這個空間有多少這樣的資訊：監聽 5 分鐘，熱點與面板照常可以用。位址只在偵測器的記憶體裡計數，名稱只顯示在這裡，都不寫進記錄。停止後結果留在這裡，下次開始或重新開機時清除。</p>
 <div class="inline"><button class="b main" id="probeBtn" onclick="probeToggle()">開始監聽</button></div>
 <p class="mute num" id="probeSum"></p></div>
 <div id="probeList"></div>
@@ -243,7 +243,7 @@ section[hidden]{display:none}
 <div class="row set"><div><div class="lbl">藍牙連線</div><div class="mute" id="bleInfo"></div></div><button class="sw" role="switch" id="sw_ble" onclick="act('/api/link',{wifi:1,ble:S.bleOn?0:1})"></button></div>
 <div class="row" id="pinRow"><div class="lbl">藍牙配對碼</div><div class="pin num" id="blePin">------</div><div class="mute">手機跳出配對視窗時輸入這組數字，已配對 <span id="bleBonds">0</span> 支手機</div>
 <div class="inline"><button class="b" onclick="act('/api/ble/newpin')">重新產生</button><button class="b" id="unpairBtn" onclick="twice(this,'清除已配對的手機',()=>act('/api/ble/unpair'))">清除已配對的手機</button></div></div>
-<div class="row set"><div><div class="lbl">全部關閉</div><div class="mute">Wi-Fi 與藍牙都關閉，板子停止對外發出訊號，回到只做被動掃描</div></div><button class="b" onclick="act('/api/linkoff')">關閉</button></div>
+<div class="row set"><div><div class="lbl">全部關閉</div><div class="mute">Wi-Fi 與藍牙都關閉，偵測器停止對外發出訊號，回到只做被動掃描</div></div><button class="b" onclick="act('/api/linkoff')">關閉</button></div>
 <div class="row"><div class="lbl">BOOT 鍵</div><div class="mute">長按 2 秒：Wi-Fi 沒開就打開熱點，開著就全部關閉。藍牙與「只留藍牙」在這裡切換。短按、雙擊與燈號的意思見本頁最下方「BOOT 鍵與燈號」</div></div>
 <div class="row"><div class="lbl">沒有手機連著時自動關閉</div><div class="seg" id="seg_idle"></div></div>
 </div>
@@ -254,7 +254,7 @@ section[hidden]{display:none}
 <div class="row set"><div><div class="lbl">移動判斷</div><div class="mute">掃描周圍的 Wi-Fi 基地台判斷你換了地點，追蹤器要跟著你經過 3 個不同的地點才警示。停留在家裡、辦公室時，周圍的追蹤器不會再造成誤報</div></div><button class="sw" role="switch" id="sw_wifiscan" onclick="tog('wifiscan')"></button></div>
 <div class="row" id="placeBox" hidden><div class="lbl">地點</div><div class="mute" id="placeInfo"></div>
 <div class="inline"><input id="placeName" maxlength="30" aria-label="目前地點的名稱" placeholder="替目前的地點命名，例如 家、公司"><button class="b main" onclick="namePlace(0,$('placeName').value)">儲存</button></div>
-<details class="more"><summary id="placeSum">存過的地點</summary><div id="placeList"></div><p class="note">停留約 5 分鐘以上的地方才會存起來，最多 32 個，滿了先移除最久沒去、沒有命名的。板子只存基地台的雜湊，不能直接拿去基地台資料庫查詢，但取得板子的人仍可能比對公開的基地台清單推出位置。名稱存在板子上，會出現在警示歷史與摘要，不寫進 flash 記錄</p></details></div>
+<details class="more"><summary id="placeSum">存過的地點</summary><div id="placeList"></div><p class="note">停留約 5 分鐘以上的地方才會存起來，最多 32 個，滿了先移除最久沒去、沒有命名的。偵測器只存基地台的雜湊，不能直接拿去基地台資料庫查詢，但取得偵測器的人仍可能比對公開的基地台清單推出位置。名稱存在偵測器上，會出現在警示歷史與摘要，不寫進 flash 記錄</p></details></div>
 <div class="row"><div class="lbl">掃描間隔</div><div class="mute">間隔越短反應越快，但比較耗電</div><div class="seg" id="seg_interval"></div></div>
 <div class="row"><div class="lbl">每次掃描長度</div><div class="seg" id="seg_duration"></div></div>
 <div class="row set"><div><div class="lbl">統計模式</div><div class="mute" id="statsInfo"></div></div><button class="sw" role="switch" id="sw_stats" onclick="tog('stats')"></button></div>
@@ -266,7 +266,7 @@ section[hidden]{display:none}
 <div id="helpBox" hidden><p class="mute"><b>也協助周圍的人</b>：除了跟著你的追蹤器，附近與主人分開的 DULT 追蹤器在很近的距離（訊號強於 -70 dBm）出現超過 10 分鐘，也會讓它響一次，幫帶著它的人發現。會響的只有主人手機不在旁邊的追蹤器，但聽到聲音的人不一定知道原因，也可能只是借來的東西，或主人的手機剛好沒電。等於由你替旁人決定讓他的包包響起來，請確認了解再開啟。</p>
 <div class="inline"><button class="b main" onclick="$('helpBox').hidden=true;setv('autosound',2)">我了解，開啟</button><button class="b" onclick="$('helpBox').hidden=true">取消</button></div></div></div>
 <div class="row set"><div><div class="lbl">安靜模式</div><div class="mute">警示時蜂鳴器不響</div></div><button class="sw" role="switch" id="sw_quiet" onclick="tog('quiet')"></button></div>
-<div class="row set"><div><div class="lbl">板子的燈號</div><div class="mute" id="ledInfo"></div></div><button class="sw" role="switch" id="sw_led" onclick="setLed()"></button></div>
+<div class="row set"><div><div class="lbl">偵測器的燈號</div><div class="mute" id="ledInfo"></div></div><button class="sw" role="switch" id="sw_led" onclick="setLed()"></button></div>
 </div>
 
 <h2>名稱與密碼</h2>
@@ -292,7 +292,7 @@ section[hidden]{display:none}
 <div id="otaIdle"><div id="autoNow" hidden><div class="lbl sub">從網路更新</div><div class="mute">自動更新開著，不必按 BOOT。連上 assets.anoni.net，有比較新的版本才下載安裝</div><div class="inline"><button class="b main" id="netNowBtn" onclick="netAsked=true;act('/api/net/update')">檢查並安裝新版</button></div></div>
 <div id="netSlotIdle"></div>
 <div id="armBox"><div class="lbl sub" id="armLbl" hidden>上傳檔案</div><div class="inline"><button class="b" id="armBtn" onclick="act('/api/ota/arm')">開放更新</button></div><div class="note" id="armNote"></div></div></div>
-<div id="otaWait" hidden><p><b>請短按一下板子的 BOOT 鍵</b>，燈號正在快閃紫色，剩下 <span id="otaWaitLeft" class="num"></span> 秒</p></div>
+<div id="otaWait" hidden><p><b>請短按一下偵測器的 BOOT 鍵</b>，燈號正在快閃紫色，剩下 <span id="otaWaitLeft" class="num"></span> 秒</p></div>
 <div id="otaReady" hidden><p class="mute">已開放更新，剩下 <span id="otaReadyLeft" class="num"></span> 秒。可以從網路更新，或上傳手機裡的檔案。</p>
 <div class="lbl sub">從網路更新</div><div class="mute" id="netHint"></div>
 <div class="inline"><button class="b main" id="netBtn" onclick="netAsked=true;act('/api/net/update')">檢查並安裝新版</button></div><div id="netSlotReady"></div>
@@ -303,7 +303,7 @@ section[hidden]{display:none}
 <div class="row"><div class="lbl">更新用的 Wi-Fi</div><div class="mute" id="netWifiInfo"></div>
 <div class="inline"><input id="netSsid" maxlength="32" aria-label="更新用的 Wi-Fi 名稱" placeholder="2.4 GHz 的 Wi-Fi 名稱"></div>
 <div class="inline"><input id="netPass" type="password" maxlength="63" aria-label="更新用的 Wi-Fi 密碼" placeholder="Wi-Fi 密碼，開放的網路留空"><button class="b main" onclick="saveNetWifi()">儲存</button></div></div>
-<div class="row set"><div><div class="lbl">接收測試版</div><div class="mute">測試版是每次修改都發布、還沒經過實機測試的版本，給開發用的板子。實機測試通過的版本才會複製到正式版。一般使用維持關閉。打開時要短按板子的 BOOT 鍵確認</div></div><button class="sw" role="switch" id="sw_testchan" onclick="tog('testchan')"></button></div>
+<div class="row set"><div><div class="lbl">接收測試版</div><div class="mute">測試版是每次修改都發布、還沒經過實機測試的版本，給開發測試用的偵測器。實機測試通過的版本才會複製到正式版。一般使用維持關閉。打開時要短按偵測器的 BOOT 鍵確認</div></div><button class="sw" role="switch" id="sw_testchan" onclick="tog('testchan')"></button></div>
 <div class="note confirm" id="cf_testchan" hidden></div>
 <div class="row set"><div><div class="lbl">自動更新</div><div class="mute" id="autoUpdInfo"></div></div><button class="sw" role="switch" id="sw_autoupd" onclick="tog('autoupd')"></button></div>
 <div class="note confirm" id="cf_autoupd" hidden></div>
@@ -312,7 +312,7 @@ section[hidden]{display:none}
 <h2>BOOT 鍵與燈號</h2>
 <div class="rows">
 <details class="row more"><summary>BOOT 鍵的按法</summary><table class="keys boot"><tr><td>短按</td><td>沒有警示時打一個記號，有警示時確認警示。放開 0.35 秒後才執行，記號的時間用按下的那一刻。房間檢查中是取消檢查，燈號快閃紫色時是確認：允許更新韌體，或打開自動更新、接收測試版</td></tr><tr><td>雙擊</td><td>開始尋找警示中的追蹤器，沒有警示時找訊號最強的。越近嗶得越快、燈號閃得越快，尋找中再雙擊就結束</td></tr><tr><td>長按 2 秒</td><td>Wi-Fi 沒開就打開熱點，開著就全部關閉。按下時燈號變白，切換時新狀態的顏色恆亮 2 秒，這時放開</td></tr><tr><td>長按 10 秒</td><td>恢復原廠設定。5 秒起燈號快閃黃色，10 秒後改成快閃白色，這時放開才執行</td></tr></table></details>
-<details class="row more"><summary>燈號的意思</summary><table class="keys"><tr><td><i class="dot" style="background:#2E9E5B"></i>綠燈恆亮</td><td>附近沒有追蹤器</td></tr><tr><td><i class="dot" style="background:#E0A800"></i>黃燈慢慢呼吸</td><td>附近有追蹤器，還沒達到警示門檻</td></tr><tr><td><i class="dot" style="background:#D7263D"></i>紅燈快閃三下、停一下</td><td>有還沒確認的警示，短按 BOOT 確認</td></tr><tr><td><i class="dot" style="background:#2F6FDE"></i>藍燈恆亮</td><td>掃描中</td></tr><tr><td><i class="dot" style="background:#27B8C9"></i>每 3 秒亮一下</td><td>手機連線開著：青色只有 Wi-Fi，白色 Wi-Fi 加藍牙，紫色只有藍牙</td></tr><tr><td><i class="dot" style="background:#C9CED4"></i>白燈閃一下</td><td>打了一個記號</td></tr><tr><td><i class="dot" style="background:#C9CED4"></i>白燈閃爍，越來越快</td><td>尋找中，越近閃得越快</td></tr><tr><td><i class="dot" style="background:#2F6FDE"></i>藍燈慢慢呼吸（尋找中）</td><td>尋找的追蹤器 8 秒以上沒收到訊號</td></tr><tr><td><i class="dot" style="background:#D7263D"></i>紅燈閃兩下</td><td>雙擊時附近沒有可以找的追蹤器</td></tr><tr><td><i class="dot" style="background:#C9CED4"></i>白燈慢慢呼吸</td><td>房間檢查中</td></tr><tr><td><i class="dot" style="background:#2E9E5B"></i>綠燈連閃兩下、停一下</td><td>房間檢查完成，連回熱點看報告</td></tr><tr><td><i class="dot" style="background:#9B4DCA"></i>紫燈快閃</td><td>等待短按 BOOT 確認：更新韌體、打開自動更新或接收測試版</td></tr></table><p class="note">設定裡關掉「板子的燈號」時，只剩按鍵、切換連線、房間檢查與韌體更新的燈號會亮。</p></details>
+<details class="row more"><summary>燈號的意思</summary><table class="keys"><tr><td><i class="dot" style="background:#2E9E5B"></i>綠燈恆亮</td><td>附近沒有追蹤器</td></tr><tr><td><i class="dot" style="background:#E0A800"></i>黃燈慢慢呼吸</td><td>附近有追蹤器，還沒達到警示門檻</td></tr><tr><td><i class="dot" style="background:#D7263D"></i>紅燈快閃三下、停一下</td><td>有還沒確認的警示，短按 BOOT 確認</td></tr><tr><td><i class="dot" style="background:#2F6FDE"></i>藍燈恆亮</td><td>掃描中</td></tr><tr><td><i class="dot" style="background:#27B8C9"></i>每 3 秒亮一下</td><td>手機連線開著：青色只有 Wi-Fi，白色 Wi-Fi 加藍牙，紫色只有藍牙</td></tr><tr><td><i class="dot" style="background:#C9CED4"></i>白燈閃一下</td><td>打了一個記號</td></tr><tr><td><i class="dot" style="background:#C9CED4"></i>白燈閃爍，越來越快</td><td>尋找中，越近閃得越快</td></tr><tr><td><i class="dot" style="background:#2F6FDE"></i>藍燈慢慢呼吸（尋找中）</td><td>尋找的追蹤器 8 秒以上沒收到訊號</td></tr><tr><td><i class="dot" style="background:#D7263D"></i>紅燈閃兩下</td><td>雙擊時附近沒有可以找的追蹤器</td></tr><tr><td><i class="dot" style="background:#C9CED4"></i>白燈慢慢呼吸</td><td>房間檢查中</td></tr><tr><td><i class="dot" style="background:#2E9E5B"></i>綠燈連閃兩下、停一下</td><td>房間檢查完成，連回熱點看報告</td></tr><tr><td><i class="dot" style="background:#9B4DCA"></i>紫燈快閃</td><td>等待短按 BOOT 確認：更新韌體、打開自動更新或接收測試版</td></tr></table><p class="note">設定裡關掉「偵測器的燈號」時，只剩按鍵、切換連線、房間檢查與韌體更新的燈號會亮。</p></details>
 </div>
 </section>
 <p class="foot num" id="foot"></p>
@@ -325,7 +325,7 @@ section[hidden]{display:none}
 <p class="hint mute" id="findNote"></p>
 <p class="mute" id="findSound"></p>
 <div class="btns"><button class="b main" id="findSoundBtn" onclick="sound(S.findAddr)">讓它響</button><button class="b" id="findEnd" onclick="find('')">結束尋找</button></div>
-<p class="note">拿著板子慢慢走，數字越接近 0（例如從 -90 變成 -50）代表越近。每秒更新一次。板子的嗶聲與燈號也會越近越快，雙擊 BOOT 可以結束尋找。</p>
+<p class="note">拿著偵測器慢慢走，數字越接近 0（例如從 -90 變成 -50）代表越近。每秒更新一次。偵測器的嗶聲與燈號也會越近越快，雙擊 BOOT 可以結束尋找。</p>
 </div>
 
 <nav role="tablist"><button role="tab" id="tab-scan" aria-controls="t-scan" data-t="scan" aria-selected="true">偵測</button><button role="tab" id="tab-hist" aria-controls="t-hist" data-t="hist">歷史<span class="badge" id="histBadge" hidden></span></button><button role="tab" id="tab-mark" aria-controls="t-mark" data-t="mark">記號</button><button role="tab" id="tab-room" aria-controls="t-room" data-t="room">空間</button><button role="tab" id="tab-set" aria-controls="t-set" data-t="set">設定</button></nav>
@@ -351,8 +351,9 @@ $('tab-scan').parentNode.addEventListener('keydown',e=>{const i=tabs.indexOf(doc
 try{if(localStorage.tab)showTab(localStorage.tab)}catch(e){}
 
 function toast(t){const e=$('toast');e.textContent=t;e.style.opacity=1;clearTimeout(e._t);e._t=setTimeout(()=>e.style.opacity=0,2200);}
-async function post(u,d){const r=await fetch(u,{method:'POST',body:new URLSearchParams(d||{})});return r.text();}
-async function act(u,d){try{toast(await post(u,d));setTimeout(poll,600);}catch(e){toast('送出失敗，板子可能正在掃描 Wi-Fi，請再按一次');}}
+let lastPostOk=false;
+async function post(u,d){const r=await fetch(u,{method:'POST',body:new URLSearchParams(d||{})});lastPostOk=r.ok;return r.text();}
+async function act(u,d){try{toast(await post(u,d));setTimeout(poll,600);}catch(e){toast('送出失敗，偵測器可能正在掃描 Wi-Fi，請再按一次');}}
 function twice(btn,label,fn){if(btn._armed&&Date.now()-btn._armed<5000){btn._armed=0;btn.textContent=label;fn();return;}btn._armed=Date.now();btn.textContent='再按一次確認';setTimeout(()=>{if(btn._armed){btn._armed=0;btn.textContent=label}},5000);}
 const mark=l=>{act('/api/mark',{label:l||''});$('label').value='';};
 const find=a=>act('/api/find',{addr:a});
@@ -444,19 +445,19 @@ function render(){
   const s=S,alert=s.alert,list=s.trk||[],acked=!alert&&list.some(t=>t.alerted);
   setState(alert?'alert':acked?'acked':list.length?'watch':'');
   $('state').textContent=alert?'警示':acked?'已確認':list.length?'觀察中':'沒有發現';
-  $('say').textContent=alert?'有追蹤器一直跟著你，符合全部警示條件。按下方按鈕，或短按板子的 BOOT 確認。':acked?'你確認過的追蹤器還在附近，可以尋找它或讓它響。':list.length?'附近有 '+list.length+' 個追蹤器，還沒達到警示條件。':'附近沒有發現追蹤器。';
+  $('say').textContent=alert?'有追蹤器一直跟著你，符合全部警示條件。按下方按鈕，或短按偵測器的 BOOT 確認。':acked?'你確認過的追蹤器還在附近，可以尋找它或讓它響。':list.length?'附近有 '+list.length+' 個追蹤器，還沒達到警示條件。':'附近沒有發現追蹤器。';
   noteState(alert?'alert':acked?'acked':list.length?'watch':'safe');
   if(alert&&!lastAlert&&navigator.vibrate)navigator.vibrate([200,100,200,100,200]);lastAlert=alert;
   $('dev').textContent=s.apName||'';$('scanNo').textContent='已掃描 '+s.scan+' 次';
   beat=s.scan?{ago:s.scanAgo||0,at:Date.now(),iv:s.every||s.interval||30,dur:s.duration||5}:null;tickBeat();
   // 周圍環境：上一次掃描收到幾個藍牙裝置（只計數，不記位址），開著移動判斷時加上基地台
   $('env').textContent=s.scan?'上一次掃描收到藍牙裝置 '+s.bleNow+' 個'+(s.wifiscan?'、Wi-Fi 基地台 '+s.wifiNow+' 個':''):'';
-  $('linkInfo').textContent='Wi-Fi 開啟，藍牙'+(s.bleOn?(s.bleSecure?'已配對連線':s.bleConnected?'等待配對':'開啟'):'關閉');
+  $('linkInfo').textContent='Wi-Fi 開啟，'+(s.bleOn?(s.bleSecure?'藍牙已配對連線':s.bleConnected?'藍牙等待配對':'藍牙開啟'):'藍牙關閉');
   sw('sw_ble',s.bleOn);$('pinRow').hidden=!s.bleOn;
   $('bleInfo').textContent=!s.bleOn?'關閉。開啟後可以用藍牙終端機 App 連線送指令，不佔用手機的 Wi-Fi':s.bleSecure?'已配對連線':s.bleConnected?'手機連上了，等待輸入配對碼':'開啟中，等待手機連線';
   $('wifiInfo').textContent='開啟中，這個面板就是經由它連線。'+(s.bleOn?'關閉後只留藍牙':'關閉後全部關閉')+'，面板會斷線，要再打開請長按 BOOT 2 秒';
   const chips=[];
-  if(s.mode&&s.mode!='偵測')chips.push(s.mode+'模式');
+  if(s.mode=='stats')chips.push('統計模式');else if(s.mode=='crowd')chips.push('人流計數模式');
   if(s.needPlaces)chips.push((s.moving?'移動中':'停留中')+'，'+(!s.placeId?'還沒掃描到基地台':s.placeName||'地點 #'+s.placeId));
   if(s.preset==3)chips.push('<span class="chip warn">快速測試門檻，容易誤報</span>');
   if(s.quiet)chips.push('安靜模式');if(!s.led)chips.push('燈號全關');
@@ -476,7 +477,7 @@ function render(){
   // 記號
   $('markNote').textContent=s.logOn?'按下的時間與文字寫進 flash 記錄，之後用來對照追蹤器何時出現。':'flash 記錄暫停中，記號只留在記憶體，重新開機就消失。要保存請到設定打開「寫入記錄」。';
   $('recent').innerHTML=(s.recent||[]).length?s.recent.slice().reverse().map(m=>'<li><span class="t num">'+(m.epoch?fmt(m.epoch):'開機後 '+Math.floor(m.uptime/60)+' 分')+'</span><span>'+esc(m.label||'記號 #'+m.n)+'</span></li>').join(''):'<li class="mute">還沒有記號</li>';
-  $('clock').textContent=s.timeKnown?'板子的時間 '+fmt(s.epoch):'還沒對時';
+  $('clock').textContent=s.timeKnown?'偵測器的時間 '+fmt(s.epoch):'還沒對時';
   if(!s.timeKnown&&!synced)syncTime(false);
   // 設定
   seg('seg_preset','preset',PRESET.map((p,i)=>[i,p[0]]),s.preset);$('presetInfo').textContent=(PRESET[s.preset]||['',''])[1]+'，切換後追蹤器重新累計';
@@ -484,13 +485,13 @@ function render(){
   seg('seg_duration','duration',[[3,'3 秒'],[5,'5 秒']],s.duration);
   seg('seg_idle','idle',[[5,'5 分'],[10,'10 分'],[30,'30 分'],[0,'不關閉']],s.idle);
   $('seg_auto').innerHTML=[[0,'關閉'],[1,'跟著我移動時'],[2,'也協助周圍的人']].map(o=>'<button aria-pressed="'+(o[0]==s.automode)+'" onclick="'+(o[0]==2&&s.automode!=2?"$('helpBox').hidden=false":"setv('autosound',"+o[0]+")")+'">'+o[1]+'</button>').join('');
-  $('autoInfo').textContent=(s.automode==0?'只有手動按「讓它響」才會發聲。':s.automode==1?'追蹤器跟著你經過好幾個地點、觸發警示時，自動讓它響。':'跟著你的追蹤器，以及附近與主人分開、很近又出現夠久的 DULT 追蹤器，都會自動響一次。')+(s.automode&&!s.wifiscan?'移動判斷目前關著，自動發聲不會作用，請到上方打開「移動判斷」。':'')+'只對收過 DULT 廣播的追蹤器、AirTag、Pebblebee 嘗試，每個追蹤器最多自動響一次，響之前板子會嗶兩聲提醒你留意四周。';
+  $('autoInfo').textContent=(s.automode==0?'只有手動按「讓它響」才會發聲。':s.automode==1?'追蹤器跟著你經過好幾個地點、觸發警示時，自動讓它響。':'跟著你的追蹤器，以及附近與主人分開、很近又出現夠久的 DULT 追蹤器，都會自動響一次。')+(s.automode&&!s.wifiscan?'移動判斷目前關著，自動發聲不會作用，請到上方打開「移動判斷」。':'')+'只對收過 DULT 廣播的追蹤器、AirTag、Pebblebee 嘗試，每個追蹤器最多自動響一次，響之前偵測器會嗶兩聲提醒你留意四周。';
   $('placeBox').hidden=!s.wifiscan;
   $('placeInfo').textContent=!s.placeId?'還沒掃描到 Wi-Fi 基地台':'目前在「'+(s.placeName||'地點 #'+s.placeId)+'」'+(s.placeName?'':'，還沒命名')+'。回到存過的地點時會認出來，警示歷史會寫出追蹤器跟著你經過哪些地點';
   if(s.wifiscan&&placeKey!=s.placeId+'|'+s.placeName+'|'+s.placeCount){placeKey=s.placeId+'|'+s.placeName+'|'+s.placeCount;loadPlaces();}
   sw('sw_wifiscan',s.wifiscan);sw('sw_stats',s.stats,!s.statsAllowed);sw('sw_quiet',s.quiet);sw('sw_led',s.led);sw('sw_captive',s.captive);sw('sw_log',s.log,!s.logMounted);
   $('statsInfo').textContent=!s.statsAllowed?'人流計數模式下不能開啟':s.statsOn?'目前 '+s.statNow+' 個裝置，20 分鐘以上 '+s.statPersist+' 個，累計 '+s.statTotal+' 個位址':'記錄周圍所有藍牙裝置的位址，研究用，每小時約 250 KB';
-  $('ledInfo').textContent=!s.led&&s.quiet?'燈號與蜂鳴器都關閉，板子本身不會提示警示。藍牙連線開著時，警示會推送到藍牙終端機':'關閉後燈號完全不亮，只靠手機面板看狀態';
+  $('ledInfo').textContent=!s.led&&s.quiet?'燈號與蜂鳴器都關閉，偵測器本身不會提示警示。藍牙連線開著時，警示會推送到藍牙終端機':'關閉後燈號完全不亮，只靠手機面板看狀態';
   $('apName').textContent=s.apName;
   $('passInfo').textContent=s.defaultPass?'目前是預設密碼，README 公開寫著這組密碼，知道的人都能連上你的面板，建議修改':'已改成自訂密碼';
   $('blePin').textContent=s.blePin;$('bleBonds').textContent=s.bleBonds;
@@ -502,12 +503,12 @@ function render(){
   // 名稱一行，版本與建置時間各自不拆開，寬度不夠時只在兩段之間換行
   $('foot').innerHTML='<span>'+esc(s.apName)+'</span><br><span>韌體版本 '+esc(s.rev)+'</span>，<span>建置於 '+esc(s.build)+'</span>';
   // 等 BOOT 確認打開自動更新或接收測試版時，提示顯示在那個開關下方，韌體更新那一列照常
-  const otaSt=s.bootWhat?0:s.otaState,cf='請在 '+s.otaLeft+' 秒內短按一下板子的 BOOT 鍵確認，燈號正在快閃紫色。沒有按就維持關閉';
+  const otaSt=s.bootWhat?0:s.otaState,cf='請在 '+s.otaLeft+' 秒內短按一下偵測器的 BOOT 鍵確認，燈號正在快閃紫色。沒有按就維持關閉';
   $('cf_autoupd').hidden=s.bootWhat!=1;$('cf_testchan').hidden=s.bootWhat!=2;if(s.bootWhat)$('cf_'+(s.bootWhat==1?'autoupd':'testchan')).textContent=cf;
   $('otaIdle').hidden=otaSt!=0;$('otaWait').hidden=otaSt!=1;$('otaReady').hidden=!(otaSt==2||$('otaMsg').textContent);
   $('otaWaitLeft').textContent=s.otaLeft;$('otaReadyLeft').textContent=s.otaLeft;
   const ns=s.netState||0,busy=ns>=1&&ns<=3;
-  $('netWifiInfo').textContent=(s.netSsid?'目前是「'+s.netSsid+'」。':'還沒設定。')+'從網路更新時，板子用這個 Wi-Fi 上網下載，密碼只存在板子上。連線期間熱點會換到這個 Wi-Fi 的頻道，手機可能斷線幾秒';
+  $('netWifiInfo').textContent=(s.netSsid?'目前是「'+s.netSsid+'」。':'還沒設定。')+'從網路更新時，偵測器用這個 Wi-Fi 上網下載，密碼只存在偵測器上。連線期間熱點會換到這個 Wi-Fi 的頻道，手機可能斷線幾秒';
   $('netHint').textContent=(s.testchan?'測試通道。':'')+(s.netSsid?'用 Wi-Fi「'+s.netSsid+'」連上網，比對建置時間，有新版才下載，SHA-256 相符才換上':'先在下方設定更新用的 Wi-Fi（2.4 GHz）');
   $('netBtn').disabled=!s.netSsid||busy;$('netNowBtn').disabled=!s.netSsid||busy;
   $('autoNow').hidden=!s.autoupd;
@@ -518,11 +519,11 @@ function render(){
   sw('sw_autoupd',s.autoupd);sw('sw_testchan',s.testchan);$('sw_autoupd').disabled=!s.netSsid&&!s.autoupd;
   // 自動更新開著時，從網路更新不必按 BOOT，這顆按鈕只剩開放上傳檔案
   $('armLbl').hidden=!s.autoupd;$('armBtn').textContent=s.autoupd?'開放上傳':'開放更新';
-  $('armNote').textContent='按下後在 60 秒內短按一下板子的 BOOT 鍵，開放 5 分鐘'+(s.autoupd?'上傳手機裡的韌體檔':'，可以從網路更新或上傳手機裡的檔案')+'。要按板子上的鍵，附近的人就無法換掉韌體';
-  $('autoUpdInfo').textContent=(s.autoFrom?'這次開機是從 '+s.autoFrom+' 自動更新上來的。':'')+(!s.netSsid?'先在上方設定更新用的 Wi-Fi。':'')+'打開時要短按板子的 BOOT 鍵確認，之後更新不必再按：板子每 6 小時被動掃描一次，附近有更新用的 Wi-Fi 才連上 assets.anoni.net，有比較新的版本就下載，SHA-256 相符才換上並重新開機。有警示、追蹤器快達到門檻、房間檢查、尋找中或手機連著熱點時延後。上傳檔案仍要按 BOOT'+(s.autoupd&&s.netSsid&&s.autoNext?'。下次檢查約在 '+(s.autoNext>=3600?Math.round(s.autoNext/3600)+' 小時':mins(s.autoNext))+'後':'');
+  $('armNote').textContent='按下後在 60 秒內短按一下偵測器的 BOOT 鍵，開放 5 分鐘'+(s.autoupd?'上傳手機裡的韌體檔':'，可以從網路更新或上傳手機裡的檔案')+'。要按偵測器上的鍵，附近的人就無法換掉韌體';
+  $('autoUpdInfo').textContent=(s.autoFrom?'這次開機是從 '+s.autoFrom+' 自動更新上來的。':'')+(!s.netSsid?'先在上方設定更新用的 Wi-Fi。':'')+'打開時要短按偵測器的 BOOT 鍵確認，之後更新不必再按：偵測器每 6 小時被動掃描一次，附近有更新用的 Wi-Fi 才連上 assets.anoni.net，有比較新的版本就下載，SHA-256 相符才換上並重新開機。有警示、追蹤器快達到門檻、房間檢查、尋找中或手機連著熱點時延後。上傳檔案仍要按 BOOT'+(s.autoupd&&s.netSsid&&s.autoNext?'。下次檢查約在 '+(s.autoNext>=3600?Math.round(s.autoNext/3600)+' 小時':mins(s.autoNext))+'後':'');
   $('netBox').hidden=!ns;
   $('netBar').style.width=(s.netTotal?s.netGot*100/s.netTotal:ns==4||ns==5?100:0)+'%';
-  $('netMsg').textContent=(s.netLastAuto&&ns>=4?'自動檢查（'+mins(s.netAgo)+'前）：':'')+(ns==7?'附近沒有 Wi-Fi「'+s.netSsid+'」，稍後再試':ns==1?'連線到 Wi-Fi「'+s.netSsid+'」，手機可能斷線幾秒':ns==2?'讀取版本資訊':ns==3?'下載 '+(s.netRev||s.netBuild||'新版')+'：'+Math.round(s.netGot/1024)+' / '+Math.round(s.netTotal/1024)+' KB':ns==4?'下載完成，正在重新開機換成 '+(s.netRev||s.netBuild):ns==5?((s.netMsg||'').indexOf('比目前的舊')>=0?s.netMsg:'已經是最新版（'+(s.netRev||s.netBuild)+'）'):ns==6?'沒有更新：'+s.netMsg:'');
+  $('netMsg').textContent=(s.netLastAuto&&ns>=4?'自動檢查（'+mins(s.netAgo)+'前）：':'')+(ns==7?'附近沒有 Wi-Fi「'+s.netSsid+'」，稍後再試':ns==1?'連線到 Wi-Fi「'+s.netSsid+'」，手機可能斷線幾秒':ns==2?'讀取版本資訊':ns==3?'下載 '+(s.netRev||s.netBuild||'新版')+'：'+Math.round(s.netGot/1024)+' / '+Math.round(s.netTotal/1024)+' KB':ns==4?'下載完成，正在重新開機換成 '+(s.netRev||s.netBuild):ns==5?(s.netNote&&s.netMsg?s.netMsg:'已經是最新版（'+(s.netRev||s.netBuild)+'）'):ns==6?'沒有更新：'+s.netMsg:'');
   // 自己按了更新才讀出進度與結果，背景的自動檢查不打斷
   if(ns!=lastNs){lastNs=ns;if(netAsked&&ns)announce(ns==3?'開始下載新版':$('netMsg').textContent);if(ns>=4)netAsked=false;}
   // 房間
@@ -554,7 +555,7 @@ async function tail(){try{const t=await (await fetch('/api/tail',{cache:'no-stor
 function otaUpload(){const f=$('fw').files[0];if(!f){toast('先選擇 .bin 檔');return;}
   const fd=new FormData();fd.append('fw',f,f.name);const x=new XMLHttpRequest();x.open('POST','/update');
   x.upload.onprogress=e=>{if(e.lengthComputable){$('otaBar').style.width=(e.loaded/e.total*100)+'%';$('otaMsg').textContent=Math.round(e.loaded/1024)+' / '+Math.round(e.total/1024)+' KB';}};
-  x.onload=()=>{$('otaMsg').textContent=x.responseText;announce(x.responseText);};x.onerror=()=>{$('otaMsg').textContent='連線中斷，板子可能已經重新開機';announce($('otaMsg').textContent);};
+  x.onload=()=>{$('otaMsg').textContent=x.responseText;announce(x.responseText);};x.onerror=()=>{$('otaMsg').textContent='連線中斷，偵測器可能已經重新開機';announce($('otaMsg').textContent);};
   $('otaMsg').textContent='上傳中';$('otaBarBox').hidden=false;x.send(fd);}
 
 // 歷史
@@ -565,11 +566,11 @@ async function loadHistory(){try{curH=await (await fetch('/api/history',{cache:'
 // 之前的開機：存在 flash 的 JSON 陣列，新的在前
 async function loadPrev(){try{P=await (await fetch('/api/history/prev',{cache:'no-store'})).json();}catch(e){P=[];}if(sess>P.length)sess=0;drawSess();}
 const startOf=h=>h.epoch?new Date((h.epoch-h.uptime)*1000):null;
-function sessLabel(h,i){const d=startOf(h);return d?(d.getMonth()+1)+'/'+d.getDate()+' '+fmt(d/1000):'前 '+(i+1)+' 次';}
+function sessLabel(h,i){const d=startOf(h);return d?(d.getMonth()+1)+'/'+d.getDate()+' '+fmt(d/1000):'往前第 '+(i+1)+' 次開機';}
 function drawSess(){$('sessBox').hidden=!P.length;$('prevClear').hidden=!P.length;if(!P.length)return;
   $('histSess').innerHTML=[[0,'這次開機']].concat(P.map((h,i)=>[i+1,sessLabel(h,i)])).map(o=>'<button aria-pressed="'+(o[0]==sess)+'" onclick="pickSess('+o[0]+')">'+o[1]+'</button>').join('');
   const h=sess?P[sess-1]:null,al=h?(h.trk||[]).filter(t=>t.alert>=0).length:0;
-  $('sessNote').textContent=h?(startOf(h)?'那次開機從 '+sessLabel(h,sess-1)+' 開始，':'那次開機沒有對時，時間以開機後計算，')+'紀錄了約 '+mins(h.uptime)+'，觸發警示 '+al+' 個。最後一次存檔之後的幾分鐘可能沒存到。':'板子上存了之前 '+P.length+' 次開機的紀錄，點日期切換。';}
+  $('sessNote').textContent=h?(startOf(h)?'那次開機從 '+sessLabel(h,sess-1)+' 開始，':'那次開機沒有對時，時間以開機後計算，')+'紀錄了約 '+mins(h.uptime)+'，觸發警示 '+al+' 個。最後一次存檔之後的幾分鐘可能沒存到。':'偵測器上存了之前 '+P.length+' 次開機的紀錄，點日期切換。';}
 function pickSess(i){sess=i;H=i?P[i-1]:curH;$('summary').hidden=true;$('copyBtn').hidden=true;drawSess();if(H){drawHistory();drawTimeline();}}
 async function clearPrev(){try{toast(await post('/api/history/clear'));}catch(e){toast('送出失敗，請再試一次');return;}P=[];pickSess(0);}
 // 依序經過的地點，用那次存檔時的名稱
@@ -597,11 +598,11 @@ function makeSummary(){if(!H){toast('資料還沒載入');return;}
   const al=(H.trk||[]).filter(t=>t.alert>=0),other=(H.trk||[]).filter(t=>t.alert<0&&t.type!='AplDv'&&t.last-t.first>=600);
   const marksIn=t=>(H.marks||[]).filter(m=>m.t>=t.first-300&&m.t<=t.last+300).map(m=>at(m.t)+' '+(m.label||'記號 #'+m.n)).join('、')||'無';
   const P=PRESET[S.preset]||['',''],ivText=t=>t.iv.map(v=>at(v[0])+'–'+at(v[1])).join('、');
-  let r='追蹤器偵測紀錄摘要\n裝置：'+H.name+(sess?'\n之前的開機，最後一次存檔：':'\n產生時間：')+atFull(H.uptime)+(H.epoch?'':'（板子還沒對時，時間以開機後計算）')+'\n紀錄範圍：自開機（'+atFull(0)+'）以來，約 '+Math.round(H.uptime/60)+' 分鐘\n警示門檻：'+P[0]+'（'+P[1]+'）'+(S.needPlaces?'，並要求跟著經過 '+S.needPlaces+' 個地點':'')+(sess?'（現在的設定，當時可能不同）':'')+'\n\n觸發警示的追蹤器：'+al.length+' 個\n';
+  let r='追蹤器偵測紀錄摘要\n裝置：'+H.name+(sess?'\n之前的開機，最後一次存檔：':'\n產生時間：')+atFull(H.uptime)+(H.epoch?'':'（偵測器還沒對時，時間以開機後計算）')+'\n紀錄範圍：自開機（'+atFull(0)+'）以來，約 '+Math.round(H.uptime/60)+' 分鐘\n警示門檻：'+P[0]+'（'+P[1]+'）'+(S.needPlaces?'，並要求跟著經過 '+S.needPlaces+' 個地點':'')+(sess?'（現在的設定，當時可能不同）':'')+'\n\n觸發警示的追蹤器：'+al.length+' 個\n';
   al.forEach((t,i)=>{r+=(i+1)+'. '+(TYPE[t.type]||t.type)+'，位址 '+t.addr+'\n   第一次出現 '+at(t.first)+'，觸發警示 '+at(t.alert)+'，最後一次出現 '+at(t.last)+(t.acked?'（已確認）':'')+'\n   出現時段：'+ivText(t)+'\n   最強訊號 '+t.maxRssi+' dBm，出現在 '+t.scans+' 次掃描'+(t.pl&&t.pl.length?'\n   經過的地點：'+plPath(t):'')+'\n   發聲：'+soundText(t)+'\n   期間的記號：'+marksIn(t)+'\n';});
   if(other.length){r+='\n出現超過 10 分鐘、沒有觸發警示的追蹤器：'+other.length+' 個\n';other.slice(0,10).forEach(t=>{r+='- '+(TYPE[t.type]||t.type)+' '+t.addr+'，'+at(t.first)+'–'+at(t.last)+'，最強訊號 '+t.maxRssi+' dBm\n';});}
   if((H.marks||[]).length)r+='\n記號：'+H.marks.map(m=>at(m.t)+' '+(m.label||'#'+m.n)).join('、')+'\n';
-  r+='\n判斷方式與限制：\n- 板子只被動接收藍牙廣播，辨識 Apple Find My、Samsung SmartTag、Tile、Google 尋找我的裝置、Chipolo、Pebblebee 的配件，以及支援 DULT 規格（Apple 與 Google 共同提出的防止不當追蹤規格）的追蹤器\n- 與主人分開的 AirPods 也使用 Find My 的廣播格式，會被列入。Tile、Chipolo、Pebblebee 的廣播不標示是否與主人分開，主人帶在身上的也可能被列入\n- iPhone、iPad、Mac 等 Apple 自家裝置與主人分開時也會發送同樣的廣播，'+(S.needPlaces?'只有跟著經過好幾個地點才列入':'沒有列入')+'\n- '+(S.needPlaces?'地點的變化是用周圍 Wi-Fi 基地台推算的，不是 GPS':'板子沒有 GPS，無法分辨追蹤器跟著你移動，還是你待在追蹤器附近（例如住家、辦公室、同一班車上的其他乘客）')+'\n- 藍牙廣播沒有經過認證，任何裝置都可以假裝成某種追蹤器。位址是藍牙廣播用的位址，不代表追蹤器的序號或擁有者\n- 這份摘要只涵蓋同一次開機的紀錄，板子的 flash 另外保留最近 8 次開機的警示歷史。開啟 flash 記錄時，完整的原始紀錄另外存在板子上\n';
+  r+='\n判斷方式與限制：\n- 偵測器只被動接收藍牙廣播，辨識 Apple Find My、Samsung SmartTag、Tile、Google 尋找我的裝置、Chipolo、Pebblebee 的配件，以及支援 DULT 規格（Apple 與 Google 共同提出的防止不當追蹤規格）的追蹤器\n- 與主人分開的 AirPods 也使用 Find My 的廣播格式，會被列入。Tile、Chipolo、Pebblebee 的廣播不標示是否與主人分開，主人帶在身上的也可能被列入\n- iPhone、iPad、Mac 等 Apple 自家裝置與主人分開時也會發送同樣的廣播，'+(S.needPlaces?'只有跟著經過好幾個地點才列入':'沒有列入')+'\n- '+(S.needPlaces?'地點的變化是用周圍 Wi-Fi 基地台推算的，不是 GPS':'偵測器沒有 GPS，無法分辨追蹤器跟著你移動，還是你待在追蹤器附近（例如住家、辦公室、同一班車上的其他乘客）')+'\n- 藍牙廣播沒有經過認證，任何裝置都可以假裝成某種追蹤器。位址是藍牙廣播用的位址，不代表追蹤器的序號或擁有者\n- 這份摘要只涵蓋同一次開機的紀錄，偵測器的 flash 另外保留最近 8 次開機的警示歷史。開啟 flash 記錄時，完整的原始紀錄另外存在偵測器上\n';
   $('summary').value=r;$('summary').hidden=false;$('copyBtn').hidden=false;}
 function copySummary(){const t=$('summary');t.select();t.setSelectionRange(0,1e6);let ok=false;try{ok=document.execCommand('copy');}catch(e){}
   if(!ok&&navigator.clipboard){navigator.clipboard.writeText(t.value).then(()=>toast('已複製'),()=>toast('無法自動複製，請長按文字框選取'));return;}
@@ -614,11 +615,11 @@ const ROOMKIND={sta:'Wi-Fi 連網裝置',ap:'Wi-Fi 基地台',ble:'藍牙裝置'
 function roomWait(){try{const v=(localStorage.roomWait||'').split(',');return v.length==2?{until:+v[0],ver:+v[1]}:null}catch(e){return null}}
 function setRoomWait(w){try{if(w)localStorage.roomWait=w.until+','+w.ver;else localStorage.removeItem('roomWait')}catch(e){}}
 const roomUntil=()=>(roomWait()||{until:0}).until;
-async function roomStart(){try{const t=await post('/api/room/start');toast(t);if(t.startsWith('開始'))setRoomWait({until:Date.now()+(S.roomEst||135)*1000,ver:S.roomVer});setTimeout(poll,600);}catch(e){toast('送出失敗，請再按一次');}}
+async function roomStart(){try{const t=await post('/api/room/start');toast(t);if(lastPostOk)setRoomWait({until:Date.now()+(S.roomEst||135)*1000,ver:S.roomVer});setTimeout(poll,600);}catch(e){toast('送出失敗，請再按一次');}}
 function checkRoomWait(){const w=roomWait();if(!w)return;
-  // 板子拒絕了（沒有開始）或過了很久：不再等
+  // 偵測器拒絕了（沒有開始）或過了很久：不再等
   if(S.roomVer==w.ver&&!S.roomState&&Date.now()>w.until-(S.roomEst||135)*1000+10000||Date.now()-w.until>10*60000)setRoomWait(null);}
-// 會議室檢查：板子每 2 秒更新一次，面板看到 meetVer 變了才讀取
+// 會議室檢查：偵測器每 2 秒更新一次，面板看到 meetVer 變了才讀取
 let meetVer=-1,MT=null,meetR=70;try{meetR=+(localStorage.meetR||70);}catch(e){}
 const MEET_R=[[60,'近，-60 dBm'],[70,'中，-70 dBm'],[80,'遠，-80 dBm']];
 function drawMeetSeg(){const cur=MT&&MT.phase?-MT.rssi:meetR;$('seg_meet').innerHTML=MEET_R.map(o=>'<button aria-pressed="'+(o[0]==cur)+'"'+(MT&&MT.phase?' disabled':'')+' onclick="meetR='+o[0]+';try{localStorage.meetR='+o[0]+'}catch(e){};drawMeetSeg()">'+o[1]+'</button>').join('');}
@@ -657,7 +658,7 @@ function drawMeeting(){const m=MT;$('meetBtn').textContent=S.meetPhase?'結束�
     (wg.length?'<div class="row"><div class="lbl">在找 Wi-Fi 的裝置（依指紋估計）</div><p class="note">新的手機每次都換隨機位址，這裡用封包的指紋分組，同一種型號的手機可能被算成一組。</p></div>'+wNow.map(wt).join('')+wg.filter(g=>!g.now).map(wt).join(''):'')+
     (m.phase?meetTimeline(m,rows):'');}
 $('meetList').onclick=e=>{const i=e.target.dataset.mf;if(i!==undefined)post('/api/meeting/find',{i:i}).then(t=>{toast(t);setTimeout(poll,600);}).catch(()=>toast('送出失敗，請再試一次'));};
-// 周圍手機洩漏的 Wi-Fi 名稱：板子每 2 秒更新一次統計，面板看到 probeVer 變了才讀取
+// 周圍手機洩漏的 Wi-Fi 名稱：偵測器每 2 秒更新一次統計，面板看到 probeVer 變了才讀取
 let probeVer=-1,PR=null;
 async function loadProbes(){try{PR=await (await fetch('/api/probes',{cache:'no-store'})).json();drawProbes();}catch(e){}}
 async function probeToggle(){try{toast(await post(S.probeOn?'/api/probes/stop':'/api/probes/start'));setTimeout(poll,600);}catch(e){toast('送出失敗，請再試一次');}}
@@ -701,9 +702,9 @@ async function poll(){try{S=await (await fetch('/api/status',{cache:'no-store'})
 function offline(){fails++;
   // 房間檢查時熱點關著，直接說明要等多久、怎麼連回來
   const ru=roomUntil();if(ru&&Date.now()-ru<10*60000){const left=Math.round((ru-Date.now())/1000);setState('off');$('state').textContent='房間檢查中';
-    $('say').textContent=$('roomMsg').textContent=(left>0?'約 '+mins(left)+'後完成。':'應該已經完成了。')+'燈號綠色連閃兩下時，到手機的 Wi-Fi 設定連回「'+(S.apName||'板子的熱點')+'」，這一頁會自動顯示報告。';showFind(false);return;}
+    $('say').textContent=$('roomMsg').textContent=(left>0?'約 '+mins(left)+'後完成。':'應該已經完成了。')+'燈號綠色連閃兩下時，到手機的 Wi-Fi 設定連回「'+(S.apName||'偵測器的熱點')+'」，這一頁會自動顯示報告。';showFind(false);return;}
   if(fails<3||Date.now()-lastOk<8000)return;setState('off');$('state').textContent='連線中斷';
-  $('say').textContent=(lastOk?new Date(lastOk).toLocaleTimeString('zh-TW',{hour12:false})+' 之後沒有更新。':'')+'板子可能關閉了 Wi-Fi，或手機離開熱點範圍，畫面上是最後一次的狀態。';
+  $('say').textContent=(lastOk?new Date(lastOk).toLocaleTimeString('zh-TW',{hour12:false})+' 之後沒有更新。':'')+'偵測器可能關閉了 Wi-Fi，或手機離開熱點範圍，畫面上是最後一次的狀態。';
   noteState('off');showFind(false);}
 poll();
 </script></body></html>

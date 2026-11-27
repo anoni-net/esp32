@@ -30,7 +30,20 @@ from datetime import datetime
 from pathlib import Path
 
 RESULTS = Path(__file__).resolve().parent / "results"
-TEST_LATEST = "https://assets.anoni.net/esp32-tracker-test/latest.json"
+# 各語系的韌體從自己的通道更新（publish*.env、pocket_detector.ino 的 NETUPDATE_URL_*）。
+# 板子是哪個語系看狀態 JSON 的 lang
+CHANNELS = {"zh-TW": "esp32-tracker", "zh-CN": "esp32-tracker-zh-cn", "en": "esp32-tracker-en"}
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+import i18n_lib  # noqa: E402
+
+
+def no_wifi_markers():
+    """沒有 Wi-Fi 時的訊息開頭（各語系）。這兩種失敗記成略過，不算韌體的問題"""
+    out = ["附近沒有", "連不上 Wi-Fi"]
+    for e in i18n_lib.load(i18n_lib.FW_CATALOG):
+        if e["tw"].startswith(("附近沒有 Wi-Fi", "連不上 Wi-Fi")):
+            out += [e[k].split("%")[0].strip() for k in ("cn", "en") if e.get(k)]
+    return [m for m in out if m]
 FAKE_ADDR = "fa:ke:00:00:00:01"
 BUILD_RE = re.compile(r"^BUILD,(.+?),([\w?]+),(\S+)$")
 READY_RE = re.compile(r"長按 BOOT 2 秒開啟手機連線")
@@ -154,7 +167,7 @@ class Run:
         j = self.status()
         if not j:
             return self.rec("狀態 JSON", "fail", "json 指令沒有回傳可以解析的 JSON")
-        need = ["scan", "trk", "build", "rev", "netState", "autoupd", "testchan", "roomState", "interval", "duration"]
+        need = ["scan", "trk", "build", "rev", "lang", "netState", "autoupd", "testchan", "roomState", "interval", "duration"]
         miss = [k for k in need if k not in j]
         if miss:
             return self.rec("狀態 JSON", "fail", "少了欄位 " + "、".join(miss))
@@ -180,8 +193,10 @@ class Run:
         if not self.b.ask("channel test", r"^OTA,\d+,channel_test"):
             return self.rec("改接收測試版", "fail", "沒有 channel_test")
         self.rec("改接收測試版", "pass")
+        lang = (self.status() or {}).get("lang", "zh-TW")
+        test_dir = CHANNELS.get(lang, CHANNELS["zh-TW"]) + "-test/"
         try:
-            req = urllib.request.Request(TEST_LATEST + f"?r={time.time_ns()}", headers={"User-Agent": "anoni-tracker-hil"})
+            req = urllib.request.Request(f"https://assets.anoni.net/{test_dir}latest.json?r={time.time_ns()}", headers={"User-Agent": "anoni-tracker-hil"})
             remote = json.loads(urllib.request.urlopen(req, timeout=15).read())
         except Exception as e:
             return self.rec(name, "skip", f"電腦讀不到測試通道：{e}")
@@ -190,10 +205,10 @@ class Run:
             return self.rec(name, "fail", "120 秒內沒有結果")
         if kind == "nowifi":
             return self.rec(name, "skip", "板子沒有設定更新用的 Wi-Fi")
-        if "esp32-tracker-test/" not in url:
-            return self.rec(name, "fail", f"讀的不是測試通道：{url or '沒有 net_start'}")
+        if not url.endswith("/" + test_dir):
+            return self.rec(name, "fail", f"讀的不是 {lang} 的測試通道：{url or '沒有 net_start'}")
         if kind == "fail":
-            if "附近沒有" in msg or "連不上 Wi-Fi" in msg:
+            if any(m in msg for m in no_wifi_markers()):
                 return self.rec(name, "skip", msg)
             return self.rec(name, "fail", msg)
         if kind == "done":
@@ -209,7 +224,7 @@ class Run:
         self.rec(name, "pass", f"{'下載並換上' if kind == 'done' else '已經是'} {remote['commit']}")
         # 換上的新版本自己的更新程式也要能讀測試通道，回報已經是最新版
         kind2, msg2, url2, _ = self.netupdate()
-        if kind2 != "latest" or "esp32-tracker-test/" not in url2:
+        if kind2 != "latest" or not url2.endswith("/" + test_dir):
             return self.rec("新版的網址更新", "fail", f"{kind2}：{msg2 or url2}")
         self.update_ok = True
         return self.rec("新版的網址更新", "pass", "已經是最新版")

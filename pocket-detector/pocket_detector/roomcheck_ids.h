@@ -3,6 +3,7 @@
 // company_identifiers.yaml 與 member_uuids.yaml。只收 VENDORS 列出的廠商。
 #pragma once
 #include <stdint.h>
+#include "i18n.h"
 
 namespace roomcheck {
 
@@ -30,8 +31,8 @@ static const Vendor VENDORS[] = {
   {"GeoVision", 1},  // 15
   {"Tiandy", 1},  // 16
   {"Jovision", 1},  // 17
-  {"YI（小蟻）", 1},  // 18
-  {"創米（小米攝影機）", 1},  // 19
+  {TR("YI（小蟻）"), 1},  // 18
+  {TR("創米（小米攝影機）"), 1},  // 19
   {"Milesight", 1},  // 20
   {"Gwell（Yoosee）", 1},  // 21
   {"Espressif", 2},  // 22
@@ -39,13 +40,13 @@ static const Vendor VENDORS[] = {
   {"Beken", 2},  // 24
   {"Bouffalo Lab", 2},  // 25
   {"AltoBeam", 2},  // 26
-  {"LB-LINK（必聯）", 2},  // 27
+  {TR("LB-LINK（必聯）"), 2},  // 27
   {"Winner Micro", 2},  // 28
   {"HiSilicon", 2},  // 29
   {"Ingenic", 2},  // 30
-  {"Aqara（綠米）", 2},  // 31
+  {TR("Aqara（綠米）"), 2},  // 31
   {"BroadLink", 2},  // 32
-  {"小米", 2},  // 33
+  {TR("小米"), 2},  // 33
 };
 
 // MAC 位址前三碼 << 8 | 廠商編號，依前三碼排序，共 771 筆

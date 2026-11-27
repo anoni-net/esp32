@@ -25,15 +25,25 @@
 #include <esp_random.h>
 #include <mbedtls/sha256.h>
 
+#include "i18n.h"
 #include "flashlog.h"
 #include "types.h"
 #include "phonelink.h"
 #include "trackersound.h"
 #include "webpanel.h"
 // 網址更新的兩個通道（lib/netupdate）。已經燒進板子的版本都讀這兩個網址，
-// 換到新路徑之前要先讓發布腳本同時發布新舊路徑
+// 換到新路徑之前要先讓發布腳本同時發布新舊路徑。每個語系各有自己的通道（publish.env），
+// 英文版從網址更新時不會換成正體中文版
+#if defined(FW_LANG_ZH_CN)
+#define NETUPDATE_URL_STABLE "https://assets.anoni.net/esp32-tracker-zh-cn/"
+#define NETUPDATE_URL_TEST "https://assets.anoni.net/esp32-tracker-zh-cn-test/"
+#elif defined(FW_LANG_EN)
+#define NETUPDATE_URL_STABLE "https://assets.anoni.net/esp32-tracker-en/"
+#define NETUPDATE_URL_TEST "https://assets.anoni.net/esp32-tracker-en-test/"
+#else
 #define NETUPDATE_URL_STABLE "https://assets.anoni.net/esp32-tracker/"
 #define NETUPDATE_URL_TEST "https://assets.anoni.net/esp32-tracker-test/"
+#endif
 #include "netupdate.h"
 #include "roomcheck.h"
 #include "screen.h"
@@ -249,6 +259,21 @@ static const char* trackerName(TrackerType t) {
     case TrackerType::Chipolo:              return "Chipolo";
     case TrackerType::Pebblebee:            return "Pebblebee";
     default:                                return "未知";
+  }
+}
+
+// 藍牙文字通道顯示的追蹤器類型，會翻譯。序列埠用上面的 trackerName，維持原文
+static const char* trackerNameUi(TrackerType t) {
+  switch (t) {
+    case TrackerType::AppleFindMySeparated: return TR("Apple Find My（與主人分開）");
+    case TrackerType::SamsungSmartTag:      return "Samsung SmartTag";
+    case TrackerType::Tile:                 return "Tile";
+    case TrackerType::GoogleFindHub:        return TR("Google 尋找我的裝置");
+    case TrackerType::Dult:                 return TR("DULT 追蹤器（與主人分開）");
+    case TrackerType::AppleDevice:          return TR("Apple 自家裝置（iPhone、iPad、Mac，與主人分開）");
+    case TrackerType::Chipolo:              return "Chipolo";
+    case TrackerType::Pebblebee:            return "Pebblebee";
+    default:                                return TR("未知");
   }
 }
 
@@ -1974,8 +1999,8 @@ static void printVerbose(const NimBLEAdvertisedDevice* d, TrackerType t) {
 
 static void announce(const Sighting& s, uint32_t now) {
   // 藍牙連線開著時直接推送，LED 與蜂鳴器都關閉時也能從手機知道
-  phonelink::send(String("!!! 可能有追蹤器一直跟著你：") + trackerName(s.type) + " " + s.addr.c_str() +
-                  "，輸入 ack 確認\n");
+  phonelink::send(String(TR("!!! 可能有追蹤器一直跟著你：")) + trackerNameUi(s.type) + " " + s.addr.c_str() +
+                  TR("，輸入 ack 確認\n"));
   if (TrackHist* h = findHistory(s.addr)) {
     if (!h->alerted) {
       h->alerted = true;
@@ -1992,7 +2017,7 @@ static void announce(const Sighting& s, uint32_t now) {
   out.printf("    持續：%lu 分鐘，出現在 %u 次掃描（其中 %u 次訊號夠強），最近訊號 %d dBm\n",
                 (unsigned long)((now - s.firstSeen) / 60000), s.windows,
                 s.nearWindows, s.rssi);
-  out.println("    訊號越強（數字越接近 0）代表越近，可以拿著板子走動找出位置");
+  out.println("    訊號越強（數字越接近 0）代表越近，可以拿著偵測器走動找出位置");
   out.println("    按 BOOT 鍵確認後警示燈會熄滅");
   out.println();
 }
@@ -2835,7 +2860,7 @@ static void startMeetingFind(uint32_t idx) {
   findQuiet = true;
   startFind(addr);
   findQuiet = false;
-  findLabel = String(meet.devs[idx].label) + "（會議室檢查）";
+  findLabel = String(meet.devs[idx].label) + TR("（會議室檢查）");
   out.printf("FIND,%lu,meeting,%lu\n", (unsigned long)scanCount, (unsigned long)idx);
   publishSnapshot();
 }
@@ -3139,7 +3164,7 @@ static void publishSnapshot() {
   s.statTotal = sum(totalCount);
   s.bleOn = linkBle;
   s.bleConnected = phonelink::connected;
-  strlcpy(s.mode, statsMode ? "統計" : CROWD_MODE ? "人流計數" : "偵測", sizeof(s.mode));
+  strlcpy(s.mode, statsMode ? "stats" : CROWD_MODE ? "crowd" : "detect", sizeof(s.mode));
   for (int i = 0; i < recentMarkCount; i++) s.recent[i] = recentMarks[i];
   s.recentCount = recentMarkCount;
 
@@ -3231,6 +3256,7 @@ static void publishSnapshot() {
   strlcpy(s.part, run ? run->label : "?", sizeof(s.part));
   strlcpy(s.netSsid, netSsid.c_str(), sizeof(s.netSsid));
   s.netState = netPending ? netupdate::CONNECTING : netupdate::state;
+  s.netNote = netupdate::latestNote;
   strlcpy(s.netMsg, netupdate::msg, sizeof(s.netMsg));
   strlcpy(s.netBuild, netupdate::newBuild, sizeof(s.netBuild));
   s.netGot = netupdate::got;
@@ -3341,7 +3367,7 @@ static void startRoomFind(uint32_t idx) {
     findQuiet = true;
     startFind(addr);
     findQuiet = false;
-    findLabel = it.name + (it.sub.length() ? "（" + it.sub + "）" : String("")) + "，藍牙";
+    findLabel = it.name + (it.sub.length() ? TR("（") + it.sub + TR("）") : String("")) + TR("，藍牙");
   } else {
     if (it.ch < 1 || it.ch > 13) return;
     startFind("");
@@ -3353,7 +3379,7 @@ static void startRoomFind(uint32_t idx) {
     memcpy(findWifiMac, m, 6);
     findWifiCh = it.ch;
     findWifiStage = 1;
-    findLabel = it.name + (it.sub.length() ? "，" + it.sub : String("")) + "，Wi-Fi 頻道 " + it.ch;
+    findLabel = it.name + (it.sub.length() ? TR("，") + it.sub : String("")) + TR("，Wi-Fi 頻道 ") + it.ch;
   }
   // 記錄裡不寫位址，只寫是報告裡的第幾個
   out.printf("FIND,%lu,room_%s,%lu\n", (unsigned long)scanCount, roomcheck::KIND[it.kind], (unsigned long)idx);
@@ -3632,32 +3658,34 @@ static String phoneStatus() {
   for (const auto& t : table) {
     if (t.alerted && !t.acknowledged) alert = true;
   }
-  String r = "掃描 #" + String(scanCount) + "，記錄中的追蹤器 " + String(table.size()) + " 個\n";
-  if (alert) r += "!!! 有未確認的警示，輸入 ack 確認\n";
-  r += String("統計模式：") + (statsMode ? "開啟" : "關閉") + "\n";
-  if (logReady) r += "flash 記錄：" + String(logSize() / 1024) + " KB" + (logFull ? "（已滿）" : "") + "\n";
-  r += timeKnown ? "已對時\n" : "還沒對時，輸入 time 加上 Unix 秒數\n";
+  String r = TR("掃描 #") + String(scanCount) + TR("，記錄中的追蹤器 ") + String(table.size()) + TR(" 個\n");
+  if (alert) r += TR("!!! 有未確認的警示，輸入 ack 確認\n");
+  r += String(TR("統計模式：")) + (statsMode ? TR("開啟") : TR("關閉")) + "\n";
+  if (logReady) r += TR("flash 記錄：") + String(logSize() / 1024) + " KB" + (logFull ? TR("（已滿）") : "") + "\n";
+  r += timeKnown ? TR("已對時\n") : TR("還沒對時，輸入 time 加上 Unix 秒數\n");
   return r;
 }
 
-static const char PHONE_HELP[] =
-    "指令：\n"
-    "status  目前狀態\n"
-    "mark 文字  打記號，例如 mark 上車\n"
-    "ack  確認警示\n"
-    "trackers  附近的追蹤器與離警示門檻多遠\n"
-    "sound 位址  讓追蹤器發出聲音，省略位址時選尋找中、警示中或訊號最強的\n"
-    "autosound 0、1、2  自動發聲：關閉、跟著我移動時、也協助周圍的人\n"
-    "history  自開機以來觸發過警示的追蹤器\n"
-    "stats on、stats off  切換統計模式\n"
-    "log on、log off  flash 記錄的寫入\n"
-    "quiet on、quiet off  安靜模式\n"
-    "time 秒數  用 Unix 秒數對時\n"
-    "wifi  熱點的名稱、密碼與 QR 文字\n"
-    "wifi on、wifi off  開關 Wi-Fi 熱點與手機面板\n"
-    "room  房間檢查，約 2 分鐘，期間 Wi-Fi 熱點關閉\n"
-    "room report  上一次房間檢查的結果\n"
-    "off  關閉藍牙與 Wi-Fi，回到單純偵測\n";
+// 藍牙文字通道的指令說明。每一行各自翻譯，指令本身（status、mark…）不翻譯
+static String phoneHelp() {
+  return String(TR("指令：\n"))
+      + TR("status  目前狀態\n")
+      + TR("mark 文字  打記號，例如 mark 上車\n")
+      + TR("ack  確認警示\n")
+      + TR("trackers  附近的追蹤器與離警示門檻多遠\n")
+      + TR("sound 位址  讓追蹤器發出聲音，省略位址時選尋找中、警示中或訊號最強的\n")
+      + TR("autosound 0、1、2  自動發聲：關閉、跟著我移動時、也協助周圍的人\n")
+      + TR("history  自開機以來觸發過警示的追蹤器\n")
+      + TR("stats on、stats off  切換統計模式\n")
+      + TR("log on、log off  flash 記錄的寫入\n")
+      + TR("quiet on、quiet off  安靜模式\n")
+      + TR("time 秒數  用 Unix 秒數對時\n")
+      + TR("wifi  熱點的名稱、密碼與 QR 文字\n")
+      + TR("wifi on、wifi off  開關 Wi-Fi 熱點與手機面板\n")
+      + TR("room  房間檢查，約 2 分鐘，期間 Wi-Fi 熱點關閉\n")
+      + TR("room report  上一次房間檢查的結果\n")
+      + TR("off  關閉藍牙與 Wi-Fi，回到單純偵測\n");
+}
 
 static void pollPhoneCommand() {
   static bool wasSecure = false;
@@ -3665,7 +3693,7 @@ static void pollPhoneCommand() {
     wasSecure = phonelink::secure;
     if (wasSecure) {
       out.printf("BLE,%lu,paired_connected\n", (unsigned long)scanCount);
-      phonelink::send("已配對連線到 " + deviceName + "，輸入 help 看指令\n");
+      phonelink::send(TR("已配對連線到 ") + deviceName + TR("，輸入 help 看指令\n"));
       publishSnapshot();
     }
   }
@@ -3680,14 +3708,14 @@ static void pollPhoneCommand() {
   }
   cmd.toLowerCase();
   if (cmd == "help" || cmd == "?") {
-    phonelink::send(PHONE_HELP);
+    phonelink::send(phoneHelp());
   } else if (cmd == "status") {
     phonelink::send(phoneStatus());
   } else if (cmd == "mark") {
     markEvent(arg.c_str());
-    phonelink::send("已記錄 MARK #" + String(markCount) + (arg.length() ? " " + arg : String("")) + "\n");
+    phonelink::send(TR("已記錄 MARK #") + String(markCount) + (arg.length() ? " " + arg : String("")) + "\n");
   } else if (cmd == "ack") {
-    phonelink::send(acknowledgeAlerts() ? "已確認警示\n" : "目前沒有警示\n");
+    phonelink::send(acknowledgeAlerts() ? TR("已確認警示\n") : TR("目前沒有警示\n"));
   } else if (cmd == "sound") {
     std::string target = arg.c_str();
     if (target.empty()) target = findOn ? findAddr : "";
@@ -3699,94 +3727,94 @@ static void pollPhoneCommand() {
       }
     }
     if (target.empty()) {
-      phonelink::send("附近沒有追蹤器\n");
+      phonelink::send(TR("附近沒有追蹤器\n"));
     } else {
-      phonelink::send(String("正在連線到 ") + target.c_str() + "…\n");
+      phonelink::send(String(TR("正在連線到 ")) + target.c_str() + "…\n");
       soundTracker(target);
     }
   } else if (cmd == "history") {
     String r;
     for (const auto& h : history) {
       if (!h.alerted) continue;
-      r += String(trackerShort(h.type)) + " " + h.addr.c_str() + "：開機後 " + h.firstMs / 60000 + " 分出現，" +
-           h.alertMs / 60000 + " 分警示，" + h.lastMs / 60000 + " 分最後一次，最強 " + h.maxRssi + " dBm" +
-           (h.acked ? "（已確認）" : "") + "\n";
+      r += String(trackerShort(h.type)) + " " + h.addr.c_str() + TR("：開機後 ") + h.firstMs / 60000 + TR(" 分出現，") +
+           h.alertMs / 60000 + TR(" 分警示，") + h.lastMs / 60000 + TR(" 分最後一次，最強 ") + h.maxRssi + " dBm" +
+           (h.acked ? TR("（已確認）") : "") + "\n";
     }
-    phonelink::send(r.length() ? r : String("自開機以來沒有觸發過警示\n"));
+    phonelink::send(r.length() ? r : String(TR("自開機以來沒有觸發過警示\n")));
   } else if (cmd == "trackers") {
     if (table.empty()) {
-      phonelink::send("附近沒有追蹤器\n");
+      phonelink::send(TR("附近沒有追蹤器\n"));
     } else {
       String r;
       const uint32_t now = millis();
       for (const auto& t : table) {
         const uint32_t since = scanCount - t.firstScan + 1;
-        r += String(t.alerted ? (t.acknowledged ? "[已確認] " : "[警示] ") : "") + trackerShort(t.type) + " " +
-             t.addr.c_str() + " " + t.rssi + " dBm，" + (t.lastSeen - t.firstSeen) / 60000 + " 分，近距離 " +
-             t.nearWindows + "/" + alertMinWindows + "，比例 " + t.windows * 100 / since + "%，" +
-             (now - t.lastSeen) / 1000 + " 秒前\n";
+        r += String(t.alerted ? (t.acknowledged ? TR("[已確認] ") : TR("[警示] ")) : "") + trackerShort(t.type) + " " +
+             t.addr.c_str() + " " + t.rssi + TR(" dBm，") + (t.lastSeen - t.firstSeen) / 60000 + TR(" 分，近距離 ") +
+             t.nearWindows + "/" + alertMinWindows + TR("，比例 ") + t.windows * 100 / since + TR("%，") +
+             (now - t.lastSeen) / 1000 + TR(" 秒前\n");
       }
       phonelink::send(r);
     }
   } else if (cmd == "autosound" && (arg == "on" || arg == "off" || arg == "0" || arg == "1" || arg == "2")) {
     setAutoSound(arg == "on" ? 1 : arg == "off" ? 0 : arg.toInt());
-    static const char* const NAMES[] = {"關閉", "跟著我移動時", "也協助周圍的人"};
-    phonelink::send(String("自動發聲：") + NAMES[autoMode] + (autoMode && !wifiScanOn ? "（移動判斷沒開，不會作用）" : "") + "\n");
+    static const char* const NAMES[] = {TR("關閉"), TR("跟著我移動時"), TR("也協助周圍的人")};
+    phonelink::send(String(TR("自動發聲：")) + NAMES[autoMode] + (autoMode && !wifiScanOn ? TR("（移動判斷沒開，不會作用）") : "") + "\n");
   } else if ((cmd == "log" || cmd == "quiet") && (arg == "on" || arg == "off")) {
     if (cmd == "log") setLogEnabled(arg == "on");
     else setQuiet(arg == "on");
     phonelink::send(cmd + " " + arg + "\n");
   } else if (cmd == "stats" && (arg == "on" || arg == "off")) {
     setStatsMode(arg == "on");
-    phonelink::send(String("統計模式：") + (statsMode ? "開啟" : "關閉") + "\n");
+    phonelink::send(String(TR("統計模式：")) + (statsMode ? TR("開啟") : TR("關閉")) + "\n");
   } else if (cmd == "time") {
     const long epoch = arg.toInt();
     if (epoch > 1700000000L) {
       setTime((uint32_t)epoch);
-      phonelink::send("已對時\n");
+      phonelink::send(TR("已對時\n"));
     } else {
-      phonelink::send("用法：time 1795500000\n");
+      phonelink::send(TR("用法：time 1795500000\n"));
     }
   } else if (cmd == "wifi" && arg.length() == 0) {
     // 只在加密的配對連線上送出密碼
-    phonelink::send("熱點名稱：" + deviceName + "\n密碼：" + devicePass + "\n目前" +
-                    (linkWifi ? "開啟，網址 http://192.168.4.1" : "關閉，輸入 wifi on 開啟") +
-                    "\n用 QR code 產生器把下面這行做成 QR code，手機相機掃描就能加入：\n" + wifiQrText() + "\n");
+    phonelink::send(TR("熱點名稱：") + deviceName + TR("\n密碼：") + devicePass + TR("\n目前") +
+                    (linkWifi ? TR("開啟，網址 http://192.168.4.1") : TR("關閉，輸入 wifi on 開啟")) +
+                    TR("\n用 QR code 產生器把下面這行做成 QR code，手機相機掃描就能加入：\n") + wifiQrText() + "\n");
   } else if (cmd == "wifi" && (arg == "on" || arg == "off")) {
     applyLink(arg == "on", linkBle);
-    phonelink::send(arg == "on" ? "Wi-Fi 熱點與手機面板已開啟\n" : "Wi-Fi 熱點已關閉\n");
+    phonelink::send(arg == "on" ? TR("Wi-Fi 熱點與手機面板已開啟\n") : TR("Wi-Fi 熱點已關閉\n"));
   } else if (cmd == "room" && arg.length() == 0) {
-    phonelink::send(requestRoomCheck() ? "開始房間檢查，約 2 分鐘，完成後輸入 room report 看結果\n"
-                                       : "現在不能開始房間檢查（正在檢查、更新韌體或發聲）\n");
+    phonelink::send(requestRoomCheck() ? TR("開始房間檢查，約 2 分鐘，完成後輸入 room report 看結果\n")
+                                       : TR("現在不能開始房間檢查（正在檢查、更新韌體或發聲）\n"));
   } else if (cmd == "room" && arg == "stop") {
     cancelRoomCheck();
-    phonelink::send("已取消房間檢查\n");
+    phonelink::send(TR("已取消房間檢查\n"));
   } else if (cmd == "room" && arg == "report") {
     String r;
     if (roomcheck::state != roomcheck::DONE) {
-      r = roomStage ? "房間檢查進行中\n" : "還沒有房間檢查的結果\n";
+      r = roomStage ? TR("房間檢查進行中\n") : TR("還沒有房間檢查的結果\n");
     } else {
-      r = String("基地台 ") + roomcheck::apCount + " 個、連網裝置 " + roomcheck::staCount + " 個、藍牙 " +
-          roomcheck::bleTotal + " 個\n";
+      r = String(TR("基地台 ")) + roomcheck::apCount + TR(" 個、連網裝置 ") + roomcheck::staCount + TR(" 個、藍牙 ") +
+          roomcheck::bleTotal + TR(" 個\n");
       int n = 0;
       for (const auto& it : roomcheck::items) {
         if (it.level == 0) continue;
         String why = it.why;
         why.trim();
-        why.replace("\n", "；");
-        r += String(it.level == 2 ? "[建議找出來] " : "[可以留意] ") + it.name + (it.sub.length() ? "，" + it.sub : "") +
-             "，" + it.rssi + " dBm：" + why + "\n";
+        why.replace("\n", TR("；"));
+        r += String(it.level == 2 ? TR("[建議找出來] ") : TR("[可以留意] ")) + it.name + (it.sub.length() ? TR("，") + it.sub : "") +
+             TR("，") + it.rssi + TR(" dBm：") + why + "\n";
         if (++n >= 10) break;
       }
-      if (!n) r += "沒有找到符合規則的裝置\n";
+      if (!n) r += TR("沒有找到符合規則的裝置\n");
     }
     phonelink::send(r);
   } else if (cmd == "off") {
-    phonelink::send("關閉連線，回到單純偵測\n");
+    phonelink::send(TR("關閉連線，回到單純偵測\n"));
     delay(200);
     applyLink(false, false);
   } else {
-    phonelink::send("不認得的指令，輸入 help 看指令\n");
+    phonelink::send(TR("不認得的指令，輸入 help 看指令\n"));
   }
   flushLog();
   publishSnapshot();
@@ -3839,7 +3867,7 @@ static trackersound::Result soundTracker(const std::string& addr) {
   if (addr == FAKE_ADDR) {
     soundResult = trackersound::OK;
     soundShowUntil = millis() + SOUND_SHOW_MS;
-    soundMsg = "假追蹤器沒辦法真的發出聲音，這是測試用的模擬結果";
+    soundMsg = TR("假追蹤器沒辦法真的發出聲音，這是測試用的模擬結果");
     out.printf("SOUND,%lu,%s,fake\n", (unsigned long)scanCount, logAddr);
     publishSnapshot();
     return trackersound::OK;
@@ -3851,7 +3879,7 @@ static trackersound::Result soundTracker(const std::string& addr) {
     else finishScanWindow();
   }
   soundBusy = true;
-  soundMsg = "尋找並連線到追蹤器中…";
+  soundMsg = TR("尋找並連線到追蹤器中…");
   publishSnapshot();
   pollScreen(true);  // 接下來 loop() 會停住幾秒，先畫好「連線中」
   writeLed(32, 0, 32);
@@ -3870,18 +3898,18 @@ static trackersound::Result soundTracker(const std::string& addr) {
   }
   switch (r) {
     case trackersound::OK:
-      soundMsg = String("已送出發聲指令（") + trackersound::lastProtocol + " 協定），追蹤器會響約 10 秒，循著聲音找找看";
+      soundMsg = String(TR("已送出發聲指令（")) + trackersound::lastProtocol + TR(" 協定），追蹤器會響約 10 秒，循著聲音找找看");
       break;
-    case trackersound::NOT_FOUND: soundMsg = "4 秒內沒有收到這個追蹤器的廣播，可能已經換了位址或離開範圍"; break;
+    case trackersound::NOT_FOUND: soundMsg = TR("4 秒內沒有收到這個追蹤器的廣播，可能已經換了位址或離開範圍"); break;
     case trackersound::CONNECT_FAIL:
-      soundMsg = "連不上這個追蹤器（錯誤碼 " + String(trackersound::lastError) + "），靠近一點再試一次";
+      soundMsg = TR("連不上這個追蹤器（錯誤碼 ") + String(trackersound::lastError) + TR("），靠近一點再試一次");
       break;
-    case trackersound::NOT_CONNECTABLE: soundMsg = "這個追蹤器目前的廣播不接受連線，沒辦法讓它發聲"; break;
-    case trackersound::SKIPPED: soundMsg = "不在自動發聲的範圍"; break;
-    case trackersound::NO_SERVICE: soundMsg = "連上了，但沒有支援的發聲服務（DULT、AirTag、Find My、Pebblebee）"; break;
-    case trackersound::WRITE_FAIL: soundMsg = "送出發聲指令失敗"; break;
-    case trackersound::NO_RESPONSE: soundMsg = "送出指令後追蹤器沒有回覆"; break;
-    case trackersound::REFUSED: soundMsg = String("追蹤器拒絕：") + trackersound::statusText(status); break;
+    case trackersound::NOT_CONNECTABLE: soundMsg = TR("這個追蹤器目前的廣播不接受連線，沒辦法讓它發聲"); break;
+    case trackersound::SKIPPED: soundMsg = TR("不在自動發聲的範圍"); break;
+    case trackersound::NO_SERVICE: soundMsg = TR("連上了，但沒有支援的發聲服務（DULT、AirTag、Find My、Pebblebee）"); break;
+    case trackersound::WRITE_FAIL: soundMsg = TR("送出發聲指令失敗"); break;
+    case trackersound::NO_RESPONSE: soundMsg = TR("送出指令後追蹤器沒有回覆"); break;
+    case trackersound::REFUSED: soundMsg = String(TR("追蹤器拒絕：")) + trackersound::statusText(status); break;
   }
   // SOUND,掃描次數,位址,結果代碼,狀態碼,連線錯誤碼,協定
   out.printf("SOUND,%lu,%s,%d,0x%04X,%d,%s\n", (unsigned long)scanCount, logAddr, (int)r, status,
@@ -3936,7 +3964,7 @@ static void processAutoSound(uint32_t scanEndMs) {
       beep(60);
       delay(120);
     }
-    phonelink::send(String("自動發聲：讓附近的") + (pick->help ? "追蹤器（協助周圍的人）" : "追蹤器") + "響，留意四周\n");
+    phonelink::send(String(TR("自動發聲：讓附近的")) + (pick->help ? TR("追蹤器（協助周圍的人）") : TR("追蹤器")) + TR("響，留意四周\n"));
   }
   const trackersound::Result r = soundTracker(pick->addr);
   pick->done = r == trackersound::OK || r == trackersound::NO_SERVICE || r == trackersound::REFUSED ||
@@ -4116,7 +4144,7 @@ void setup() {
   NimBLEDevice::setSecurityRespKey(BLE_SM_PAIR_KEY_DIST_ENC | BLE_SM_PAIR_KEY_DIST_ID);
   const bool rpaOk = NimBLEDevice::setOwnAddrType(BLE_OWN_ADDR_RPA_PUBLIC_DEFAULT);
   selfAddr = NimBLEDevice::getAddress().toString();
-  out.printf("這塊板子的藍牙識別位址：%s（對外%s）\n", selfAddr.c_str(),
+  out.printf("這塊偵測器的藍牙識別位址：%s（對外%s）\n", selfAddr.c_str(),
              rpaOk ? "使用定期更換的隨機位址" : "的隨機位址設定失敗，改用這個固定位址");
   if (oledReady) {
     oled.clearBuffer();
@@ -4134,6 +4162,7 @@ void setup() {
 
   const esp_partition_t* runPart = esp_ota_get_running_partition();
   out.printf("BUILD,%s,%s,%s\n", BUILD_ID, runPart ? runPart->label : "?", FW_VERSION);
+  out.printf("LANG,%s\n", FW_LANG);
   logMem("boot");
   // 上次是自動更新：換上的是剛下載的版本就記下來源，不是的話之後不再自動安裝那個版本
   const String autoTo = prefs.getString("autoto", "");

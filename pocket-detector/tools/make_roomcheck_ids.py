@@ -105,6 +105,7 @@ def main(oui_csv, company_yaml, uuid_yaml, date):
         "// company_identifiers.yaml 與 member_uuids.yaml。只收 VENDORS 列出的廠商。",
         "#pragma once",
         "#include <stdint.h>",
+        '#include "i18n.h"',
         "",
         "namespace roomcheck {",
         "",
@@ -116,7 +117,9 @@ def main(oui_csv, company_yaml, uuid_yaml, date):
         "static const Vendor VENDORS[] = {",
     ]
     for i, (name, cat, _) in enumerate(VENDORS):
-        lines.append(f'  {{"{name}", {cat}}},  // {i}' + ("" if i in used else "（登記資料裡沒有對應的項目）"))
+        # 含中文的名稱會顯示在面板上，包 TR 讓其他語系的韌體換成翻譯（i18n/firmware.toml）
+        lit = f'TR("{name}")' if re.search(r"[\u4e00-\u9fff]", name) else f'"{name}"'
+        lines.append(f'  {{{lit}, {cat}}},  // {i}' + ("" if i in used else "（登記資料裡沒有對應的項目）"))
     lines += ["};", "", f"// MAC 位址前三碼 << 8 | 廠商編號，依前三碼排序，共 {len(oui)} 筆",
               "static const uint32_t OUI_TABLE[] = {"]
     for k in range(0, len(oui), 6):

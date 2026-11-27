@@ -3,6 +3,7 @@
 #
 #   ./tools/promote_firmware.sh pocket-detector            # 測試通道目前的版本通過實機測試才推
 #   ./tools/promote_firmware.sh pocket-detector --force    # 略過實機測試的紀錄（緊急修正用）
+#   ./tools/promote_firmware.sh pocket-detector --lang en  # 英文版的通道（publish.en.env）
 #
 # 不重新建置：在主機上把 CHANNEL-test/ 的韌體檔與 latest.json 原封不動複製到 CHANNEL/，
 # 正式通道的建置時間、SHA-256 與測試過的檔案完全相同。實機測試的紀錄在 <工具>/tests/hil/results/passed.tsv，
@@ -13,13 +14,26 @@ set -euo pipefail
 die() { printf '錯誤：%s\n' "$*" >&2; exit 1; }
 TOOL="${1:-}"
 [ -n "$TOOL" ] || die "要指定工具，例如 ./tools/promote_firmware.sh pocket-detector"
+shift
 FORCE=0
-[ "${2:-}" = "--force" ] && FORCE=1
+LANG_CODE=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --force) FORCE=1 ;;
+    --lang) shift; LANG_CODE="${1:-}" ;;
+    *) die "不認得的參數：$1" ;;
+  esac
+  shift
+done
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 [ -f "$ROOT/$TOOL/publish.env" ] || die "找不到 $TOOL/publish.env"
 # shellcheck source=/dev/null
 . "$ROOT/$TOOL/publish.env"
+if [ -n "$LANG_CODE" ]; then
+  [ -f "$ROOT/$TOOL/publish.${LANG_CODE}.env" ] || die "找不到 $TOOL/publish.${LANG_CODE}.env"
+  . "$ROOT/$TOOL/publish.${LANG_CODE}.env"
+fi
 # shellcheck source=/dev/null
 [ -f "$ROOT/tools/publish.local.env" ] && . "$ROOT/tools/publish.local.env"
 [ -n "${PUBLISH_HOST:-}" ] && [ -n "${PUBLISH_ROOT:-}" ] || die "要設定 PUBLISH_HOST 與 PUBLISH_ROOT（或寫在 tools/publish.local.env）"

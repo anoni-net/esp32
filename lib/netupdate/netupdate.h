@@ -18,6 +18,13 @@
 #include <esp_random.h>
 #include <esp_heap_caps.h>
 #include "updcheck.h"
+// 訊息會顯示在面板上。專案有 i18n.h（例如隨身偵測器）時跟著翻譯，沒有時維持正體中文
+#if __has_include("i18n.h")
+#include "i18n.h"
+#endif
+#ifndef TR
+#define TR(s) (s)
+#endif
 #include <mbedtls/platform.h>
 #include <lwip/dns.h>
 
@@ -59,6 +66,9 @@ static volatile uint32_t got = 0, total = 0;
 static char msg[384] = "";
 static char newBuild[24] = "";
 static char newRev[24] = "";  // latest.json 的 commit，面板顯示用
+// 結果是 LATEST 時，msg 是否要顯示給使用者（遠端的版本比較舊、上次自動安裝失敗）。面板用它決定顯示 msg
+// 還是「已經是最新版」，不比對 msg 的文字，翻譯過的韌體也一樣判斷
+static bool latestNote = false;
 static String ssid, pass;
 static const char* currentBuild = "";
 static bool probeFirst = false;  // 自動更新：先被動掃描，附近有這個 Wi-Fi 才連線
@@ -102,14 +112,14 @@ static void connectError(char* m, size_t n, const char* what, int code, NetworkC
   client.lastError(tls, sizeof(tls));
   const uint32_t freeKb = heap_caps_get_free_size(MALLOC_CAP_INTERNAL) / 1024;
   const uint32_t big = heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL);
-  snprintf(m, n, "%s（%s%s%s，%s → %s，DNS %s，記憶體剩 %lu KB、最大 %lu KB）%s", what,
-           HTTPClient::errorToString(code).c_str(), tls[0] ? "：" : "", tls, HOST, hostIp.toString().c_str(),
+  snprintf(m, n, TR("%s（%s%s%s，%s → %s，DNS %s，記憶體剩 %lu KB、最大 %lu KB）%s"), what,
+           HTTPClient::errorToString(code).c_str(), tls[0] ? TR("：") : "", tls, HOST, hostIp.toString().c_str(),
            dnsIp.toString().c_str(), (unsigned long)freeKb, (unsigned long)(big / 1024),
            big < TLS_NEED_BYTES && heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM) < TLS_NEED_BYTES
-               ? "，記憶體不夠，重新開機後再試" : "");
+               ? TR("，記憶體不夠，重新開機後再試") : "");
   // iPhone 個人熱點的網段。手機同時連著板子的熱點時，個人熱點不會替板子轉送連線
   if (dnsIp[0] == 172 && dnsIp[1] == 20 && dnsIp[2] == 10) {
-    strlcat(m, "。手機連著板子的熱點時，iPhone 的個人熱點沒辦法替板子上網：打開自動更新，手機離開板子的熱點後，板子會自己連上個人熱點更新", n);
+    strlcat(m, TR("。手機連著開發板的熱點時，iPhone 的個人熱點沒辦法替開發板上網：打開自動更新，手機離開開發板的熱點後，開發板會自己連上個人熱點更新"), n);
   }
 }
 
@@ -123,14 +133,14 @@ static State work() {
     // 隱藏名稱的 Wi-Fi 在被動掃描裡沒有名稱，自動更新找不到它
     const int16_t n = WiFi.scanNetworks(false, false, true, 150);
     if (n < 0) {
-      snprintf(m, sizeof(m), "掃描 Wi-Fi 失敗（%d）", n);
+      snprintf(m, sizeof(m), TR("掃描 Wi-Fi 失敗（%d）"), n);
       return fin(FAILED, m);
     }
     bool seen = false;
     for (int i = 0; i < n && !seen; i++) seen = WiFi.SSID(i) == ssid;
     WiFi.scanDelete();
     if (!seen) {
-      snprintf(m, sizeof(m), "附近沒有 Wi-Fi「%s」", ssid.c_str());
+      snprintf(m, sizeof(m), TR("附近沒有 Wi-Fi「%s」"), ssid.c_str());
       return fin(NONET, m);
     }
   }
@@ -138,7 +148,7 @@ static State work() {
   const uint32_t t0 = millis();
   while (WiFi.status() != WL_CONNECTED && millis() - t0 < JOIN_TIMEOUT_MS) delay(200);
   if (WiFi.status() != WL_CONNECTED) {
-    snprintf(m, sizeof(m), "連不上 Wi-Fi「%s」，請確認名稱、密碼，而且是 2.4 GHz 的網路", ssid.c_str());
+    snprintf(m, sizeof(m), TR("連不上 Wi-Fi「%s」，請確認名稱、密碼，而且是 2.4 GHz 的網路"), ssid.c_str());
     return fin(FAILED, m);
   }
 
@@ -184,8 +194,7 @@ static State work() {
   hostIp = ip;
   if (dnsErr != 1) {
     snprintf(m, sizeof(m),
-             "連上「%s」了，但查不到 %s 的位址（Wi-Fi 給的 DNS %s，實際查詢 %s，換過閘道與公用 DNS 也失敗，錯誤 %d）。"
-             "這個 Wi-Fi 可能要先登入，或沒有連上網路",
+             TR("連上「%s」了，但查不到 %s 的位址（Wi-Fi 給的 DNS %s，實際查詢 %s，換過閘道與公用 DNS 也失敗，錯誤 %d）。這個 Wi-Fi 可能要先登入，或沒有連上網路"),
              ssid.c_str(), HOST, dnsIp.toString().c_str(), used, dnsErr);
     return fin(FAILED, m);
   }
@@ -195,11 +204,11 @@ static State work() {
   http.setTimeout(15000);
   http.setUserAgent("anoni-tracker");
   // 加上隨機的查詢字串，避開 Cloudflare 與途中的快取，一定讀到最新的 latest.json
-  if (!http.begin(client, String(BASE_URL) + MANIFEST + "?r=" + String(esp_random(), HEX))) return fin(FAILED, "無法建立連線");
+  if (!http.begin(client, String(BASE_URL) + MANIFEST + "?r=" + String(esp_random(), HEX))) return fin(FAILED, TR("無法建立連線"));
   int code = http.GET();
   if (code != 200) {
-    if (code < 0) connectError(m, sizeof(m), "讀不到版本資訊", code, client);
-    else snprintf(m, sizeof(m), "讀不到版本資訊（%d）", code);
+    if (code < 0) connectError(m, sizeof(m), TR("讀不到版本資訊"), code, client);
+    else snprintf(m, sizeof(m), TR("讀不到版本資訊（%d）"), code);
     http.end();
     return fin(FAILED, m);
   }
@@ -207,14 +216,15 @@ static State work() {
   http.end();
   updcheck::Manifest man;
   const updcheck::Verdict v = updcheck::decide(std::string(j.c_str()), currentBuild, skipBuild.c_str(), sizeof(newBuild), man);
-  if (v == updcheck::BAD) return fin(FAILED, "版本資訊的格式不對，沒有更新");
+  if (v == updcheck::BAD) return fin(FAILED, TR("版本資訊的格式不對，沒有更新"));
   strlcpy(newBuild, man.build.c_str(), sizeof(newBuild));
   strlcpy(newRev, man.commit.c_str(), sizeof(newRev));
-  if (v == updcheck::SAME) return fin(LATEST, "已經是最新版");
-  if (v == updcheck::SKIPPED) return fin(LATEST, "這個版本上次自動安裝後沒有正常開機，不再自動安裝");
-  if (v == updcheck::BADTIME) return fin(FAILED, "讀不懂建置時間，沒有更新");
+  latestNote = v == updcheck::SKIPPED || v == updcheck::OLDER;
+  if (v == updcheck::SAME) return fin(LATEST, TR("已經是最新版"));
+  if (v == updcheck::SKIPPED) return fin(LATEST, TR("這個版本上次自動安裝後沒有正常開機，不再自動安裝"));
+  if (v == updcheck::BADTIME) return fin(FAILED, TR("讀不懂建置時間，沒有更新"));
   if (v == updcheck::OLDER) {
-    snprintf(m, sizeof(m), "assets.anoni.net 上的版本（%s）比目前的舊，沒有更新", man.build.c_str());
+    snprintf(m, sizeof(m), TR("assets.anoni.net 上的版本（%s）比目前的舊，沒有更新"), man.build.c_str());
     return fin(LATEST, m);
   }
   const uint32_t size = man.size;
@@ -223,11 +233,11 @@ static State work() {
   state = DOWNLOADING;
   total = size;
   got = 0;
-  if (!http.begin(client, String(BASE_URL) + file)) return fin(FAILED, "無法建立連線");
+  if (!http.begin(client, String(BASE_URL) + file)) return fin(FAILED, TR("無法建立連線"));
   code = http.GET();
   if (code != 200) {
-    if (code < 0) connectError(m, sizeof(m), "下載失敗", code, client);
-    else snprintf(m, sizeof(m), "下載失敗（%d）", code);
+    if (code < 0) connectError(m, sizeof(m), TR("下載失敗"), code, client);
+    else snprintf(m, sizeof(m), TR("下載失敗（%d）"), code);
     http.end();
     return fin(FAILED, m);
   }
@@ -235,10 +245,10 @@ static State work() {
   // 只接受有 Content-Length 的回應，分段傳送（chunked）時串流裡會夾著分段的標頭
   if (len < 0 || (uint32_t)len != size) {
     http.end();
-    return fin(FAILED, len < 0 ? "伺服器沒有回報檔案大小，沒有更新" : "檔案大小跟版本資訊不符，沒有更新");
+    return fin(FAILED, len < 0 ? TR("伺服器沒有回報檔案大小，沒有更新") : TR("檔案大小跟版本資訊不符，沒有更新"));
   }
   if (!Update.begin(size)) {
-    snprintf(m, sizeof(m), "無法開始寫入：%s", Update.errorString());
+    snprintf(m, sizeof(m), TR("無法開始寫入：%s"), Update.errorString());
     http.end();
     return fin(FAILED, m);
   }
@@ -256,7 +266,7 @@ static State work() {
       if (n <= 0) continue;
       if (Update.write(buf, n) != (size_t)n) {
         ok = false;
-        snprintf(m, sizeof(m), "寫入失敗：%s", Update.errorString());
+        snprintf(m, sizeof(m), TR("寫入失敗：%s"), Update.errorString());
         break;
       }
       mbedtls_sha256_update(&ctx, buf, n);
@@ -264,7 +274,7 @@ static State work() {
       lastData = millis();
     } else if (!s->connected() || millis() - lastData > STALL_TIMEOUT_MS) {
       ok = false;
-      snprintf(m, sizeof(m), "下載中斷，收到 %lu / %lu bytes", (unsigned long)got, (unsigned long)size);
+      snprintf(m, sizeof(m), TR("下載中斷，收到 %lu / %lu bytes"), (unsigned long)got, (unsigned long)size);
       break;
     } else {
       delay(5);
@@ -282,13 +292,13 @@ static State work() {
   for (int i = 0; i < 32; i++) sprintf(hex + i * 2, "%02x", digest[i]);
   if (!sha.equalsIgnoreCase(hex)) {
     Update.abort();
-    return fin(FAILED, "SHA-256 跟版本資訊不符，沒有更新");
+    return fin(FAILED, TR("SHA-256 跟版本資訊不符，沒有更新"));
   }
   if (!Update.end(true)) {
-    snprintf(m, sizeof(m), "驗證失敗：%s", Update.errorString());
+    snprintf(m, sizeof(m), TR("驗證失敗：%s"), Update.errorString());
     return fin(FAILED, m);
   }
-  return fin(DONE, "下載完成，重新開機換成新版");
+  return fin(DONE, TR("下載完成，重新開機換成新版"));
 }
 
 // 在函式外收尾，work() 裡的 HTTPClient 與字串這時都已經釋放
@@ -317,12 +327,12 @@ static bool start(const String& wifiName, const String& wifiPass, const char* bu
   total = 0;
   newBuild[0] = 0;
   newRev[0] = 0;
-  setMsg("連線到 Wi-Fi");
+  setMsg(TR("連線到 Wi-Fi"));
   state = CONNECTING;
   // TLS 交握需要比較大的堆疊
   if (xTaskCreatePinnedToCore(run, "netupdate", 12288, nullptr, 1, nullptr, 0) != pdPASS) {
     state = FAILED;
-    setMsg("無法建立下載的工作");
+    setMsg(TR("無法建立下載的工作"));
     return false;
   }
   return true;

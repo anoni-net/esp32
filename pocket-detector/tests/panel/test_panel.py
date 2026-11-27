@@ -233,7 +233,7 @@ CASES = {
     # 打開自動更新或接收測試版要短按 BOOT 確認，提示在那個開關下方，韌體更新那一列照常
     "confirm_autoupd": ({"otaState": 1, "bootWhat": 1, "otaLeft": 42}, "set", """
         const f=[];
-        if($('cf_autoupd').hidden||!$('cf_autoupd').textContent.startsWith('請在 42 秒內短按一下板子的 BOOT 鍵確認')) f.push('自動更新下方沒有確認提示：'+$('cf_autoupd').textContent);
+        if($('cf_autoupd').hidden||!$('cf_autoupd').textContent.startsWith('請在 42 秒內短按一下偵測器的 BOOT 鍵確認')) f.push('自動更新下方沒有確認提示：'+$('cf_autoupd').textContent);
         if(!$('cf_testchan').hidden) f.push('接收測試版下方不該有提示');
         if($('otaIdle').hidden||!$('otaWait').hidden) f.push('確認設定時，韌體更新那一列要照常顯示');
         return f;"""),

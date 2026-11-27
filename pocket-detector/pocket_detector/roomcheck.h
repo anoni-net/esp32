@@ -19,6 +19,7 @@
 #include <WiFi.h>
 #include <NimBLEDevice.h>
 #include "esp_wifi.h"
+#include "i18n.h"
 #include "roomcheck_ids.h"
 #include <algorithm>
 #include <vector>
@@ -129,7 +130,7 @@ static const char* cameraWord(const char* name) {
   if (n.startsWith("mv") && n.length() >= 8) {
     bool digits = true;
     for (size_t k = 2; k < n.length(); k++) digits &= isDigit(n[k]);
-    if (digits) return "MV＋數字";
+    if (digits) return TR("MV＋數字");
   }
   return nullptr;
 }
@@ -258,10 +259,10 @@ static const int WEAK_RSSI = -80;  // 比這個弱的多半在隔壁房間或更
 // 訊號很弱或不明時最多列為「可以留意」，理由寫清楚
 static void addItem(Item&& it) {
   if (it.rssi == RSSI_UNKNOWN) {
-    it.why += "監聽期間沒有收到它送出的資料，訊號強度不明，多半在隔壁或更遠\n";
+    it.why += TR("監聽期間沒有收到它送出的資料，訊號強度不明，多半在隔壁或更遠\n");
     if (it.level == 2) it.level = 1;
   } else if (it.rssi < WEAK_RSSI && it.level == 2) {
-    it.why += String("訊號很弱（") + it.rssi + " dBm），多半在隔壁或更遠\n";
+    it.why += String(TR("訊號很弱（")) + it.rssi + TR(" dBm），多半在隔壁或更遠\n");
     it.level = 1;
   }
   items.push_back(std::move(it));
@@ -274,8 +275,8 @@ static String kbps(uint32_t bps) {
 static String vendorWhy(int v, const char* what) {
   if (v < 0) return "";
   const Vendor& V = VENDORS[v];
-  if (V.cat == 1) return String(what) + "屬於攝影機品牌 " + V.name + "\n";
-  return String(what) + "屬於 " + V.name + "，這家的晶片或模組常用在便宜的 Wi-Fi 攝影機，也用在插座、燈泡等智慧家電\n";
+  if (V.cat == 1) return String(what) + TR("屬於攝影機品牌 ") + V.name + "\n";
+  return String(what) + TR("屬於 ") + V.name + TR("，這家的晶片或模組常用在便宜的 Wi-Fi 攝影機，也用在插座、燈泡等智慧家電\n");
 }
 
 static void buildReport() {
@@ -301,15 +302,15 @@ static void buildReport() {
     }
     it.upBps = msSum ? (uint64_t)upSum * 1000 / msSum : 0;
     const bool uploading = steady >= 2 && upSum > downSum * 2;
-    it.name = v >= 0 ? String(VENDORS[v].name) + " 的裝置" : rnd ? "隨機位址的裝置" : "連網裝置";
+    it.name = v >= 0 ? String(VENDORS[v].name) + TR(" 的裝置") : rnd ? TR("隨機位址的裝置") : TR("連網裝置");
     const int a = findAp(s.bssid);
-    if (a >= 0 && aps[a].ssid[0]) it.sub = String("連在「") + aps[a].ssid + "」";
-    it.why = vendorWhy(v, "MAC 位址");
+    if (a >= 0 && aps[a].ssid[0]) it.sub = String(TR("連在「")) + aps[a].ssid + TR("」");
+    it.why = vendorWhy(v, TR("MAC 位址"));
     if (uploading) {
-      it.why += String("持續上傳：") + PASSES + " 輪監聽有 " + steady + " 輪在送資料，平均 " + kbps(it.upBps) +
-                (downSum ? "，送出是收到的 " + String(downSum ? upSum / downSum : 0) + " 倍" : "，幾乎沒有收到資料") + "\n";
+      it.why += String(TR("持續上傳：")) + PASSES + TR(" 輪監聽有 ") + steady + TR(" 輪在送資料，平均 ") + kbps(it.upBps) +
+                (downSum ? TR("，送出是收到的 ") + String(downSum ? upSum / downSum : 0) + TR(" 倍") : TR("，幾乎沒有收到資料")) + "\n";
     }
-    if (rnd) it.why += "位址是隨機產生的，多半是手機、平板或電腦\n";
+    if (rnd) it.why += TR("位址是隨機產生的，多半是手機、平板或電腦\n");
     if (v >= 0 && VENDORS[v].cat == 1) it.level = 2;
     else if (uploading && !rnd) it.level = 2;
     else if (uploading || v >= 0) it.level = 1;
@@ -327,12 +328,12 @@ static void buildReport() {
     memcpy(it.mac, a.bssid, 6);
     const int v = ouiVendor(a.bssid);
     const char* word = a.ssid[0] ? cameraWord(a.ssid) : nullptr;
-    it.name = a.ssid[0] ? String("「") + a.ssid + "」" : String("沒有名稱的基地台");
+    it.name = a.ssid[0] ? String(TR("「")) + a.ssid + TR("」") : String(TR("沒有名稱的基地台"));
     if (v >= 0) it.sub = VENDORS[v].name;
-    it.why = vendorWhy(v, "基地台的 MAC 位址");
-    if (word) it.why += String("名稱含有「") + word + "」，有些攝影機會開自己的熱點讓手機直接連\n";
-    if (espDefault(a.ssid)) it.why += "Espressif 晶片預設的熱點名稱，常見於還沒設定好或自製的裝置\n";
-    if (!a.ssid[0]) it.why += "不廣播名稱\n";
+    it.why = vendorWhy(v, TR("基地台的 MAC 位址"));
+    if (word) it.why += String(TR("名稱含有「")) + word + TR("」，有些攝影機會開自己的熱點讓手機直接連\n");
+    if (espDefault(a.ssid)) it.why += TR("Espressif 晶片預設的熱點名稱，常見於還沒設定好或自製的裝置\n");
+    if (!a.ssid[0]) it.why += TR("不廣播名稱\n");
     if ((v >= 0 && VENDORS[v].cat == 1) || word) it.level = 2;
     else if (v >= 0 || espDefault(a.ssid) || (!a.ssid[0] && a.rssi >= -65)) it.level = 1;
     else it.level = 0;
@@ -347,10 +348,10 @@ static void buildReport() {
     it.rssi = b.rssi;
     it.upBps = 0;
     memcpy(it.mac, b.addr, 6);
-    it.name = b.name[0] ? String(b.name) : String("藍牙裝置");
+    it.name = b.name[0] ? String(b.name) : String(TR("藍牙裝置"));
     if (b.vendor >= 0) it.sub = VENDORS[b.vendor].name;
-    it.why = vendorWhy(b.vendor, "藍牙廣播的公司代碼或服務");
-    if (b.match[0]) it.why += String("名稱含有「") + b.match + "」\n";
+    it.why = vendorWhy(b.vendor, TR("藍牙廣播的公司代碼或服務"));
+    if (b.match[0]) it.why += String(TR("名稱含有「")) + b.match + TR("」\n");
     it.level = (b.vendor >= 0 && VENDORS[b.vendor].cat == 1) || b.match[0] ? 2 : 1;
     addItem(std::move(it));
   }

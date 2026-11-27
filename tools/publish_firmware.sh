@@ -3,6 +3,10 @@
 #
 #   ./tools/publish_firmware.sh pocket-detector            # 建置並發布到測試通道
 #   ./tools/publish_firmware.sh pocket-detector --dry-run  # 建置並產生 latest.json，不上傳
+#   ./tools/publish_firmware.sh pocket-detector --lang en  # 英文版，發布到英文的測試通道
+#
+# 有多個語系的工具，每個語系在 <工具>/publish.<語系>.env 改寫通道目錄、PlatformIO 環境與顯示的名稱，
+# 不指定 --lang 時是原文（正體中文）。各語系的通道各自獨立，英文版的板子只會從英文的通道更新。
 #
 # 工具的設定在 <工具>/publish.env（通道目錄、PlatformIO 環境、檔名開頭）。上傳用 ssh 與 rsync，
 # 主機與 assets.anoni.net 在主機上的根目錄由環境變數 PUBLISH_HOST、PUBLISH_ROOT 指定，
@@ -19,13 +23,27 @@ set -euo pipefail
 die() { printf '錯誤：%s\n' "$*" >&2; exit 1; }
 TOOL="${1:-}"
 [ -n "$TOOL" ] || die "要指定工具，例如 ./tools/publish_firmware.sh pocket-detector"
+shift
 DRY_RUN=0
-[ "${2:-}" = "--dry-run" ] && DRY_RUN=1
+LANG_CODE=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --dry-run) DRY_RUN=1 ;;
+    --lang) shift; LANG_CODE="${1:-}" ;;
+    *) die "不認得的參數：$1" ;;
+  esac
+  shift
+done
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 [ -f "$ROOT/$TOOL/publish.env" ] || die "找不到 $TOOL/publish.env"
 # shellcheck source=/dev/null
 . "$ROOT/$TOOL/publish.env"
+if [ -n "$LANG_CODE" ]; then
+  [ -f "$ROOT/$TOOL/publish.${LANG_CODE}.env" ] || die "找不到 $TOOL/publish.${LANG_CODE}.env"
+  # shellcheck source=/dev/null
+  . "$ROOT/$TOOL/publish.${LANG_CODE}.env"
+fi
 # shellcheck source=/dev/null
 [ -f "$ROOT/tools/publish.local.env" ] && . "$ROOT/tools/publish.local.env"
 URL="https://assets.anoni.net/${CHANNEL}-test"

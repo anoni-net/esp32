@@ -101,6 +101,40 @@ pio device monitor
 
 PlatformIO 建置時會自動重新產生（`platformio.ini` 的 `extra_scripts`），`panel_gz.h` 也放進版控，用 Arduino IDE 編譯時不必先執行腳本，但改了 `panel.html` 之後要執行 `python3 -I tools/make_panel.py`。`tools/run_tests.sh` 會檢查兩者是否一致（比對 `panel.html` 的 SHA-256，並把 `panel_gz.h` 解壓縮回來比對內容）。
 
+### 多語系
+
+韌體有正體中文、簡體中文與英文三個版本，分開建置、分開發布。原文是正體中文，寫在 `panel.html` 與原始碼裡，翻譯放在 `i18n/`：
+
+| 檔案 | 內容 |
+|---|---|
+| `i18n/panel.toml` | 面板網頁裡含中文的片段，以 HTML 標籤、引號與 `\n` 切開 |
+| `i18n/firmware.toml` | 韌體裡用 `TR("…")` 包起來的字串：面板上的提示、裝置的類型、房間檢查的理由、網址更新的訊息、藍牙文字通道的回覆 |
+| `i18n/trad_chars.txt` | 原文用到的正體字，檢查簡體中文的翻譯時不能出現 |
+
+| 語系 | PlatformIO 環境 | 建置旗標 | 發布通道 |
+|---|---|---|---|
+| 正體中文 | `esp32-s3-n16r8` | 無 | `esp32-tracker/` |
+| 簡體中文 | `esp32-s3-n16r8-zh-cn` | `-DFW_LANG_ZH_CN` | `esp32-tracker-zh-cn/` |
+| 英文 | `esp32-s3-n16r8-en` | `-DFW_LANG_EN` | `esp32-tracker-en/` |
+
+建置前 `tools/make_i18n.py` 從 `i18n/firmware.toml` 產生 `i18n_zh_cn.h`、`i18n_en.h`，`tools/make_panel.py` 產生 `panel_gz_zh_cn.h`、`panel_gz_en.h`，都放進版控。`TR("正體中文")` 在編譯期查表換成翻譯（`pocket_detector/i18n.h`），表裡沒有的字串編譯就失敗，不會默默留下原文。用 Arduino IDE 編譯時沒有旗標，就是正體中文版。
+
+各語系的網址更新讀自己的通道，英文版的板子不會更新成正體中文版。要換語系，用網頁安裝或 USB 燒錄另一個語系的韌體，設定與記錄都會保留。發布與推正式版時加上 `--lang`：
+
+```bash
+./tools/publish_firmware.sh pocket-detector --lang en     # 設定在 publish.en.env
+./tools/promote_firmware.sh pocket-detector --lang en
+```
+
+改了面板或原始碼的文字之後：
+
+1. 要顯示給使用者的新字串用 `TR("…")` 包起來。序列埠的輸出只給開發者看，實機測試也比對它的文字，維持正體中文，不包 `TR`
+2. 執行 `uv run --with opencc-python-reimplemented tools/make_i18n.py --extract`，新的字串加進目錄，簡體中文先用 OpenCC 轉一份草稿
+3. 補上英文，校對簡體中文的用詞（固件、网络、设置、默认、热点……）
+4. 執行 `./tools/run_tests.sh`，`make_i18n.py --check` 檢查翻譯齊全、printf 的格式一致，`tests/panel/test_i18n.py` 用每個情境載入翻譯過的面板，確認沒有 JS 錯誤
+
+字串由片段組成時（例如 `TR("訊號很弱（") + rssi + TR(" dBm）…")`），翻譯照原文的順序接回去，英文需要的空白寫在翻譯裡。面板與韌體之間不比對文字：模式、房間檢查是否開始、版本比目前的舊，都用欄位或 HTTP 狀態碼判斷。OLED 只能顯示英數字，三個語系都是英文。專案網頁 anoni.net/esp32/ 與網頁上的模擬面板只有正體中文。
+
 ### 無障礙
 
 面板照 WCAG 2.2 AA 檢查過（2026-11-27），三項修正：

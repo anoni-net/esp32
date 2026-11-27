@@ -1,0 +1,2983 @@
+# 面板網頁（pocket_detector/panel.html）的翻譯。tw 是 panel.html 裡含中文的片段，
+# 片段以 HTML 標籤、引號與 \n 切開。改了 panel.html 之後執行 tools/make_i18n.py --extract 補上新的片段。
+# 格式與規則見 tools/i18n_lib.py
+
+[[s]]
+tw = '''追蹤器偵測器'''
+cn = '''追踪器探测器'''
+en = '''Tracker detector'''
+
+[[s]]
+tw = '''按一下暫停或繼續掃描的倒數'''
+cn = '''点一下暂停或继续扫描倒计时'''
+en = '''Tap to pause or resume the scan countdown'''
+
+[[s]]
+tw = '''讀取中'''
+cn = '''加载中'''
+en = '''Loading'''
+
+[[s]]
+tw = '''附近追蹤器的訊號距離'''
+cn = '''附近追踪器的信号距离'''
+en = '''Signal distance of nearby trackers'''
+
+[[s]]
+tw = '''確認警示'''
+cn = '''确认警报'''
+en = '''Confirm'''
+
+[[s]]
+tw = '''尋找它'''
+cn = '''寻找它'''
+en = '''Find it'''
+
+[[s]]
+tw = '''讓它響'''
+cn = '''让它响'''
+en = '''Make it ring'''
+
+[[s]]
+tw = '''附近的追蹤器'''
+cn = '''附近的追踪器'''
+en = '''Nearby trackers'''
+
+[[s]]
+tw = '''哪一次開機'''
+cn = '''哪一次开机'''
+en = '''Which session'''
+
+[[s]]
+tw = '''觸發過警示的追蹤器'''
+cn = '''触发过警报的追踪器'''
+en = '''Trackers that triggered an alert'''
+
+[[s]]
+tw = '''自開機以來沒有觸發過警示'''
+cn = '''自开机以来没有触发过警报'''
+en = '''No alerts since startup'''
+
+[[s]]
+tw = '''追蹤器 30 分鐘沒出現會從「附近的追蹤器」移除，這裡保留整次開機的紀錄。紀錄也存在偵測器的 flash，重新開機（例如接上電腦讀資料）後，到上方切換之前的開機查看，最多保留 8 次。'''
+cn = '''追踪器 30 分钟没出现会从“附近的追踪器”移除，这里保留整次开机的记录。记录也存在探测器的 flash，重新开机（例如接上电脑读取数据）后，到上方切换到之前的开机查看，最多保留 8 次。'''
+en = '''Trackers not seen for 30 minutes are removed from “Nearby trackers”, but this list keeps the whole session. The record is also saved in the detector’s flash. After a restart (for example, after connecting it to a computer to read data), switch to an earlier session above to view it. Up to 8 sessions are kept.'''
+
+[[s]]
+tw = '''出現的時段'''
+cn = '''出现的时段'''
+en = '''Time seen'''
+
+[[s]]
+tw = '''名稱前標「警示」、時段畫成紅色的是觸發過警示的追蹤器，虛線是打的記號。'''
+cn = '''名称前标“警报”、时段画成红色的是触发过警报的追踪器，虚线是打的标记。'''
+en = '''Trackers labeled “Alert” with red time spans triggered an alert. Dashed lines are your markers.'''
+
+[[s]]
+tw = '''蒐證摘要'''
+cn = '''取证摘要'''
+en = '''Evidence summary'''
+
+[[s]]
+tw = '''整理觸發警示的追蹤器、出現時段與期間的記號，附上判斷方式的限制，可以截圖或複製給協助你的人。'''
+cn = '''整理触发警报的追踪器、出现时段与期间的标记，附上判断方式的局限，可以截图或复制给协助你的人。'''
+en = '''Lists the trackers that triggered an alert, when they were seen and the markers in that period, plus the limits of how detection works. You can screenshot or copy it for the person helping you.'''
+
+[[s]]
+tw = '''產生摘要'''
+cn = '''生成摘要'''
+en = '''Create summary'''
+
+[[s]]
+tw = '''複製'''
+cn = '''复制'''
+en = '''Copy'''
+
+[[s]]
+tw = '''刪除之前開機的紀錄'''
+cn = '''删除之前开机的记录'''
+en = '''Delete earlier sessions'''
+
+[[s]]
+tw = '''只刪除存在 flash 的之前幾次開機，這次開機的紀錄保留'''
+cn = '''只删除存在 flash 的之前几次开机，这次开机的记录保留'''
+en = '''Deletes only earlier sessions stored in flash. This session’s records are kept'''
+
+[[s]]
+tw = '''刪除'''
+cn = '''删除'''
+en = '''Delete'''
+
+[[s]]
+tw = '''打記號'''
+cn = '''打标记'''
+en = '''Add marker'''
+
+[[s]]
+tw = '''記號的文字'''
+cn = '''标记的文字'''
+en = '''Marker text'''
+
+[[s]]
+tw = '''自訂文字，例如轉乘'''
+cn = '''自定义文字，例如换乘'''
+en = '''Custom text, e.g. changed trains'''
+
+[[s]]
+tw = '''記錄'''
+cn = '''记录'''
+en = '''Record'''
+
+[[s]]
+tw = '''最近的記號'''
+cn = '''最近的标记'''
+en = '''Recent markers'''
+
+[[s]]
+tw = '''時間'''
+cn = '''时间'''
+en = '''Time'''
+
+[[s]]
+tw = '''還沒對時'''
+cn = '''尚未校时'''
+en = '''Time not set'''
+
+[[s]]
+tw = '''第一次打開面板時自動用手機的時間對時'''
+cn = '''第一次打开面板时自动用手机的时间校时'''
+en = '''Set automatically from your phone the first time you open the panel'''
+
+[[s]]
+tw = '''對時'''
+cn = '''校时'''
+en = '''Set time'''
+
+[[s]]
+tw = '''會議室檢查'''
+cn = '''会议室检查'''
+en = '''Meeting room check'''
+
+[[s]]
+tw = '''收走手機之後，監看房間裡有沒有還開著藍牙或 Wi-Fi 的裝置。開始後 2 分鐘建立基準，記下隔壁、走廊與房間裡固定的設備。之後基準之外出現訊號夠強的藍牙裝置就在這裡提醒，近距離有裝置在找 Wi-Fi 時標成留意。偵測器不出聲、不亮警示燈。只開行動網路、Wi-Fi 與藍牙都關掉的手機偵測不到，沒有無線功能的錄音設備也偵測不到。'''
+cn = '''收走手机之后，监测房间里有没有仍开着蓝牙或 Wi-Fi 的设备。开始后 2 分钟建立基准，记下隔壁、走廊与房间里固定的设备。之后基准之外出现信号够强的蓝牙设备就在这里提醒，近距离有设备在搜索 Wi-Fi 时标为留意。探测器不出声、不亮警报灯。只开移动数据、Wi-Fi 与蓝牙都关掉的手机探测不到，没有无线功能的录音设备也探测不到。'''
+en = '''After phones are collected, this watches the room for devices that still have Bluetooth or Wi-Fi on. The first 2 minutes build a baseline of fixed devices next door, in the hallway and in the room. After that, any Bluetooth device outside the baseline with a strong enough signal is reported here, and nearby devices searching for Wi-Fi are marked for a closer look. The detector makes no sound and the alert light stays off. Phones with only mobile data on and Wi-Fi and Bluetooth off cannot be detected, and neither can recorders without wireless features.'''
+
+[[s]]
+tw = '''範圍'''
+cn = '''范围'''
+en = '''Range'''
+
+[[s]]
+tw = '''開始檢查'''
+cn = '''开始检查'''
+en = '''Start check'''
+
+[[s]]
+tw = '''房間檢查'''
+cn = '''房间检查'''
+en = '''Room check'''
+
+[[s]]
+tw = '''住旅館、民宿時，進房間先檢查一遍：列出附近的 Wi-Fi 與藍牙裝置，標出可能是攝影機的裝置與判斷理由。整個檢查約 2 分鐘，開始 15 秒後熱點會關閉、手機會斷線，追蹤器偵測也暫停。燈號從白色呼吸變成綠色連閃兩下就是完成，再到手機的 Wi-Fi 設定連回熱點看報告。短按 BOOT 可以中途取消。'''
+cn = '''住酒店、民宿时，进房间先检查一遍：列出附近的 Wi-Fi 与蓝牙设备，标出可能是摄像头的设备与判断理由。整个检查约 2 分钟，开始 15 秒后热点会关闭、手机会断开连接，追踪器探测也暂停。指示灯从白色呼吸变成绿色连闪两下就是完成，再到手机的 Wi-Fi 设置重新连接热点查看报告。短按 BOOT 可以中途取消。'''
+en = '''When staying at a hotel or guesthouse, check the room when you arrive: it lists nearby Wi-Fi and Bluetooth devices and marks the ones that may be cameras, with the reasons. The check takes about 2 minutes. 15 seconds after it starts, the hotspot turns off, your phone disconnects and tracker detection pauses. When the light changes from white breathing to two green flashes, it is done. Then reconnect to the hotspot in your phone’s Wi-Fi settings to see the report. Short press BOOT to cancel at any time.'''
+
+[[s]]
+tw = '''檢查結果'''
+cn = '''检查结果'''
+en = '''Results'''
+
+[[s]]
+tw = '''還沒有檢查過'''
+cn = '''还没有检查过'''
+en = '''Not checked yet'''
+
+[[s]]
+tw = '''怎麼找、找到之後怎麼做'''
+cn = '''怎么找，找到之后怎么做'''
+en = '''How to search, and what to do if you find one'''
+
+[[s]]
+tw = '''按裝置旁的「尋找」，拿著偵測器在房間裡慢慢走，數字越接近 0 越近，偵測器的嗶聲與燈號也會越來越快。Wi-Fi 裝置要正在傳資料，才能收到它的訊號。'''
+cn = '''按设备旁的“寻找”，拿着探测器在房间里慢慢走，数字越接近 0 越近，探测器的哔声与指示灯也会越来越快。Wi-Fi 设备要正在传输数据，才能收到它的信号。'''
+en = '''Tap “Find” next to a device and walk slowly around the room with the detector. The closer the number is to 0, the closer you are, and the detector’s beeps and light get faster. A Wi-Fi device must be sending data for its signal to be picked up.'''
+
+[[s]]
+tw = '''攝影機常藏在煙霧偵測器、時鐘、充電器、延長線、面紙盒、電視盒、冷氣與喇叭的開孔，特別留意對著床、浴室與衣櫃的位置。'''
+cn = '''摄像头常藏在烟雾探测器、时钟、充电器、插线板、纸巾盒、电视盒子、空调与音箱的开孔，特别留意对着床、浴室与衣柜的位置。'''
+en = '''Cameras are often hidden in smoke detectors, clocks, chargers, power strips, tissue boxes, TV boxes, and the openings of air conditioners and speakers. Pay special attention to spots facing the bed, bathroom and closet.'''
+
+[[s]]
+tw = '''關燈後，手電筒貼近眼睛的高度慢慢掃過可疑的地方，鏡頭會反射出一個小亮點。'''
+cn = '''关灯后，把手电筒贴近眼睛的高度慢慢扫过可疑的地方，镜头会反射出一个小亮点。'''
+en = '''With the lights off, hold a flashlight at eye level and slowly sweep it over suspicious spots. A lens reflects a small bright dot.'''
+
+[[s]]
+tw = '''找到之後不要拆開或丟掉，先拍照記下位置，再聯絡業者或報警。不放心的話換房間，或改用別的住宿。'''
+cn = '''找到之后不要拆开或丢掉，先拍照记下位置，再联系经营者或报警。不放心的话换房间，或改住别的地方。'''
+en = '''If you find one, do not take it apart or throw it away. Photograph it and note where it is, then contact the operator or the police. If you still feel unsafe, change rooms or stay somewhere else.'''
+
+[[s]]
+tw = '''列出的裝置不一定是攝影機，訊號強也可能只是隔壁的智慧家電。'''
+cn = '''列出的设备不一定是摄像头，信号强也可能只是隔壁的智能家电。'''
+en = '''A listed device is not necessarily a camera. A strong signal may just be a smart appliance next door.'''
+
+[[s]]
+tw = '''能找到與找不到的'''
+cn = '''能找到与找不到的'''
+en = '''What it can and cannot find'''
+
+[[s]]
+tw = '''只能找到使用無線網路的攝影機。接網路線、只錄在記憶卡、或關著 Wi-Fi 的找不到。'''
+cn = '''只能找到使用无线网络的摄像头。接网线、只录在存储卡、或关着 Wi-Fi 的找不到。'''
+en = '''It only finds cameras that use wireless networks. Cameras on a network cable, recording only to a memory card, or with Wi-Fi off cannot be found.'''
+
+[[s]]
+tw = '''偵測器只能接收 2.4 GHz，只用 5 GHz 的裝置不會出現。'''
+cn = '''探测器只能接收 2.4 GHz，只用 5 GHz 的设备不会出现。'''
+en = '''The detector only receives 2.4 GHz. Devices that use only 5 GHz will not appear.'''
+
+[[s]]
+tw = '''很多攝影機只在偵測到動作、或有人在看的時候才上傳。檢查時沒在上傳的，只能靠廠商與名稱判斷。'''
+cn = '''很多摄像头只在探测到动作、或有人在看的时候才上传。检查时没在上传的，只能靠厂商与名称判断。'''
+en = '''Many cameras upload only when they detect motion or someone is watching. Those not uploading during the check can only be judged by maker and name.'''
+
+[[s]]
+tw = '''新的手機、筆電常用的高速傳輸模式（Wi-Fi 6、兩支天線同時傳）偵測器解不開，這類裝置的上傳量會算少。'''
+cn = '''新的手机、笔记本电脑常用的高速传输模式（Wi-Fi 6、两根天线同时传输）探测器无法解析，这类设备的上传量会算少。'''
+en = '''The detector cannot decode the high-speed modes common on newer phones and laptops (Wi-Fi 6, two antennas sending at once), so their upload volume is undercounted.'''
+
+[[s]]
+tw = '''隔壁房間、走廊的裝置也會列出來。訊號強度越接近 0（例如 -45 dBm）代表越近。'''
+cn = '''隔壁房间、走廊的设备也会列出来。信号强度越接近 0（例如 -45 dBm）代表越近。'''
+en = '''Devices in the next room or the hallway are listed too. The closer the signal strength is to 0 (e.g. -45 dBm), the closer the device.'''
+
+[[s]]
+tw = '''廠商的比對來自 IEEE 與藍牙 SIG 公開的登記資料，比對到的不一定是攝影機，改過位址或名稱的裝置也比對不出來。'''
+cn = '''厂商的比对来自 IEEE 与蓝牙 SIG 公开的登记数据，比对到的不一定是摄像头，改过地址或名称的设备也比对不出来。'''
+en = '''Makers are matched against public IEEE and Bluetooth SIG registration data. A match is not necessarily a camera, and devices with a changed address or name cannot be matched.'''
+
+[[s]]
+tw = '''找到可疑的裝置，先拍照記下位置，不要自行拆除，聯絡業者或報警處理。'''
+cn = '''找到可疑的设备，先拍照记下位置，不要自行拆除，联系经营者或报警处理。'''
+en = '''If you find a suspicious device, photograph it and note where it is. Do not remove it yourself. Contact the operator or the police.'''
+
+[[s]]
+tw = '''記錄裝置的位址'''
+cn = '''记录设备的地址'''
+en = '''Log device addresses'''
+
+[[s]]
+tw = '''監聽會收到同住的人、隔壁房客手機的 MAC 位址。報告只顯示廠商、名稱與判斷理由，打開這個選項才把位址寫進 flash 記錄'''
+cn = '''监听会收到同住的人、隔壁房客手机的 MAC 地址。报告只显示厂商、名称与判断理由，打开这个选项才把地址写进 flash 记录'''
+en = '''Listening picks up the MAC addresses of phones belonging to people you are staying with and guests next door. The report shows only maker, name and reasons. Turn this on to also write the addresses to the flash log'''
+
+[[s]]
+tw = '''周圍手機洩漏的 Wi-Fi 名稱'''
+cn = '''周围手机泄露的 Wi-Fi 名称'''
+en = '''Wi-Fi names leaked by nearby phones'''
+
+[[s]]
+tw = '''手機找 Wi-Fi 時會送出探測請求，有些會直接問存過的網路，名稱（家、公司、住過的旅館）就跟著送出來，附近的人都收得到。這裡統計這個空間有多少這樣的資訊：監聽 5 分鐘，熱點與面板照常可以用。位址只在偵測器的記憶體裡計數，名稱只顯示在這裡，都不寫進記錄。停止後結果留在這裡，下次開始或重新開機時清除。'''
+cn = '''手机搜索 Wi-Fi 时会发出探测请求，有些会直接询问保存过的网络，名称（家、公司、住过的酒店）就跟着发出去，附近的人都收得到。这里统计这个空间有多少这样的信息：监听 5 分钟，热点与面板照常可以使用。地址只在探测器的内存里计数，名称只显示在这里，都不写进记录。停止后结果留在这里，下次开始或重新开机时清除。'''
+en = '''When phones look for Wi-Fi they send probe requests. Some ask for saved networks by name, so the names (home, work, hotels you stayed at) go out with them, and anyone nearby can receive them. This counts how much of that information is in this space: it listens for 5 minutes, and the hotspot and panel keep working. Addresses are only counted in the detector’s memory and names are only shown here. Neither is written to the log. Results stay here after stopping and are cleared on the next start or restart.'''
+
+[[s]]
+tw = '''開始監聽'''
+cn = '''开始监听'''
+en = '''Start listening'''
+
+[[s]]
+tw = '''為什麼手機會送出這些名稱？怎麼關掉？'''
+cn = '''为什么手机会发出这些名称？怎么关掉？'''
+en = '''Why do phones send these names? How do I stop it?'''
+
+[[s]]
+tw = '''手機想快點找到認識的網路，會送出「附近有誰」的探測請求。大部分的請求不帶名稱，下面三種情況會把名稱說出來，附近的人都收得到：'''
+cn = '''手机想快点找到认识的网络，会发出“附近有谁”的探测请求。大部分请求不带名称，下面三种情况会把名称说出来，附近的人都收得到：'''
+en = '''To find known networks faster, phones send probe requests asking “who’s nearby?”. Most requests carry no name, but in these three cases the name is sent, and anyone nearby can receive it:'''
+
+[[s]]
+tw = '''隱藏名稱的網路'''
+cn = '''隐藏名称的网络'''
+en = '''Networks with a hidden name'''
+
+[[s]]
+tw = '''：基地台不廣播名稱，手機只能說出名稱來找它。把 Wi-Fi 設成隱藏，反而讓手機走到哪裡都說出這個名稱'''
+cn = '''：接入点不广播名称，手机只能说出名称来找它。把 Wi-Fi 设成隐藏，反而让手机走到哪里都说出这个名称'''
+en = ''': the access point does not broadcast its name, so the phone has to say the name to find it. Hiding your Wi-Fi actually makes your phone announce the name wherever it goes'''
+
+[[s]]
+tw = '''舊的系統與部分裝置'''
+cn = '''旧的系统与部分设备'''
+en = '''Older systems and some devices'''
+
+[[s]]
+tw = '''：舊版的 Android、Windows、一些筆電與智慧家電，會把存過的網路一個一個問過去'''
+cn = '''：旧版的 Android、Windows、一些笔记本电脑与智能家电，会把保存过的网络一个一个问过去'''
+en = ''': older Android and Windows versions, some laptops and smart appliances ask for every saved network one by one'''
+
+[[s]]
+tw = '''剛用過的網路'''
+cn = '''刚用过的网络'''
+en = '''Recently used networks'''
+
+[[s]]
+tw = '''：有些系統為了快點連回去，直接問上一個連過的網路'''
+cn = '''：有些系统为了快点连回去，直接询问上一个连接过的网络'''
+en = ''': some systems ask directly for the last network they joined, to reconnect faster'''
+
+[[s]]
+tw = '''從名稱可以猜出住處、公司與去過的旅館，也有人會架一個同名的基地台，等手機自動連上。可以這樣減少：'''
+cn = '''从名称可以猜出住处、公司与去过的酒店，也有人会架设一个同名的接入点，等手机自动连上。可以这样减少：'''
+en = '''Names can reveal where you live, work and which hotels you stayed at. Some people also set up an access point with the same name and wait for phones to join automatically. You can reduce this:'''
+
+[[s]]
+tw = '''家裡、辦公室的 Wi-Fi 不要隱藏名稱，已經隱藏的到路由器的設定改回公開'''
+cn = '''家里、办公室的 Wi-Fi 不要隐藏名称，已经隐藏的到路由器的设置改回公开'''
+en = '''Do not hide the name of your home or office Wi-Fi. If it is hidden, make it visible again in the router settings'''
+
+[[s]]
+tw = '''刪除用不到的網路（住過的旅館、咖啡店、以前的公司），也就不會自動連上同名的基地台'''
+cn = '''删除用不到的网络（住过的酒店、咖啡店、以前的公司），也就不会自动连上同名的接入点'''
+en = '''Delete networks you no longer use (past hotels, cafes, former workplaces) so your phone won’t join an access point with the same name'''
+
+[[s]]
+tw = '''不常用的網路關掉自動加入。iPhone 在 Wi-Fi 設定點進那個網路，關閉「自動加入」'''
+cn = '''不常用的网络关掉自动加入。iPhone 在 Wi-Fi 设置点进那个网络，关闭“自动加入”'''
+en = '''Turn off auto-join for networks you rarely use. On iPhone, tap the network in Wi-Fi settings and turn off “Auto-Join”'''
+
+[[s]]
+tw = '''保持隨機位址開著，iPhone 是「私人 Wi-Fi 位址」，Android 是「使用隨機 MAC」。名稱就算送出去了，也比較難連結到同一支手機'''
+cn = '''保持随机地址开着，iPhone 是“私有无线局域网地址”，Android 是“使用随机 MAC 地址”。名称就算发出去了，也比较难关联到同一部手机'''
+en = '''Keep random addresses on: “Private Wi-Fi Address” on iPhone, “Use randomized MAC” on Android. Even if a name is sent, it is harder to link it to the same phone'''
+
+[[s]]
+tw = '''出門時到「設定」把 Wi-Fi 關掉。iPhone 在控制中心點 Wi-Fi 只會中斷連線，還會繼續掃描'''
+cn = '''出门时到“设置”把 Wi-Fi 关掉。iPhone 在控制中心点 Wi-Fi 只会断开连接，还会继续扫描'''
+en = '''Turn Wi-Fi off in “Settings” when you go out. On iPhone, tapping Wi-Fi in Control Center only disconnects, and the phone keeps scanning'''
+
+[[s]]
+tw = '''改完之後再監聽一次，看看你的網路名稱還會不會出現。'''
+cn = '''改完之后再监听一次，看看你的网络名称还会不会出现。'''
+en = '''After making changes, listen again to see whether your network names still appear.'''
+
+[[s]]
+tw = '''連線'''
+cn = '''连接'''
+en = '''Connection'''
+
+[[s]]
+tw = '''Wi-Fi 熱點'''
+cn = '''Wi-Fi 热点'''
+en = '''Wi-Fi hotspot'''
+
+[[s]]
+tw = '''開啟中，這個面板就是經由它連線'''
+cn = '''已开启，这个面板就是通过它连接的'''
+en = '''On. This panel is connected through it'''
+
+[[s]]
+tw = '''關閉'''
+cn = '''关闭'''
+en = '''Off'''
+
+[[s]]
+tw = '''藍牙連線'''
+cn = '''蓝牙连接'''
+en = '''Bluetooth connection'''
+
+[[s]]
+tw = '''藍牙配對碼'''
+cn = '''蓝牙配对码'''
+en = '''Bluetooth pairing code'''
+
+[[s]]
+tw = '''手機跳出配對視窗時輸入這組數字，已配對'''
+cn = '''手机弹出配对窗口时输入这组数字，已配对'''
+en = '''Enter this number when your phone asks to pair. Paired with'''
+
+[[s]]
+tw = '''支手機'''
+cn = '''部手机'''
+en = '''phone(s)'''
+
+[[s]]
+tw = '''重新產生'''
+cn = '''重新生成'''
+en = '''Generate new'''
+
+[[s]]
+tw = '''清除已配對的手機'''
+cn = '''清除已配对的手机'''
+en = '''Forget paired phones'''
+
+[[s]]
+tw = '''全部關閉'''
+cn = '''全部关闭'''
+en = '''Turn all off'''
+
+[[s]]
+tw = '''Wi-Fi 與藍牙都關閉，偵測器停止對外發出訊號，回到只做被動掃描'''
+cn = '''Wi-Fi 与蓝牙都关闭，探测器停止对外发出信号，回到只做被动扫描'''
+en = '''Turns off both Wi-Fi and Bluetooth. The detector stops transmitting and goes back to passive scanning only'''
+
+[[s]]
+tw = '''BOOT 鍵'''
+cn = '''BOOT 键'''
+en = '''BOOT button'''
+
+[[s]]
+tw = '''長按 2 秒：Wi-Fi 沒開就打開熱點，開著就全部關閉。藍牙與「只留藍牙」在這裡切換。短按、雙擊與燈號的意思見本頁最下方「BOOT 鍵與燈號」'''
+cn = '''长按 2 秒：Wi-Fi 没开就打开热点，开着就全部关闭。蓝牙与“只留蓝牙”在这里切换。短按、双击与指示灯的含义见本页最下方“BOOT 键与指示灯”'''
+en = '''Hold for 2 seconds: turns on the hotspot if Wi-Fi is off, or turns everything off if it is on. Switch Bluetooth and “Bluetooth only” here. For short press, double press and the lights, see “BOOT button and lights” at the bottom of this page'''
+
+[[s]]
+tw = '''沒有手機連著時自動關閉'''
+cn = '''没有手机连接时自动关闭'''
+en = '''Turn off when no phone is connected'''
+
+[[s]]
+tw = '''偵測'''
+cn = '''探测'''
+en = '''Detection'''
+
+[[s]]
+tw = '''警示門檻'''
+cn = '''警报阈值'''
+en = '''Alert threshold'''
+
+[[s]]
+tw = '''移動判斷'''
+cn = '''移动判断'''
+en = '''Movement check'''
+
+[[s]]
+tw = '''掃描周圍的 Wi-Fi 基地台判斷你換了地點，追蹤器要跟著你經過 3 個不同的地點才警示。停留在家裡、辦公室時，周圍的追蹤器不會再造成誤報'''
+cn = '''扫描周围的 Wi-Fi 接入点判断你换了地点，追踪器要跟着你经过 3 个不同的地点才触发警报。停留在家里、办公室时，周围的追踪器不会再造成误报'''
+en = '''Scans nearby Wi-Fi access points to tell when you change place. A tracker must follow you through 3 different places before an alert. While you stay at home or the office, nearby trackers no longer cause false alerts'''
+
+[[s]]
+tw = '''地點'''
+cn = '''地点'''
+en = '''Place'''
+
+[[s]]
+tw = '''目前地點的名稱'''
+cn = '''当前地点的名称'''
+en = '''Name of current place'''
+
+[[s]]
+tw = '''替目前的地點命名，例如 家、公司'''
+cn = '''给当前的地点命名，例如 家、公司'''
+en = '''Name this place, e.g. Home, Work'''
+
+[[s]]
+tw = '''儲存'''
+cn = '''保存'''
+en = '''Save'''
+
+[[s]]
+tw = '''存過的地點'''
+cn = '''保存过的地点'''
+en = '''Saved places'''
+
+[[s]]
+tw = '''停留約 5 分鐘以上的地方才會存起來，最多 32 個，滿了先移除最久沒去、沒有命名的。偵測器只存基地台的雜湊，不能直接拿去基地台資料庫查詢，但取得偵測器的人仍可能比對公開的基地台清單推出位置。名稱存在偵測器上，會出現在警示歷史與摘要，不寫進 flash 記錄'''
+cn = '''停留约 5 分钟以上的地方才会保存，最多 32 个，满了先移除最久没去、没有命名的。探测器只保存接入点的哈希值，不能直接拿去接入点数据库查询，但拿到探测器的人仍可能比对公开的接入点列表推算出位置。名称保存在探测器上，会出现在警报历史与摘要，不写进 flash 记录'''
+en = '''Only places where you stay about 5 minutes or longer are saved, up to 32. When full, the unnamed place visited least recently is removed first. The detector stores only hashes of access points, which cannot be looked up directly in an access point database, but someone who gets the detector could still compare them with public access point lists to work out locations. Names are stored on the detector and appear in the alert history and summary, but are not written to the flash log'''
+
+[[s]]
+tw = '''掃描間隔'''
+cn = '''扫描间隔'''
+en = '''Scan interval'''
+
+[[s]]
+tw = '''間隔越短反應越快，但比較耗電'''
+cn = '''间隔越短反应越快，但比较耗电'''
+en = '''Shorter intervals react faster but use more battery'''
+
+[[s]]
+tw = '''每次掃描長度'''
+cn = '''每次扫描时长'''
+en = '''Scan duration'''
+
+[[s]]
+tw = '''統計模式'''
+cn = '''统计模式'''
+en = '''Stats mode'''
+
+[[s]]
+tw = '''警示與發聲'''
+cn = '''警报与发声'''
+en = '''Alerts and sound'''
+
+[[s]]
+tw = '''自動發聲'''
+cn = '''自动发声'''
+en = '''Auto ring'''
+
+[[s]]
+tw = '''也協助周圍的人'''
+cn = '''也协助周围的人'''
+en = '''Also help people nearby'''
+
+[[s]]
+tw = '''：除了跟著你的追蹤器，附近與主人分開的 DULT 追蹤器在很近的距離（訊號強於 -70 dBm）出現超過 10 分鐘，也會讓它響一次，幫帶著它的人發現。會響的只有主人手機不在旁邊的追蹤器，但聽到聲音的人不一定知道原因，也可能只是借來的東西，或主人的手機剛好沒電。等於由你替旁人決定讓他的包包響起來，請確認了解再開啟。'''
+cn = '''：除了跟着你的追踪器，附近与主人分开的 DULT 追踪器在很近的距离（信号强于 -70 dBm）出现超过 10 分钟，也会让它响一次，帮带着它的人发现。会响的只有主人手机不在旁边的追踪器，但听到声音的人不一定知道原因，也可能只是借来的东西，或主人的手机刚好没电。这等于由你替旁人决定让他的包响起来，请确认了解后再开启。'''
+en = ''': besides trackers following you, a DULT tracker nearby that is separated from its owner and stays very close (signal stronger than -70 dBm) for more than 10 minutes is also made to ring once, so the person carrying it notices. Only trackers whose owner’s phone is not nearby will ring, but the person who hears it may not know why, and it may just be something borrowed, or the owner’s phone may have run out of battery. You are deciding for someone else to make their bag ring, so make sure you understand this before turning it on.'''
+
+[[s]]
+tw = '''我了解，開啟'''
+cn = '''我了解，开启'''
+en = '''I understand, turn on'''
+
+[[s]]
+tw = '''取消'''
+cn = '''取消'''
+en = '''Cancel'''
+
+[[s]]
+tw = '''安靜模式'''
+cn = '''静音模式'''
+en = '''Quiet mode'''
+
+[[s]]
+tw = '''警示時蜂鳴器不響'''
+cn = '''警报时蜂鸣器不响'''
+en = '''The buzzer stays silent during alerts'''
+
+[[s]]
+tw = '''偵測器的燈號'''
+cn = '''探测器的指示灯'''
+en = '''Detector light'''
+
+[[s]]
+tw = '''名稱與密碼'''
+cn = '''名称与密码'''
+en = '''Name and password'''
+
+[[s]]
+tw = '''熱點與藍牙名稱'''
+cn = '''热点与蓝牙名称'''
+en = '''Hotspot and Bluetooth name'''
+
+[[s]]
+tw = '''目前是'''
+cn = '''当前是'''
+en = '''Currently'''
+
+[[s]]
+tw = '''。周圍的人都看得到這個名稱，換成不起眼的名稱，旁人就不容易看出你帶著偵測器'''
+cn = '''。周围的人都看得到这个名称，换成不起眼的名称，旁人就不容易看出你带着探测器'''
+en = '''. People nearby can see this name. With a plain name, others won’t easily tell you are carrying a detector'''
+
+[[s]]
+tw = '''新的熱點與藍牙名稱'''
+cn = '''新的热点与蓝牙名称'''
+en = '''New hotspot and Bluetooth name'''
+
+[[s]]
+tw = '''自訂名稱，最多 29 bytes'''
+cn = '''自定义名称，最多 29 bytes'''
+en = '''Custom name, up to 29 bytes'''
+
+[[s]]
+tw = '''熱點密碼'''
+cn = '''热点密码'''
+en = '''Hotspot password'''
+
+[[s]]
+tw = '''新的熱點密碼'''
+cn = '''新的热点密码'''
+en = '''New hotspot password'''
+
+[[s]]
+tw = '''8 到 63 個英數字或符號'''
+cn = '''8 到 63 个英文字母、数字或符号'''
+en = '''8 to 63 letters, digits or symbols'''
+
+[[s]]
+tw = '''連上熱點時自動跳出面板'''
+cn = '''连上热点时自动弹出面板'''
+en = '''Open panel automatically when joining the hotspot'''
+
+[[s]]
+tw = '''iPhone 關掉跳出的視窗會斷線。關閉這個選項後，改用瀏覽器開 http://192.168.4.1，可以一直連著'''
+cn = '''iPhone 关掉弹出的窗口会断开连接。关闭这个选项后，改用浏览器打开 http://192.168.4.1，可以一直保持连接'''
+en = '''On iPhone, closing the pop-up window disconnects you. With this off, open http://192.168.4.1 in a browser instead to stay connected'''
+
+[[s]]
+tw = '''flash 記錄'''
+cn = '''flash 记录'''
+en = '''Flash log'''
+
+[[s]]
+tw = '''寫入記錄'''
+cn = '''写入记录'''
+en = '''Write log'''
+
+[[s]]
+tw = '''下載'''
+cn = '''下载'''
+en = '''Download'''
+
+[[s]]
+tw = '''看最後幾行'''
+cn = '''查看最后几行'''
+en = '''Show last lines'''
+
+[[s]]
+tw = '''在自動跳出的小視窗裡可能無法下載，請改用瀏覽器開 http://192.168.4.1'''
+cn = '''在自动弹出的小窗口里可能无法下载，请改用浏览器打开 http://192.168.4.1'''
+en = '''Downloading may not work in the pop-up window. Open http://192.168.4.1 in a browser instead'''
+
+[[s]]
+tw = '''韌體'''
+cn = '''固件'''
+en = '''Firmware'''
+
+[[s]]
+tw = '''韌體更新'''
+cn = '''固件更新'''
+en = '''Firmware update'''
+
+[[s]]
+tw = '''目前的版本是'''
+cn = '''当前的版本是'''
+en = '''Current version'''
+
+[[s]]
+tw = '''，建置於'''
+cn = '''，构建于'''
+en = ''', built'''
+
+[[s]]
+tw = '''，執行中的程式槽'''
+cn = '''，运行中的程序分区'''
+en = ''', running slot'''
+
+[[s]]
+tw = '''從網路更新'''
+cn = '''从网络更新'''
+en = '''Update from the internet'''
+
+[[s]]
+tw = '''自動更新開著，不必按 BOOT。連上 assets.anoni.net，有比較新的版本才下載安裝'''
+cn = '''自动更新已开启，不必按 BOOT。连接 assets.anoni.net，有比较新的版本才下载安装'''
+en = '''Auto update is on, no need to press BOOT. It connects to assets.anoni.net and installs only when a newer version is available'''
+
+[[s]]
+tw = '''檢查並安裝新版'''
+cn = '''检查并安装新版'''
+en = '''Check and install update'''
+
+[[s]]
+tw = '''上傳檔案'''
+cn = '''上传文件'''
+en = '''Upload a file'''
+
+[[s]]
+tw = '''開放更新'''
+cn = '''开放更新'''
+en = '''Allow update'''
+
+[[s]]
+tw = '''請短按一下偵測器的 BOOT 鍵'''
+cn = '''请短按一下探测器的 BOOT 键'''
+en = '''Short press the detector’s BOOT button'''
+
+[[s]]
+tw = '''，燈號正在快閃紫色，剩下'''
+cn = '''，指示灯正在快闪紫色，剩下'''
+en = '''. The light is flashing purple. Time left:'''
+
+[[s]]
+tw = '''秒'''
+cn = '''秒'''
+en = '''seconds'''
+
+[[s]]
+tw = '''已開放更新，剩下'''
+cn = '''已开放更新，剩下'''
+en = '''Update allowed. Time left:'''
+
+[[s]]
+tw = '''秒。可以從網路更新，或上傳手機裡的檔案。'''
+cn = '''秒。可以从网络更新，或上传手机里的文件。'''
+en = '''seconds. You can update from the internet or upload a file from your phone.'''
+
+[[s]]
+tw = '''選擇建置好的 firmware.bin'''
+cn = '''选择构建好的 firmware.bin'''
+en = '''Choose a built firmware.bin'''
+
+[[s]]
+tw = '''韌體檔'''
+cn = '''固件文件'''
+en = '''Firmware file'''
+
+[[s]]
+tw = '''上傳並安裝'''
+cn = '''上传并安装'''
+en = '''Upload and install'''
+
+[[s]]
+tw = '''更新用的 Wi-Fi'''
+cn = '''更新用的 Wi-Fi'''
+en = '''Wi-Fi for updates'''
+
+[[s]]
+tw = '''更新用的 Wi-Fi 名稱'''
+cn = '''更新用的 Wi-Fi 名称'''
+en = '''Wi-Fi name for updates'''
+
+[[s]]
+tw = '''2.4 GHz 的 Wi-Fi 名稱'''
+cn = '''2.4 GHz 的 Wi-Fi 名称'''
+en = '''2.4 GHz Wi-Fi name'''
+
+[[s]]
+tw = '''更新用的 Wi-Fi 密碼'''
+cn = '''更新用的 Wi-Fi 密码'''
+en = '''Wi-Fi password for updates'''
+
+[[s]]
+tw = '''Wi-Fi 密碼，開放的網路留空'''
+cn = '''Wi-Fi 密码，开放的网络留空'''
+en = '''Wi-Fi password, leave empty for open networks'''
+
+[[s]]
+tw = '''接收測試版'''
+cn = '''接收测试版'''
+en = '''Receive test builds'''
+
+[[s]]
+tw = '''測試版是每次修改都發布、還沒經過實機測試的版本，給開發測試用的偵測器。實機測試通過的版本才會複製到正式版。一般使用維持關閉。打開時要短按偵測器的 BOOT 鍵確認'''
+cn = '''测试版是每次修改都发布、还没经过实机测试的版本，给开发测试用的探测器使用。实机测试通过的版本才会复制到正式版。一般使用请保持关闭。打开时要短按探测器的 BOOT 键确认'''
+en = '''Test builds are published after every change and have not been tested on real hardware. They are meant for detectors used in development. Only builds that pass hardware testing are copied to the stable channel. Keep this off for normal use. Turning it on requires a short press of the detector’s BOOT button to confirm'''
+
+[[s]]
+tw = '''自動更新'''
+cn = '''自动更新'''
+en = '''Auto update'''
+
+[[s]]
+tw = '''恢復原廠設定'''
+cn = '''恢复出厂设置'''
+en = '''Restore factory settings'''
+
+[[s]]
+tw = '''名稱、密碼、門檻、存過的地點與所有設定回到預設值。flash 記錄與警示歷史保留，但警示歷史裡的地點名稱會清掉。忘記密碼時，也可以長按 BOOT 10 秒，燈號快閃白色後放開'''
+cn = '''名称、密码、阈值、保存过的地点与所有设置恢复为默认值。flash 记录与警报历史保留，但警报历史里的地点名称会清除。忘记密码时，也可以长按 BOOT 10 秒，指示灯快闪白色后松开'''
+en = '''Name, password, threshold, saved places and all settings go back to defaults. The flash log and alert history are kept, but place names in the alert history are cleared. If you forget the password, you can also hold BOOT for 10 seconds and release it when the light flashes white quickly'''
+
+[[s]]
+tw = '''恢復'''
+cn = '''恢复'''
+en = '''Restore'''
+
+[[s]]
+tw = '''BOOT 鍵與燈號'''
+cn = '''BOOT 键与指示灯'''
+en = '''BOOT button and lights'''
+
+[[s]]
+tw = '''BOOT 鍵的按法'''
+cn = '''BOOT 键的按法'''
+en = '''Using the BOOT button'''
+
+[[s]]
+tw = '''短按'''
+cn = '''短按'''
+en = '''Short press'''
+
+[[s]]
+tw = '''沒有警示時打一個記號，有警示時確認警示。放開 0.35 秒後才執行，記號的時間用按下的那一刻。房間檢查中是取消檢查，燈號快閃紫色時是確認：允許更新韌體，或打開自動更新、接收測試版'''
+cn = '''没有警报时打一个标记，有警报时确认警报。松开 0.35 秒后才执行，标记的时间以按下的那一刻为准。房间检查中是取消检查，指示灯快闪紫色时是确认：允许更新固件，或打开自动更新、接收测试版'''
+en = '''With no alert, adds a marker. With an alert, acknowledges it. It runs 0.35 seconds after release, and the marker uses the moment you pressed. During a room check it cancels the check. When the light flashes purple it confirms: allowing a firmware update, or turning on auto update or test builds'''
+
+[[s]]
+tw = '''雙擊'''
+cn = '''双击'''
+en = '''Double press'''
+
+[[s]]
+tw = '''開始尋找警示中的追蹤器，沒有警示時找訊號最強的。越近嗶得越快、燈號閃得越快，尋找中再雙擊就結束'''
+cn = '''开始寻找触发警报的追踪器，没有警报时找信号最强的。越近哔得越快、指示灯闪得越快，寻找中再双击就结束'''
+en = '''Starts finding the tracker in alert, or the strongest signal if there is no alert. The closer you get, the faster it beeps and the light flashes. Double press again while finding to stop'''
+
+[[s]]
+tw = '''長按 2 秒'''
+cn = '''长按 2 秒'''
+en = '''Hold for 2 seconds'''
+
+[[s]]
+tw = '''Wi-Fi 沒開就打開熱點，開著就全部關閉。按下時燈號變白，切換時新狀態的顏色恆亮 2 秒，這時放開'''
+cn = '''Wi-Fi 没开就打开热点，开着就全部关闭。按下时指示灯变白，切换时新状态的颜色常亮 2 秒，这时松开'''
+en = '''Turns on the hotspot if Wi-Fi is off, or turns everything off if it is on. The light turns white while held. When it switches, the new state’s color stays on for 2 seconds. Release then'''
+
+[[s]]
+tw = '''長按 10 秒'''
+cn = '''长按 10 秒'''
+en = '''Hold for 10 seconds'''
+
+[[s]]
+tw = '''恢復原廠設定。5 秒起燈號快閃黃色，10 秒後改成快閃白色，這時放開才執行'''
+cn = '''恢复出厂设置。5 秒起指示灯快闪黄色，10 秒后改成快闪白色，这时松开才执行'''
+en = '''Restores factory settings. From 5 seconds the light flashes yellow quickly, and after 10 seconds it flashes white quickly. It runs only if you release then'''
+
+[[s]]
+tw = '''燈號的意思'''
+cn = '''指示灯的含义'''
+en = '''What the lights mean'''
+
+[[s]]
+tw = '''綠燈恆亮'''
+cn = '''绿灯常亮'''
+en = '''Solid green'''
+
+[[s]]
+tw = '''附近沒有追蹤器'''
+cn = '''附近没有追踪器'''
+en = '''No trackers nearby'''
+
+[[s]]
+tw = '''黃燈慢慢呼吸'''
+cn = '''黄灯慢慢呼吸'''
+en = '''Yellow, slow breathing'''
+
+[[s]]
+tw = '''附近有追蹤器，還沒達到警示門檻'''
+cn = '''附近有追踪器，还没达到警报阈值'''
+en = '''Trackers nearby, below the alert threshold'''
+
+[[s]]
+tw = '''紅燈快閃三下、停一下'''
+cn = '''红灯快闪三下、停一下'''
+en = '''Red, three quick flashes then a pause'''
+
+[[s]]
+tw = '''有還沒確認的警示，短按 BOOT 確認'''
+cn = '''有尚未确认的警报，短按 BOOT 确认'''
+en = '''Unacknowledged alert. Short press BOOT to acknowledge'''
+
+[[s]]
+tw = '''藍燈恆亮'''
+cn = '''蓝灯常亮'''
+en = '''Solid blue'''
+
+[[s]]
+tw = '''掃描中'''
+cn = '''扫描中'''
+en = '''Scanning'''
+
+[[s]]
+tw = '''每 3 秒亮一下'''
+cn = '''每 3 秒亮一下'''
+en = '''One blink every 3 seconds'''
+
+[[s]]
+tw = '''手機連線開著：青色只有 Wi-Fi，白色 Wi-Fi 加藍牙，紫色只有藍牙'''
+cn = '''手机连接开着：青色只有 Wi-Fi，白色 Wi-Fi 加蓝牙，紫色只有蓝牙'''
+en = '''Phone connection on: cyan for Wi-Fi only, white for Wi-Fi and Bluetooth, purple for Bluetooth only'''
+
+[[s]]
+tw = '''白燈閃一下'''
+cn = '''白灯闪一下'''
+en = '''One white flash'''
+
+[[s]]
+tw = '''打了一個記號'''
+cn = '''打了一个标记'''
+en = '''Marker added'''
+
+[[s]]
+tw = '''白燈閃爍，越來越快'''
+cn = '''白灯闪烁，越来越快'''
+en = '''White, flashing faster and faster'''
+
+[[s]]
+tw = '''尋找中，越近閃得越快'''
+cn = '''寻找中，越近闪得越快'''
+en = '''Finding. Flashes faster as you get closer'''
+
+[[s]]
+tw = '''藍燈慢慢呼吸（尋找中）'''
+cn = '''蓝灯慢慢呼吸（寻找中）'''
+en = '''Blue, slow breathing (while finding)'''
+
+[[s]]
+tw = '''尋找的追蹤器 8 秒以上沒收到訊號'''
+cn = '''寻找的追踪器 8 秒以上没收到信号'''
+en = '''No signal from the tracker being found for 8 seconds or more'''
+
+[[s]]
+tw = '''紅燈閃兩下'''
+cn = '''红灯闪两下'''
+en = '''Red, two flashes'''
+
+[[s]]
+tw = '''雙擊時附近沒有可以找的追蹤器'''
+cn = '''双击时附近没有可以寻找的追踪器'''
+en = '''No tracker nearby to find when you double pressed'''
+
+[[s]]
+tw = '''白燈慢慢呼吸'''
+cn = '''白灯慢慢呼吸'''
+en = '''White, slow breathing'''
+
+[[s]]
+tw = '''房間檢查中'''
+cn = '''房间检查中'''
+en = '''Room check in progress'''
+
+[[s]]
+tw = '''綠燈連閃兩下、停一下'''
+cn = '''绿灯连闪两下、停一下'''
+en = '''Green, two flashes then a pause'''
+
+[[s]]
+tw = '''房間檢查完成，連回熱點看報告'''
+cn = '''房间检查完成，重新连接热点查看报告'''
+en = '''Room check done. Reconnect to the hotspot to see the report'''
+
+[[s]]
+tw = '''紫燈快閃'''
+cn = '''紫灯快闪'''
+en = '''Purple, quick flashing'''
+
+[[s]]
+tw = '''等待短按 BOOT 確認：更新韌體、打開自動更新或接收測試版'''
+cn = '''等待短按 BOOT 确认：更新固件、打开自动更新或接收测试版'''
+en = '''Waiting for a short press of BOOT to confirm: firmware update, turning on auto update, or receiving test builds'''
+
+[[s]]
+tw = '''設定裡關掉「偵測器的燈號」時，只剩按鍵、切換連線、房間檢查與韌體更新的燈號會亮。'''
+cn = '''在设置里关掉“探测器的指示灯”时，只剩按键、切换连接、房间检查与固件更新的指示灯会亮。'''
+en = '''When “Detector light” is turned off in settings, the light only comes on for button presses, connection changes, room checks and firmware updates.'''
+
+[[s]]
+tw = '''尋找追蹤器'''
+cn = '''寻找追踪器'''
+en = '''Find tracker'''
+
+[[s]]
+tw = '''結束尋找'''
+cn = '''结束寻找'''
+en = '''Stop finding'''
+
+[[s]]
+tw = '''拿著偵測器慢慢走，數字越接近 0（例如從 -90 變成 -50）代表越近。每秒更新一次。偵測器的嗶聲與燈號也會越近越快，雙擊 BOOT 可以結束尋找。'''
+cn = '''拿着探测器慢慢走，数字越接近 0（例如从 -90 变成 -50）代表越近。每秒更新一次。探测器的哔声与指示灯也会越近越快，双击 BOOT 可以结束寻找。'''
+en = '''Walk slowly with the detector. The closer the number is to 0 (for example from -90 to -50), the closer you are. It updates every second. The detector’s beeps and light also speed up as you get closer. Double press BOOT to stop finding.'''
+
+[[s]]
+tw = '''歷史'''
+cn = '''历史'''
+en = '''History'''
+
+[[s]]
+tw = '''記號'''
+cn = '''标记'''
+en = '''Markers'''
+
+[[s]]
+tw = '''空間'''
+cn = '''空间'''
+en = '''Rooms'''
+
+[[s]]
+tw = '''設定'''
+cn = '''设置'''
+en = '''Settings'''
+
+[[s]]
+tw = '''Apple 自家裝置'''
+cn = '''Apple 自有设备'''
+en = '''Apple device'''
+
+[[s]]
+tw = '''Google 尋找我的裝置'''
+cn = '''Google 查找我的设备'''
+en = '''Google Find Hub'''
+
+[[s]]
+tw = '''DULT 追蹤器'''
+cn = '''DULT 追踪器'''
+en = '''DULT tracker'''
+
+[[s]]
+tw = '''敏感'''
+cn = '''敏感'''
+en = '''Sensitive'''
+
+[[s]]
+tw = '''5 分鐘、4 次、-90 dBm、60%'''
+cn = '''5 分钟、4 次、-90 dBm、60%'''
+en = '''5 min, 4 times, -90 dBm, 60%'''
+
+[[s]]
+tw = '''標準'''
+cn = '''标准'''
+en = '''Standard'''
+
+[[s]]
+tw = '''10 分鐘、6 次、-85 dBm、70%'''
+cn = '''10 分钟、6 次、-85 dBm、70%'''
+en = '''10 min, 6 times, -85 dBm, 70%'''
+
+[[s]]
+tw = '''保守'''
+cn = '''保守'''
+en = '''Conservative'''
+
+[[s]]
+tw = '''15 分鐘、9 次、-80 dBm、80%'''
+cn = '''15 分钟、9 次、-80 dBm、80%'''
+en = '''15 min, 9 times, -80 dBm, 80%'''
+
+[[s]]
+tw = '''快速測試'''
+cn = '''快速测试'''
+en = '''Quick test'''
+
+[[s]]
+tw = '''2 分鐘、3 次、-85 dBm、70%'''
+cn = '''2 分钟、3 次、-85 dBm、70%'''
+en = '''2 min, 3 times, -85 dBm, 70%'''
+
+[[s]]
+tw = '''成功送出發聲指令'''
+cn = '''已成功发送发声指令'''
+en = '''Ring command sent'''
+
+[[s]]
+tw = '''找不到（可能已經換了位址或離開範圍）'''
+cn = '''找不到（可能已经换了地址或离开范围）'''
+en = '''Not found (it may have changed address or left range)'''
+
+[[s]]
+tw = '''連不上'''
+cn = '''连接不上'''
+en = '''Can’t connect'''
+
+[[s]]
+tw = '''連上了，但沒有支援的發聲服務'''
+cn = '''已连接，但没有支持的发声服务'''
+en = '''Connected, but no supported ring service'''
+
+[[s]]
+tw = '''送出指令失敗'''
+cn = '''发送指令失败'''
+en = '''Failed to send the command'''
+
+[[s]]
+tw = '''送出指令後沒有回覆'''
+cn = '''发送指令后没有回复'''
+en = '''No reply after sending the command'''
+
+[[s]]
+tw = '''追蹤器拒絕（可能主人就在附近）'''
+cn = '''追踪器拒绝（可能主人就在附近）'''
+en = '''Tracker refused (the owner may be nearby)'''
+
+[[s]]
+tw = '''目前的廣播不接受連線'''
+cn = '''当前的广播不接受连接'''
+en = '''The current advertisement does not accept connections'''
+
+[[s]]
+tw = '''自動發聲跳過：只對 DULT、AirTag、Pebblebee 而且接受連線的追蹤器自動發聲'''
+cn = '''跳过自动发声：只对 DULT、AirTag、Pebblebee 并且接受连接的追踪器自动发声'''
+en = '''Auto ring skipped: it only rings DULT, AirTag and Pebblebee trackers that accept connections'''
+
+[[s]]
+tw = '''送出失敗，偵測器可能正在掃描 Wi-Fi，請再按一次'''
+cn = '''发送失败，探测器可能正在扫描 Wi-Fi，请再按一次'''
+en = '''Sending failed. The detector may be scanning Wi-Fi, please press again'''
+
+[[s]]
+tw = '''再按一次確認'''
+cn = '''再按一次确认'''
+en = '''Press again to confirm'''
+
+[[s]]
+tw = '''。'''
+cn = '''。'''
+en = '''. '''
+
+[[s]]
+tw = '''分'''
+cn = '''分'''
+en = '''min'''
+
+[[s]]
+tw = '''倒數已暫停'''
+cn = '''倒计时已暂停'''
+en = '''Countdown paused'''
+
+[[s]]
+tw = '''正在掃描'''
+cn = '''正在扫描'''
+en = '''Scanning'''
+
+[[s]]
+tw = '''秒後下一次'''
+cn = '''秒后下一次'''
+en = '''s until next scan'''
+
+[[s]]
+tw = '''等待下一次掃描'''
+cn = '''等待下一次扫描'''
+en = '''Waiting for next scan'''
+
+[[s]]
+tw = '''訊號變強'''
+cn = '''信号变强'''
+en = '''signal getting stronger'''
+
+[[s]]
+tw = '''訊號變弱'''
+cn = '''信号变弱'''
+en = '''signal getting weaker'''
+
+[[s]]
+tw = '''訊號穩定'''
+cn = '''信号稳定'''
+en = '''signal steady'''
+
+[[s]]
+tw = '''最近'''
+cn = '''最近'''
+en = '''Last'''
+
+[[s]]
+tw = '''次出現'''
+cn = '''次出现'''
+en = '''sightings'''
+
+[[s]]
+tw = '''，'''
+cn = '''，'''
+en = ''', '''
+
+[[s]]
+tw = '''正在連線…'''
+cn = '''正在连接…'''
+en = '''Connecting…'''
+
+[[s]]
+tw = '''已確認'''
+cn = '''已确认'''
+en = '''Acknowledged'''
+
+[[s]]
+tw = '''警示中'''
+cn = '''警报中'''
+en = '''Alerting'''
+
+[[s]]
+tw = '''觀察中'''
+cn = '''观察中'''
+en = '''Watching'''
+
+[[s]]
+tw = '''dBm，'''
+cn = '''dBm，'''
+en = '''dBm, '''
+
+[[s]]
+tw = '''剛剛出現'''
+cn = '''刚刚出现'''
+en = '''just seen'''
+
+[[s]]
+tw = '''前'''
+cn = '''前'''
+en = ''' ago'''
+
+[[s]]
+tw = '''出現時間'''
+cn = '''出现时间'''
+en = '''Time span'''
+
+[[s]]
+tw = '''近距離'''
+cn = '''近距离'''
+en = '''Close range'''
+
+[[s]]
+tw = '''次'''
+cn = '''次'''
+en = '''times'''
+
+[[s]]
+tw = '''出現比例'''
+cn = '''出现比例'''
+en = '''Presence'''
+
+[[s]]
+tw = '''經過地點'''
+cn = '''经过地点'''
+en = '''Places'''
+
+[[s]]
+tw = '''個'''
+cn = '''个'''
+en = '''∅'''
+
+[[s]]
+tw = '''尋找'''
+cn = '''寻找'''
+en = '''Find'''
+
+[[s]]
+tw = '''警示'''
+cn = '''警报'''
+en = '''Alert'''
+
+[[s]]
+tw = '''沒有發現'''
+cn = '''没有发现'''
+en = '''Nothing found'''
+
+[[s]]
+tw = '''有追蹤器一直跟著你，符合全部警示條件。按下方按鈕，或短按偵測器的 BOOT 確認。'''
+cn = '''有追踪器一直跟着你，符合全部警报条件。按下方按钮，或短按探测器的 BOOT 确认。'''
+en = '''A tracker keeps following you and meets all alert conditions. Tap the button below, or briefly press the detector’s BOOT button to acknowledge.'''
+
+[[s]]
+tw = '''你確認過的追蹤器還在附近，可以尋找它或讓它響。'''
+cn = '''你确认过的追踪器还在附近，可以寻找它或让它响。'''
+en = '''A tracker you acknowledged is still nearby. You can find it or make it ring.'''
+
+[[s]]
+tw = '''附近有'''
+cn = '''附近有'''
+en = '''There are'''
+
+[[s]]
+tw = '''個追蹤器，還沒達到警示條件。'''
+cn = '''个追踪器，还没达到警报条件。'''
+en = '''tracker(s) nearby, not yet meeting the alert conditions.'''
+
+[[s]]
+tw = '''附近沒有發現追蹤器。'''
+cn = '''附近没有发现追踪器。'''
+en = '''No trackers found nearby.'''
+
+[[s]]
+tw = '''已掃描'''
+cn = '''已扫描'''
+en = '''Scanned'''
+
+[[s]]
+tw = '''上一次掃描收到藍牙裝置'''
+cn = '''上一次扫描收到蓝牙设备'''
+en = '''Last scan picked up Bluetooth devices:'''
+
+[[s]]
+tw = '''、Wi-Fi 基地台'''
+cn = '''、Wi-Fi 接入点'''
+en = ''', Wi-Fi access points:'''
+
+[[s]]
+tw = '''Wi-Fi 開啟，'''
+cn = '''Wi-Fi 已开启，'''
+en = '''Wi-Fi on, '''
+
+[[s]]
+tw = '''藍牙已配對連線'''
+cn = '''蓝牙已配对连接'''
+en = '''Bluetooth paired and connected'''
+
+[[s]]
+tw = '''藍牙等待配對'''
+cn = '''蓝牙等待配对'''
+en = '''Bluetooth waiting to pair'''
+
+[[s]]
+tw = '''藍牙開啟'''
+cn = '''蓝牙已开启'''
+en = '''Bluetooth on'''
+
+[[s]]
+tw = '''藍牙關閉'''
+cn = '''蓝牙关闭'''
+en = '''Bluetooth off'''
+
+[[s]]
+tw = '''關閉。開啟後可以用藍牙終端機 App 連線送指令，不佔用手機的 Wi-Fi'''
+cn = '''已关闭。开启后可以用蓝牙终端 App 连接并发送指令，不占用手机的 Wi-Fi'''
+en = '''Off. When on, you can connect with a Bluetooth terminal app to send commands, without using your phone’s Wi-Fi'''
+
+[[s]]
+tw = '''已配對連線'''
+cn = '''已配对连接'''
+en = '''paired and connected'''
+
+[[s]]
+tw = '''手機連上了，等待輸入配對碼'''
+cn = '''手机已连接，等待输入配对码'''
+en = '''Phone connected, waiting for the pairing code'''
+
+[[s]]
+tw = '''開啟中，等待手機連線'''
+cn = '''已开启，等待手机连接'''
+en = '''On, waiting for a phone to connect'''
+
+[[s]]
+tw = '''開啟中，這個面板就是經由它連線。'''
+cn = '''已开启，这个面板就是通过它连接的。'''
+en = '''On. This panel is connected through it. '''
+
+[[s]]
+tw = '''關閉後只留藍牙'''
+cn = '''关闭后只留蓝牙'''
+en = '''Turning it off leaves only Bluetooth'''
+
+[[s]]
+tw = '''關閉後全部關閉'''
+cn = '''关闭后全部关闭'''
+en = '''Turning it off turns everything off'''
+
+[[s]]
+tw = '''，面板會斷線，要再打開請長按 BOOT 2 秒'''
+cn = '''，面板会断开，要再打开请长按 BOOT 2 秒'''
+en = ''', and the panel will disconnect. To turn it back on, hold BOOT for 2 seconds'''
+
+[[s]]
+tw = '''人流計數模式'''
+cn = '''人流计数模式'''
+en = '''Crowd counting mode'''
+
+[[s]]
+tw = '''移動中'''
+cn = '''移动中'''
+en = '''Moving'''
+
+[[s]]
+tw = '''停留中'''
+cn = '''停留中'''
+en = '''Staying'''
+
+[[s]]
+tw = '''還沒掃描到基地台'''
+cn = '''还没扫描到接入点'''
+en = '''No access points scanned yet'''
+
+[[s]]
+tw = '''地點 #'''
+cn = '''地点 #'''
+en = '''Place #'''
+
+[[s]]
+tw = '''快速測試門檻，容易誤報'''
+cn = '''快速测试阈值，容易误报'''
+en = '''Quick test threshold, prone to false alerts'''
+
+[[s]]
+tw = '''燈號全關'''
+cn = '''指示灯全关'''
+en = '''All lights off'''
+
+[[s]]
+tw = '''會議室檢查：有多出來的裝置'''
+cn = '''会议室检查：有多出来的设备'''
+en = '''Meeting room check: extra devices found'''
+
+[[s]]
+tw = '''會議室檢查：留意 Wi-Fi 的動靜'''
+cn = '''会议室检查：留意 Wi-Fi 的动静'''
+en = '''Meeting room check: watch the Wi-Fi activity'''
+
+[[s]]
+tw = '''會議室檢查中'''
+cn = '''会议室检查中'''
+en = '''Meeting room check running'''
+
+[[s]]
+tw = '''自動發聲沒作用，移動判斷關著'''
+cn = '''自动发声没有作用，移动判断已关闭'''
+en = '''Auto ring inactive, Movement check is off'''
+
+[[s]]
+tw = '''自動發聲，含協助周圍'''
+cn = '''自动发声，含协助周围的人'''
+en = '''Auto ring, incl. helping people nearby'''
+
+[[s]]
+tw = '''四'''
+cn = '''四'''
+en = '''Four'''
+
+[[s]]
+tw = '''三'''
+cn = '''三'''
+en = '''Three'''
+
+[[s]]
+tw = '''個條件都達到才警示：出現時間相隔'''
+cn = '''个条件都达到才触发警报：出现时间相隔'''
+en = ''' conditions must all be met for an alert: seen over a span of'''
+
+[[s]]
+tw = '''分鐘以上、訊號強於'''
+cn = '''分钟以上、信号强于'''
+en = '''min or more, signal stronger than'''
+
+[[s]]
+tw = '''dBm 的掃描'''
+cn = '''dBm 的扫描'''
+en = '''dBm in'''
+
+[[s]]
+tw = '''次以上、出現比例'''
+cn = '''次以上、出现比例'''
+en = '''or more scans, presence'''
+
+[[s]]
+tw = '''% 以上'''
+cn = '''% 以上'''
+en = '''% or more'''
+
+[[s]]
+tw = '''、跟著你經過'''
+cn = '''、跟着你经过'''
+en = ''', following you through'''
+
+[[s]]
+tw = '''個不同的地點'''
+cn = '''个不同的地点'''
+en = '''different places'''
+
+[[s]]
+tw = '''。30 分鐘沒再出現就移除。'''
+cn = '''。30 分钟没再出现就移除。'''
+en = '''. Trackers not seen for 30 min are removed.'''
+
+[[s]]
+tw = '''另有'''
+cn = '''另有'''
+en = '''Another'''
+
+[[s]]
+tw = '''個與主人分開的 Apple 自家裝置（iPhone、iPad、Mac）沒有列出。路上到處都是，iOS 也不會對它們警示，'''
+cn = '''个与主人分开的 Apple 自家设备（iPhone、iPad、Mac）没有列出。路上到处都是，iOS 也不会对它们发出警报，'''
+en = '''Apple devices (iPhone, iPad, Mac) separated from their owners are not listed. They are everywhere on the street, and iOS does not alert on them either. '''
+
+[[s]]
+tw = '''跟著你經過'''
+cn = '''跟着你经过'''
+en = '''They alert only after following you through'''
+
+[[s]]
+tw = '''個不同的地點才會警示。'''
+cn = '''个不同的地点才会触发警报。'''
+en = '''different places.'''
+
+[[s]]
+tw = '''打開移動判斷後，確認一直跟著你才會警示。'''
+cn = '''打开移动判断后，确认一直跟着你才会触发警报。'''
+en = '''With Movement check on, they alert only when confirmed to be following you.'''
+
+[[s]]
+tw = '''追蹤器'''
+cn = '''追踪器'''
+en = '''tracker'''
+
+[[s]]
+tw = '''等待訊號'''
+cn = '''等待信号'''
+en = '''Waiting for signal'''
+
+[[s]]
+tw = '''訊號持續更新中'''
+cn = '''信号持续更新中'''
+en = '''Signal updating'''
+
+[[s]]
+tw = '''已經'''
+cn = '''已经'''
+en = '''Nothing received for'''
+
+[[s]]
+tw = '''秒沒收到，可能離開範圍或換了位址'''
+cn = '''秒没收到，可能离开范围或换了地址'''
+en = '''seconds. It may be out of range or have changed address'''
+
+[[s]]
+tw = '''還沒收到它送出的訊號。Wi-Fi 裝置正在傳資料時才能收到，攝影機通常幾秒就會送一次'''
+cn = '''还没收到它发出的信号。Wi-Fi 设备正在传输数据时才能收到，摄像头通常几秒就会发送一次'''
+en = '''No signal from it yet. A Wi-Fi device can only be heard while it is sending data. Cameras usually send every few seconds'''
+
+[[s]]
+tw = '''還沒收到這個位址的廣播'''
+cn = '''还没收到这个地址的广播'''
+en = '''No advertisement from this address yet'''
+
+[[s]]
+tw = '''後自動結束'''
+cn = '''后自动结束'''
+en = ''' until it stops automatically'''
+
+[[s]]
+tw = '''按下的時間與文字寫進 flash 記錄，之後用來對照追蹤器何時出現。'''
+cn = '''按下的时间与文字写进 flash 记录，之后用来对照追踪器何时出现。'''
+en = '''The time of the press and the text go into the flash log, so you can later compare them with when trackers appeared.'''
+
+[[s]]
+tw = '''flash 記錄暫停中，記號只留在記憶體，重新開機就消失。要保存請到設定打開「寫入記錄」。'''
+cn = '''flash 记录暂停中，标记只留在内存，重新开机就消失。要保存请到设置打开“写入记录”。'''
+en = '''The flash log is paused, so markers stay only in memory and are lost on restart. To keep them, turn on “Write log” in Settings.'''
+
+[[s]]
+tw = '''開機後'''
+cn = '''开机后'''
+en = '''Boot +'''
+
+[[s]]
+tw = '''記號 #'''
+cn = '''标记 #'''
+en = '''Marker #'''
+
+[[s]]
+tw = '''還沒有記號'''
+cn = '''还没有标记'''
+en = '''No markers yet'''
+
+[[s]]
+tw = '''偵測器的時間'''
+cn = '''探测器的时间'''
+en = '''Detector time'''
+
+[[s]]
+tw = '''，切換後追蹤器重新累計'''
+cn = '''，切换后追踪器重新累计'''
+en = '''. Trackers start counting again after switching'''
+
+[[s]]
+tw = '''15 秒'''
+cn = '''15 秒'''
+en = '''15 s'''
+
+[[s]]
+tw = '''30 秒'''
+cn = '''30 秒'''
+en = '''30 s'''
+
+[[s]]
+tw = '''60 秒'''
+cn = '''60 秒'''
+en = '''60 s'''
+
+[[s]]
+tw = '''3 秒'''
+cn = '''3 秒'''
+en = '''3 s'''
+
+[[s]]
+tw = '''5 秒'''
+cn = '''5 秒'''
+en = '''5 s'''
+
+[[s]]
+tw = '''5 分'''
+cn = '''5 分'''
+en = '''5 min'''
+
+[[s]]
+tw = '''10 分'''
+cn = '''10 分'''
+en = '''10 min'''
+
+[[s]]
+tw = '''30 分'''
+cn = '''30 分'''
+en = '''30 min'''
+
+[[s]]
+tw = '''不關閉'''
+cn = '''不关闭'''
+en = '''Never'''
+
+[[s]]
+tw = '''跟著我移動時'''
+cn = '''跟着我移动时'''
+en = '''When following me'''
+
+[[s]]
+tw = '''只有手動按「讓它響」才會發聲。'''
+cn = '''只有手动按“让它响”才会发声。'''
+en = '''Rings only when you press “Make it ring”. '''
+
+[[s]]
+tw = '''追蹤器跟著你經過好幾個地點、觸發警示時，自動讓它響。'''
+cn = '''追踪器跟着你经过好几个地点、触发警报时，自动让它响。'''
+en = '''When a tracker follows you through several places and triggers an alert, it rings automatically. '''
+
+[[s]]
+tw = '''跟著你的追蹤器，以及附近與主人分開、很近又出現夠久的 DULT 追蹤器，都會自動響一次。'''
+cn = '''跟着你的追踪器，以及附近与主人分开、很近又出现够久的 DULT 追踪器，都会自动响一次。'''
+en = '''Trackers following you, and DULT trackers nearby that are separated from their owner, very close and around long enough, each ring once automatically. '''
+
+[[s]]
+tw = '''移動判斷目前關著，自動發聲不會作用，請到上方打開「移動判斷」。'''
+cn = '''移动判断目前已关闭，自动发声不会作用，请到上方打开“移动判断”。'''
+en = '''Movement check is off, so Auto ring won’t work. Turn on “Movement check” above. '''
+
+[[s]]
+tw = '''只對收過 DULT 廣播的追蹤器、AirTag、Pebblebee 嘗試，每個追蹤器最多自動響一次，響之前偵測器會嗶兩聲提醒你留意四周。'''
+cn = '''只对收到过 DULT 广播的追踪器、AirTag、Pebblebee 尝试，每个追踪器最多自动响一次，响之前探测器会哔两声提醒你留意四周。'''
+en = '''It only tries trackers that sent DULT advertisements, AirTag and Pebblebee. Each tracker rings automatically at most once, and the detector beeps twice first so you can look around.'''
+
+[[s]]
+tw = '''還沒掃描到 Wi-Fi 基地台'''
+cn = '''还没扫描到 Wi-Fi 接入点'''
+en = '''No Wi-Fi access points scanned yet'''
+
+[[s]]
+tw = '''目前在「'''
+cn = '''目前在“'''
+en = '''Currently at “'''
+
+[[s]]
+tw = '''」'''
+cn = '''”'''
+en = '''”'''
+
+[[s]]
+tw = '''，還沒命名'''
+cn = '''，还没命名'''
+en = ''', not named yet'''
+
+[[s]]
+tw = '''。回到存過的地點時會認出來，警示歷史會寫出追蹤器跟著你經過哪些地點'''
+cn = '''。回到保存过的地点时会认出来，警报历史会写出追踪器跟着你经过哪些地点'''
+en = '''. Saved places are recognized when you return, and the alert history shows which places a tracker followed you through'''
+
+[[s]]
+tw = '''人流計數模式下不能開啟'''
+cn = '''人流计数模式下不能开启'''
+en = '''Not available in Crowd counting mode'''
+
+[[s]]
+tw = '''目前'''
+cn = '''目前'''
+en = '''Now'''
+
+[[s]]
+tw = '''個裝置，20 分鐘以上'''
+cn = '''个设备，20 分钟以上'''
+en = '''devices, over 20 min:'''
+
+[[s]]
+tw = '''個，累計'''
+cn = '''个，累计'''
+en = '''of them,'''
+
+[[s]]
+tw = '''個位址'''
+cn = '''个地址'''
+en = '''addresses in total'''
+
+[[s]]
+tw = '''記錄周圍所有藍牙裝置的位址，研究用，每小時約 250 KB'''
+cn = '''记录周围所有蓝牙设备的地址，研究用，每小时约 250 KB'''
+en = '''Logs the addresses of all Bluetooth devices around, for research, about 250 KB per hour'''
+
+[[s]]
+tw = '''燈號與蜂鳴器都關閉，偵測器本身不會提示警示。藍牙連線開著時，警示會推送到藍牙終端機'''
+cn = '''指示灯与蜂鸣器都关闭，探测器本身不会提示警报。蓝牙连接开启时，警报会推送到蓝牙终端'''
+en = '''Lights and buzzer are both off, so the detector itself gives no alert signal. While Bluetooth is connected, alerts are pushed to the Bluetooth terminal'''
+
+[[s]]
+tw = '''關閉後燈號完全不亮，只靠手機面板看狀態'''
+cn = '''关闭后指示灯完全不亮，只能在手机面板查看状态'''
+en = '''When off, the lights stay dark and you can check status only on the phone panel'''
+
+[[s]]
+tw = '''目前是預設密碼，README 公開寫著這組密碼，知道的人都能連上你的面板，建議修改'''
+cn = '''目前是默认密码，README 公开写着这组密码，知道的人都能连上你的面板，建议修改'''
+en = '''This is the default password. It is published in the README, so anyone who knows it can connect to your panel. Changing it is recommended'''
+
+[[s]]
+tw = '''已改成自訂密碼'''
+cn = '''已改成自定义密码'''
+en = '''Changed to a custom password'''
+
+[[s]]
+tw = '''FAT 分區無法使用'''
+cn = '''FAT 分区无法使用'''
+en = '''FAT partition unavailable'''
+
+[[s]]
+tw = '''已滿，停止寫入'''
+cn = '''已满，停止写入'''
+en = '''Full, writing stopped'''
+
+[[s]]
+tw = '''寫入中'''
+cn = '''写入中'''
+en = '''Writing'''
+
+[[s]]
+tw = '''暫停'''
+cn = '''暂停'''
+en = '''Paused'''
+
+[[s]]
+tw = '''，目前'''
+cn = '''，目前'''
+en = ''', now at'''
+
+[[s]]
+tw = '''KB，上限 8 MB'''
+cn = '''KB，上限 8 MB'''
+en = '''KB, limit 8 MB'''
+
+[[s]]
+tw = '''記憶體：內部剩'''
+cn = '''内存：内部剩余'''
+en = '''Memory: internal free'''
+
+[[s]]
+tw = '''KB（最大連續'''
+cn = '''KB（最大连续'''
+en = '''KB (largest block'''
+
+[[s]]
+tw = '''KB，開機以來最低'''
+cn = '''KB，开机以来最低'''
+en = '''KB, lowest since startup'''
+
+[[s]]
+tw = '''KB），PSRAM 剩'''
+cn = '''KB），PSRAM 剩余'''
+en = '''KB), PSRAM free'''
+
+[[s]]
+tw = '''。上次網址更新的加密連線用了 PSRAM'''
+cn = '''。上次网址更新的加密连接用了 PSRAM'''
+en = '''. The encrypted connection of the last network update used PSRAM'''
+
+[[s]]
+tw = '''KB、內部'''
+cn = '''KB、内部'''
+en = '''KB, internal'''
+
+[[s]]
+tw = '''韌體版本'''
+cn = '''固件版本'''
+en = '''Firmware'''
+
+[[s]]
+tw = '''建置於'''
+cn = '''构建于'''
+en = '''built'''
+
+[[s]]
+tw = '''請在'''
+cn = '''请在'''
+en = '''Briefly press the detector’s BOOT button within'''
+
+[[s]]
+tw = '''秒內短按一下偵測器的 BOOT 鍵確認，燈號正在快閃紫色。沒有按就維持關閉'''
+cn = '''秒内短按一下探测器的 BOOT 键确认，指示灯正在快闪紫色。没有按就保持关闭'''
+en = '''seconds to confirm. The light is flashing purple. If you don’t, it stays off'''
+
+[[s]]
+tw = '''目前是「'''
+cn = '''目前是“'''
+en = '''Currently “'''
+
+[[s]]
+tw = '''」。'''
+cn = '''”。'''
+en = '''”. '''
+
+[[s]]
+tw = '''還沒設定。'''
+cn = '''还没设置。'''
+en = '''Not set yet. '''
+
+[[s]]
+tw = '''從網路更新時，偵測器用這個 Wi-Fi 上網下載，密碼只存在偵測器上。連線期間熱點會換到這個 Wi-Fi 的頻道，手機可能斷線幾秒'''
+cn = '''从网络更新时，探测器用这个 Wi-Fi 上网下载，密码只存在探测器上。连接期间热点会换到这个 Wi-Fi 的信道，手机可能断开几秒'''
+en = '''When updating from the network, the detector uses this Wi-Fi to download. The password is stored only on the detector. While connected, the hotspot moves to this Wi-Fi’s channel and your phone may disconnect for a few seconds'''
+
+[[s]]
+tw = '''測試通道。'''
+cn = '''测试通道。'''
+en = '''Test channel. '''
+
+[[s]]
+tw = '''用 Wi-Fi「'''
+cn = '''用 Wi-Fi“'''
+en = '''Goes online via Wi-Fi “'''
+
+[[s]]
+tw = '''」連上網，比對建置時間，有新版才下載，SHA-256 相符才換上'''
+cn = '''”连上网，比对构建时间，有新版才下载，SHA-256 相符才换上'''
+en = '''”, compares build times, downloads only if there is a newer version, and installs it only if the SHA-256 matches'''
+
+[[s]]
+tw = '''先在下方設定更新用的 Wi-Fi（2.4 GHz）'''
+cn = '''先在下方设置更新用的 Wi-Fi（2.4 GHz）'''
+en = '''First set the Wi-Fi for updates below (2.4 GHz)'''
+
+[[s]]
+tw = '''開放上傳'''
+cn = '''开放上传'''
+en = '''Allow upload'''
+
+[[s]]
+tw = '''按下後在 60 秒內短按一下偵測器的 BOOT 鍵，開放 5 分鐘'''
+cn = '''按下后在 60 秒内短按一下探测器的 BOOT 键，开放 5 分钟'''
+en = '''After tapping, briefly press the detector’s BOOT button within 60 seconds to open a 5-minute window'''
+
+[[s]]
+tw = '''上傳手機裡的韌體檔'''
+cn = '''上传手机里的固件文件'''
+en = ''' for uploading a firmware file from your phone'''
+
+[[s]]
+tw = '''，可以從網路更新或上傳手機裡的檔案'''
+cn = '''，可以从网络更新或上传手机里的文件'''
+en = ''', during which you can update from the network or upload a file from your phone'''
+
+[[s]]
+tw = '''。要按偵測器上的鍵，附近的人就無法換掉韌體'''
+cn = '''。要按探测器上的键，附近的人就无法换掉固件'''
+en = '''. Because a button on the detector must be pressed, people nearby cannot replace the firmware'''
+
+[[s]]
+tw = '''這次開機是從'''
+cn = '''这次开机是从'''
+en = '''This session was updated from'''
+
+[[s]]
+tw = '''自動更新上來的。'''
+cn = '''自动更新上来的。'''
+en = '''automatically. '''
+
+[[s]]
+tw = '''先在上方設定更新用的 Wi-Fi。'''
+cn = '''先在上方设置更新用的 Wi-Fi。'''
+en = '''First set the Wi-Fi for updates above. '''
+
+[[s]]
+tw = '''打開時要短按偵測器的 BOOT 鍵確認，之後更新不必再按：偵測器每 6 小時被動掃描一次，附近有更新用的 Wi-Fi 才連上 assets.anoni.net，有比較新的版本就下載，SHA-256 相符才換上並重新開機。有警示、追蹤器快達到門檻、房間檢查、尋找中或手機連著熱點時延後。上傳檔案仍要按 BOOT'''
+cn = '''打开时要短按探测器的 BOOT 键确认，之后更新不必再按：探测器每 6 小时被动扫描一次，附近有更新用的 Wi-Fi 才连上 assets.anoni.net，有比较新的版本就下载，SHA-256 相符才换上并重新开机。有警报、追踪器快达到阈值、房间检查、寻找中或手机连着热点时延后。上传文件仍要按 BOOT'''
+en = '''Turning it on needs a short press of the detector’s BOOT button. After that, updates need no press: every 6 hours the detector scans passively, connects to assets.anoni.net only when the update Wi-Fi is nearby, downloads any newer version, and installs it and restarts only if the SHA-256 matches. It waits while there is an alert, a tracker is close to the threshold, a room check or find is running, or a phone is on the hotspot. Uploading a file still needs BOOT'''
+
+[[s]]
+tw = '''。下次檢查約在'''
+cn = '''。下次检查约在'''
+en = '''. Next check in about'''
+
+[[s]]
+tw = '''小時'''
+cn = '''小时'''
+en = '''h'''
+
+[[s]]
+tw = '''後'''
+cn = '''后'''
+en = '''∅'''
+
+[[s]]
+tw = '''自動檢查（'''
+cn = '''自动检查（'''
+en = '''Auto check ('''
+
+[[s]]
+tw = '''前）：'''
+cn = '''前）：'''
+en = ''' ago): '''
+
+[[s]]
+tw = '''附近沒有 Wi-Fi「'''
+cn = '''附近没有 Wi-Fi“'''
+en = '''No Wi-Fi “'''
+
+[[s]]
+tw = '''」，稍後再試'''
+cn = '''”，稍后再试'''
+en = '''” nearby, will try again later'''
+
+[[s]]
+tw = '''連線到 Wi-Fi「'''
+cn = '''连接到 Wi-Fi“'''
+en = '''Connecting to Wi-Fi “'''
+
+[[s]]
+tw = '''」，手機可能斷線幾秒'''
+cn = '''”，手机可能断开几秒'''
+en = '''”, your phone may disconnect for a few seconds'''
+
+[[s]]
+tw = '''讀取版本資訊'''
+cn = '''读取版本信息'''
+en = '''Reading version info'''
+
+[[s]]
+tw = '''新版'''
+cn = '''新版'''
+en = '''new version'''
+
+[[s]]
+tw = '''：'''
+cn = '''：'''
+en = ''': '''
+
+[[s]]
+tw = '''下載完成，正在重新開機換成'''
+cn = '''下载完成，正在重新开机换成'''
+en = '''Download complete, restarting into'''
+
+[[s]]
+tw = '''已經是最新版（'''
+cn = '''已经是最新版（'''
+en = '''Already up to date ('''
+
+[[s]]
+tw = '''）'''
+cn = '''）'''
+en = ''')'''
+
+[[s]]
+tw = '''沒有更新：'''
+cn = '''没有更新：'''
+en = '''No update: '''
+
+[[s]]
+tw = '''開始下載新版'''
+cn = '''开始下载新版'''
+en = '''Starting to download the new version'''
+
+[[s]]
+tw = '''藍牙掃描中，約'''
+cn = '''蓝牙扫描中，约'''
+en = '''Bluetooth scan in progress. The hotspot turns off in about'''
+
+[[s]]
+tw = '''秒後熱點關閉，剩下約'''
+cn = '''秒后热点关闭，剩下约'''
+en = '''seconds. Time left: about'''
+
+[[s]]
+tw = '''熱點關閉中，Wi-Fi 監聽約'''
+cn = '''热点关闭中，Wi-Fi 监听约'''
+en = '''Hotspot off, Wi-Fi listening finishes in about'''
+
+[[s]]
+tw = '''後完成'''
+cn = '''后完成'''
+en = '''∅'''
+
+[[s]]
+tw = '''出門'''
+cn = '''出门'''
+en = '''Leaving'''
+
+[[s]]
+tw = '''上車'''
+cn = '''上车'''
+en = '''Boarding'''
+
+[[s]]
+tw = '''下車'''
+cn = '''下车'''
+en = '''Getting off'''
+
+[[s]]
+tw = '''進站'''
+cn = '''进站'''
+en = '''Entering station'''
+
+[[s]]
+tw = '''出站'''
+cn = '''出站'''
+en = '''Leaving station'''
+
+[[s]]
+tw = '''轉乘'''
+cn = '''换乘'''
+en = '''Transfer'''
+
+[[s]]
+tw = '''到達'''
+cn = '''到达'''
+en = '''Arrived'''
+
+[[s]]
+tw = '''回家'''
+cn = '''回家'''
+en = '''Home'''
+
+[[s]]
+tw = '''其他'''
+cn = '''其他'''
+en = '''Other'''
+
+[[s]]
+tw = '''請輸入名稱'''
+cn = '''请输入名称'''
+en = '''Enter a name'''
+
+[[s]]
+tw = '''名稱太長，最多 29 bytes，中文約 9 個字'''
+cn = '''名称太长，最多 29 bytes，中文约 9 个字'''
+en = '''Name too long: max 29 bytes (about 9 Chinese characters)'''
+
+[[s]]
+tw = '''密碼要 8 到 63 個英數字或符號'''
+cn = '''密码需为 8 到 63 个字母、数字或符号'''
+en = '''Password must be 8 to 63 letters, numbers or symbols'''
+
+[[s]]
+tw = '''送出失敗，請再試一次'''
+cn = '''发送失败，请再试一次'''
+en = '''Couldn’t send, please try again'''
+
+[[s]]
+tw = '''存過的地點（'''
+cn = '''保存过的地点（'''
+en = '''Saved places ('''
+
+[[s]]
+tw = '''的名稱'''
+cn = '''的名称'''
+en = '''name'''
+
+[[s]]
+tw = '''（未命名）'''
+cn = '''（未命名）'''
+en = ''' (unnamed)'''
+
+[[s]]
+tw = '''改名'''
+cn = '''改名'''
+en = '''Rename'''
+
+[[s]]
+tw = '''刪除\'''
+cn = '''删除\'''
+en = '''Delete\'''
+
+[[s]]
+tw = '''目前在這裡，'''
+cn = '''目前在这里，'''
+en = '''You are here now, '''
+
+[[s]]
+tw = '''來過'''
+cn = '''来过'''
+en = '''Visited'''
+
+[[s]]
+tw = '''還沒有存過的地點'''
+cn = '''还没有保存过的地点'''
+en = '''No saved places yet'''
+
+[[s]]
+tw = '''名稱太長，最多 30 bytes，中文約 10 個字'''
+cn = '''名称太长，最多 30 bytes，中文约 10 个字'''
+en = '''Name too long: max 30 bytes (about 10 Chinese characters)'''
+
+[[s]]
+tw = '''已儲存「'''
+cn = '''已保存“'''
+en = '''Saved “'''
+
+[[s]]
+tw = '''已清除名稱'''
+cn = '''已清除名称'''
+en = '''Name cleared'''
+
+[[s]]
+tw = '''還沒掃描到 Wi-Fi 基地台，等一下再試'''
+cn = '''还没扫描到 Wi-Fi 接入点，请稍后再试'''
+en = '''No Wi-Fi access point found yet, try again shortly'''
+
+[[s]]
+tw = '''沒有儲存。32 個地點都已命名時，先刪除用不到的'''
+cn = '''没有保存。32 个地点都已命名时，请先删除不需要的'''
+en = '''Not saved. All 32 places are named, delete one you don’t need first'''
+
+[[s]]
+tw = '''Wi-Fi 名稱最多 32 bytes'''
+cn = '''Wi-Fi 名称最多 32 bytes'''
+en = '''Wi-Fi name can be at most 32 bytes'''
+
+[[s]]
+tw = '''（沒有內容）'''
+cn = '''（没有内容）'''
+en = '''(empty)'''
+
+[[s]]
+tw = '''讀取失敗'''
+cn = '''读取失败'''
+en = '''Couldn’t read'''
+
+[[s]]
+tw = '''先選擇 .bin 檔'''
+cn = '''请先选择 .bin 文件'''
+en = '''Choose a .bin file first'''
+
+[[s]]
+tw = '''連線中斷，偵測器可能已經重新開機'''
+cn = '''连接中断，探测器可能已经重新启动'''
+en = '''Connection lost, the detector may have restarted'''
+
+[[s]]
+tw = '''上傳中'''
+cn = '''上传中'''
+en = '''Uploading'''
+
+[[s]]
+tw = '''未知'''
+cn = '''未知'''
+en = '''Unknown'''
+
+[[s]]
+tw = '''觸發警示時自動發聲沒有作用（關閉，或移動判斷沒開），沒有嘗試'''
+cn = '''触发警报时自动发声没有作用（已关闭，或移动判断没开），没有尝试'''
+en = '''Auto ring on alert had no effect (off, or Movement check is off), not tried'''
+
+[[s]]
+tw = '''還沒嘗試'''
+cn = '''还没尝试'''
+en = '''Not tried yet'''
+
+[[s]]
+tw = '''往前第'''
+cn = '''往前第'''
+en = '''Earlier boot'''
+
+[[s]]
+tw = '''次開機'''
+cn = '''次开机'''
+en = '''∅'''
+
+[[s]]
+tw = '''這次開機'''
+cn = '''本次开机'''
+en = '''This session'''
+
+[[s]]
+tw = '''那次開機從'''
+cn = '''那次开机从'''
+en = '''That session ran from'''
+
+[[s]]
+tw = '''開始，'''
+cn = '''开始，'''
+en = '''onward, '''
+
+[[s]]
+tw = '''那次開機沒有對時，時間以開機後計算，'''
+cn = '''那次开机没有校时，时间按开机后计算，'''
+en = '''That session’s time was not set, times count from startup, '''
+
+[[s]]
+tw = '''紀錄了約'''
+cn = '''记录了约'''
+en = '''recorded about'''
+
+[[s]]
+tw = '''，觸發警示'''
+cn = '''，触发警报'''
+en = ''', alert:'''
+
+[[s]]
+tw = '''個。最後一次存檔之後的幾分鐘可能沒存到。'''
+cn = '''个。最后一次保存之后的几分钟可能没有保存。'''
+en = '''trackers. The last few minutes after the final save may be missing.'''
+
+[[s]]
+tw = '''偵測器上存了之前'''
+cn = '''探测器上保存了之前'''
+en = '''The detector has records of'''
+
+[[s]]
+tw = '''次開機的紀錄，點日期切換。'''
+cn = '''次开机的记录，点击日期切换。'''
+en = '''previous sessions. Tap a date to switch.'''
+
+[[s]]
+tw = '''未確認'''
+cn = '''未确认'''
+en = '''Not acknowledged'''
+
+[[s]]
+tw = '''，最強'''
+cn = '''，最强'''
+en = ''', strongest'''
+
+[[s]]
+tw = '''dBm，出現在'''
+cn = '''dBm，出现在'''
+en = '''dBm, seen in'''
+
+[[s]]
+tw = '''次掃描'''
+cn = '''次扫描'''
+en = '''scans'''
+
+[[s]]
+tw = '''出現，'''
+cn = '''出现，'''
+en = '''first seen, '''
+
+[[s]]
+tw = '''警示，'''
+cn = '''警报，'''
+en = '''alert, '''
+
+[[s]]
+tw = '''最後一次'''
+cn = '''最后一次'''
+en = '''last seen'''
+
+[[s]]
+tw = '''經過的地點：'''
+cn = '''经过的地点：'''
+en = '''Places passed: '''
+
+[[s]]
+tw = '''發聲：'''
+cn = '''发声：'''
+en = '''Ring: '''
+
+[[s]]
+tw = '''1 小時'''
+cn = '''1 小时'''
+en = '''1 hour'''
+
+[[s]]
+tw = '''3 小時'''
+cn = '''3 小时'''
+en = '''3 hours'''
+
+[[s]]
+tw = '''全部'''
+cn = '''全部'''
+en = '''All'''
+
+[[s]]
+tw = '''追蹤器出現的時段'''
+cn = '''追踪器出现的时段'''
+en = '''When trackers appeared'''
+
+[[s]]
+tw = '''這段時間沒有追蹤器出現'''
+cn = '''这段时间没有追踪器出现'''
+en = '''No trackers appeared in this period'''
+
+[[s]]
+tw = '''資料還沒載入'''
+cn = '''数据还没加载'''
+en = '''Data not loaded yet'''
+
+[[s]]
+tw = '''、'''
+cn = '''、'''
+en = ''', '''
+
+[[s]]
+tw = '''無'''
+cn = '''无'''
+en = '''None'''
+
+[[s]]
+tw = '''追蹤器偵測紀錄摘要'''
+cn = '''追踪器探测记录摘要'''
+en = '''Tracker detection log summary'''
+
+[[s]]
+tw = '''裝置：'''
+cn = '''设备：'''
+en = '''Device: '''
+
+[[s]]
+tw = '''之前的開機，最後一次存檔：'''
+cn = '''之前的开机，最后一次保存：'''
+en = '''Previous session, last saved: '''
+
+[[s]]
+tw = '''產生時間：'''
+cn = '''生成时间：'''
+en = '''Generated: '''
+
+[[s]]
+tw = '''（偵測器還沒對時，時間以開機後計算）'''
+cn = '''（探测器还没校时，时间按开机后计算）'''
+en = ''' (the detector’s time is not set, times count from startup)'''
+
+[[s]]
+tw = '''紀錄範圍：自開機（'''
+cn = '''记录范围：自开机（'''
+en = '''Range: since startup ('''
+
+[[s]]
+tw = '''）以來，約'''
+cn = '''）以来，约'''
+en = '''), about'''
+
+[[s]]
+tw = '''分鐘'''
+cn = '''分钟'''
+en = '''minutes'''
+
+[[s]]
+tw = '''警示門檻：'''
+cn = '''警报阈值：'''
+en = '''Alert threshold: '''
+
+[[s]]
+tw = '''（'''
+cn = '''（'''
+en = ''' ('''
+
+[[s]]
+tw = '''，並要求跟著經過'''
+cn = '''，并要求跟着经过'''
+en = ''', and the tracker must follow you through'''
+
+[[s]]
+tw = '''個地點'''
+cn = '''个地点'''
+en = '''places'''
+
+[[s]]
+tw = '''（現在的設定，當時可能不同）'''
+cn = '''（当前的设置，当时可能不同）'''
+en = ''' (current setting, may have been different then)'''
+
+[[s]]
+tw = '''觸發警示的追蹤器：'''
+cn = '''触发警报的追踪器：'''
+en = '''Trackers that triggered an alert: '''
+
+[[s]]
+tw = '''，位址'''
+cn = '''，地址'''
+en = ''', address'''
+
+[[s]]
+tw = '''第一次出現'''
+cn = '''第一次出现'''
+en = '''First seen'''
+
+[[s]]
+tw = '''，最後一次出現'''
+cn = '''，最后一次出现'''
+en = ''', last seen'''
+
+[[s]]
+tw = '''（已確認）'''
+cn = '''（已确认）'''
+en = ''' (acknowledged)'''
+
+[[s]]
+tw = '''出現時段：'''
+cn = '''出现时段：'''
+en = '''Seen during: '''
+
+[[s]]
+tw = '''最強訊號'''
+cn = '''最强信号'''
+en = '''Strongest signal'''
+
+[[s]]
+tw = '''期間的記號：'''
+cn = '''期间的标记：'''
+en = '''Markers in this period: '''
+
+[[s]]
+tw = '''出現超過 10 分鐘、沒有觸發警示的追蹤器：'''
+cn = '''出现超过 10 分钟、没有触发警报的追踪器：'''
+en = '''Trackers seen for over 10 minutes without an alert: '''
+
+[[s]]
+tw = '''，最強訊號'''
+cn = '''，最强信号'''
+en = ''', strongest signal'''
+
+[[s]]
+tw = '''記號：'''
+cn = '''标记：'''
+en = '''Markers: '''
+
+[[s]]
+tw = '''判斷方式與限制：'''
+cn = '''判断方式与限制：'''
+en = '''How it works and its limits:'''
+
+[[s]]
+tw = '''- 偵測器只被動接收藍牙廣播，辨識 Apple Find My、Samsung SmartTag、Tile、Google 尋找我的裝置、Chipolo、Pebblebee 的配件，以及支援 DULT 規格（Apple 與 Google 共同提出的防止不當追蹤規格）的追蹤器'''
+cn = '''- 探测器只被动接收蓝牙广播，识别 Apple Find My、Samsung SmartTag、Tile、Google 查找我的设备、Chipolo、Pebblebee 的配件，以及支持 DULT 规范（Apple 与 Google 共同提出的防止不当追踪规范）的追踪器'''
+en = '''- The detector only passively receives Bluetooth advertisements. It recognizes Apple Find My, Samsung SmartTag, Tile, Google Find Hub, Chipolo and Pebblebee accessories, plus trackers that support DULT (a specification from Apple and Google against unwanted tracking)'''
+
+[[s]]
+tw = '''- 與主人分開的 AirPods 也使用 Find My 的廣播格式，會被列入。Tile、Chipolo、Pebblebee 的廣播不標示是否與主人分開，主人帶在身上的也可能被列入'''
+cn = '''- 与主人分开的 AirPods 也使用 Find My 的广播格式，会被列入。Tile、Chipolo、Pebblebee 的广播不标示是否与主人分开，主人带在身上的也可能被列入'''
+en = '''- AirPods separated from their owner use the same Find My advertisement format and are listed too. Tile, Chipolo and Pebblebee advertisements don’t show whether they are separated from the owner, so ones the owner is carrying may also be listed'''
+
+[[s]]
+tw = '''- iPhone、iPad、Mac 等 Apple 自家裝置與主人分開時也會發送同樣的廣播，'''
+cn = '''- iPhone、iPad、Mac 等 Apple 自家设备与主人分开时也会发送同样的广播，'''
+en = '''- Apple’s own devices such as iPhone, iPad and Mac send the same advertisement when separated from their owner, '''
+
+[[s]]
+tw = '''只有跟著經過好幾個地點才列入'''
+cn = '''只有跟着经过好几个地点才列入'''
+en = '''they are listed only if they follow you through several places'''
+
+[[s]]
+tw = '''沒有列入'''
+cn = '''没有列入'''
+en = '''they are not listed'''
+
+[[s]]
+tw = '''地點的變化是用周圍 Wi-Fi 基地台推算的，不是 GPS'''
+cn = '''地点的变化是根据周围的 Wi-Fi 接入点推算的，不是 GPS'''
+en = '''Place changes are estimated from nearby Wi-Fi access points, not GPS'''
+
+[[s]]
+tw = '''偵測器沒有 GPS，無法分辨追蹤器跟著你移動，還是你待在追蹤器附近（例如住家、辦公室、同一班車上的其他乘客）'''
+cn = '''探测器没有 GPS，无法分辨是追踪器跟着你移动，还是你待在追踪器附近（例如家里、办公室、同一班车上的其他乘客）'''
+en = '''The detector has no GPS, so it can’t tell whether a tracker is moving with you or you are staying near it (for example at home, at the office, or near other passengers on the same bus or train)'''
+
+[[s]]
+tw = '''- 藍牙廣播沒有經過認證，任何裝置都可以假裝成某種追蹤器。位址是藍牙廣播用的位址，不代表追蹤器的序號或擁有者'''
+cn = '''- 蓝牙广播没有经过认证，任何设备都可以伪装成某种追踪器。地址是蓝牙广播使用的地址，不代表追踪器的序列号或拥有者'''
+en = '''- Bluetooth advertisements are not authenticated, so any device can pretend to be a tracker. The address is the one used in the Bluetooth advertisement and does not reveal the tracker’s serial number or owner'''
+
+[[s]]
+tw = '''- 這份摘要只涵蓋同一次開機的紀錄，偵測器的 flash 另外保留最近 8 次開機的警示歷史。開啟 flash 記錄時，完整的原始紀錄另外存在偵測器上'''
+cn = '''- 这份摘要只包含同一次开机的记录，探测器的 flash 另外保留最近 8 次开机的警报历史。打开 flash 记录时，完整的原始记录另外保存在探测器上'''
+en = '''- This summary covers one session only. The detector’s flash also keeps the alert history of the last 8 sessions. When the flash log is on, the full raw log is also stored on the detector'''
+
+[[s]]
+tw = '''已複製'''
+cn = '''已复制'''
+en = '''Copied'''
+
+[[s]]
+tw = '''無法自動複製，請長按文字框選取'''
+cn = '''无法自动复制，请长按文本框选择文字'''
+en = '''Couldn’t copy automatically, long-press the text box to select it'''
+
+[[s]]
+tw = '''Wi-Fi 連網裝置'''
+cn = '''Wi-Fi 联网设备'''
+en = '''Wi-Fi connected device'''
+
+[[s]]
+tw = '''Wi-Fi 基地台'''
+cn = '''Wi-Fi 接入点'''
+en = '''Wi-Fi access point'''
+
+[[s]]
+tw = '''藍牙裝置'''
+cn = '''蓝牙设备'''
+en = '''Bluetooth device'''
+
+[[s]]
+tw = '''送出失敗，請再按一次'''
+cn = '''发送失败，请再按一次'''
+en = '''Couldn’t send, please tap again'''
+
+[[s]]
+tw = '''近，-60 dBm'''
+cn = '''近，-60 dBm'''
+en = '''Near, -60 dBm'''
+
+[[s]]
+tw = '''中，-70 dBm'''
+cn = '''中，-70 dBm'''
+en = '''Medium, -70 dBm'''
+
+[[s]]
+tw = '''遠，-80 dBm'''
+cn = '''远，-80 dBm'''
+en = '''Far, -80 dBm'''
+
+[[s]]
+tw = '''正在使用'''
+cn = '''正在使用'''
+en = '''In use now'''
+
+[[s]]
+tw = '''會議中用過（'''
+cn = '''会议中用过（'''
+en = '''Used during the meeting ('''
+
+[[s]]
+tw = '''前）'''
+cn = '''前）'''
+en = ''' ago)'''
+
+[[s]]
+tw = '''AirDrop 開著'''
+cn = '''AirDrop 开着'''
+en = '''AirDrop on'''
+
+[[s]]
+tw = '''可以分享行動網路'''
+cn = '''可以共享移动网络'''
+en = '''Can share mobile data'''
+
+[[s]]
+tw = '''與主人分開'''
+cn = '''与主人分开'''
+en = '''Separated from owner'''
+
+[[s]]
+tw = '''狀態：'''
+cn = '''状态：'''
+en = '''Status: '''
+
+[[s]]
+tw = '''（估計）'''
+cn = '''（估计）'''
+en = ''' (estimated)'''
+
+[[s]]
+tw = '''開始'''
+cn = '''开始'''
+en = '''Start'''
+
+[[s]]
+tw = '''現在'''
+cn = '''现在'''
+en = '''Now'''
+
+[[s]]
+tw = '''時間軸'''
+cn = '''时间轴'''
+en = '''Timeline'''
+
+[[s]]
+tw = '''會議中多出來的裝置出現的時段'''
+cn = '''会议中多出来的设备出现的时段'''
+en = '''When extra devices appeared during the meeting'''
+
+[[s]]
+tw = '''從開始檢查到現在。紅色是現在還收得到的，灰色是已經離開的。'''
+cn = '''从开始检查到现在。红色是现在还能收到的，灰色是已经离开的。'''
+en = '''From the start of the check until now. Red is still being received, gray has left.'''
+
+[[s]]
+tw = '''結束檢查'''
+cn = '''结束检查'''
+en = '''Stop check'''
+
+[[s]]
+tw = '''近距離的 Wi-Fi 探測請求：最近每分鐘'''
+cn = '''近距离的 Wi-Fi 探测请求：最近每分钟'''
+en = '''Nearby Wi-Fi probe requests:'''
+
+[[s]]
+tw = '''個（基準'''
+cn = '''个（基准'''
+en = '''per minute recently (baseline'''
+
+[[s]]
+tw = '''個）。'''
+cn = '''个）。'''
+en = '''per minute).'''
+
+[[s]]
+tw = '''多了'''
+cn = '''多了'''
+en = '''Found'''
+
+[[s]]
+tw = '''個藍牙裝置'''
+cn = '''个蓝牙设备'''
+en = '''extra Bluetooth devices'''
+
+[[s]]
+tw = '''，估計'''
+cn = '''，估计'''
+en = ''', about'''
+
+[[s]]
+tw = '''種裝置在找 Wi-Fi'''
+cn = '''种设备在找 Wi-Fi'''
+en = '''kinds of devices looking for Wi-Fi'''
+
+[[s]]
+tw = '''留意：近距離有裝置在找 Wi-Fi，可能是隔壁或門外的手機'''
+cn = '''留意：近距离有设备在找 Wi-Fi，可能是隔壁或门外的手机'''
+en = '''Caution: a device close by is looking for Wi-Fi, possibly a phone next door or outside'''
+
+[[s]]
+tw = '''沒有多出來的裝置'''
+cn = '''没有多出来的设备'''
+en = '''No extra devices'''
+
+[[s]]
+tw = '''建立基準中，剩下'''
+cn = '''建立基准中，剩下'''
+en = '''Building baseline,'''
+
+[[s]]
+tw = '''秒。目前收到'''
+cn = '''秒。目前收到'''
+en = '''seconds left. Currently receiving'''
+
+[[s]]
+tw = '''個訊號強於'''
+cn = '''个信号强于'''
+en = '''Bluetooth devices stronger than'''
+
+[[s]]
+tw = '''dBm 的藍牙裝置。'''
+cn = '''dBm 的蓝牙设备。'''
+en = '''dBm.'''
+
+[[s]]
+tw = '''。已經檢查'''
+cn = '''。已经检查'''
+en = '''. Checked for'''
+
+[[s]]
+tw = '''，基準'''
+cn = '''，基准'''
+en = ''', baseline'''
+
+[[s]]
+tw = '''個裝置。'''
+cn = '''个设备。'''
+en = '''devices.'''
+
+[[s]]
+tw = '''手機為什麼一直在找 Wi-Fi？'''
+cn = '''手机为什么一直在找 Wi-Fi？'''
+en = '''Why do phones keep looking for Wi-Fi?'''
+
+[[s]]
+tw = '''上次檢查同時最多多出'''
+cn = '''上次检查同时最多多出'''
+en = '''Last check: up to'''
+
+[[s]]
+tw = '''個裝置，近距離的 Wi-Fi 探測請求共'''
+cn = '''个设备，近距离的 Wi-Fi 探测请求共'''
+en = '''extra devices at the same time, nearby Wi-Fi probe requests:'''
+
+[[s]]
+tw = '''個。'''
+cn = '''个。'''
+en = '''in total.'''
+
+[[s]]
+tw = '''會議室檢查：'''
+cn = '''会议室检查：'''
+en = '''Meeting room check: '''
+
+[[s]]
+tw = '''已經離開'''
+cn = '''已经离开'''
+en = '''Gone'''
+
+[[s]]
+tw = '''廣播的名稱：'''
+cn = '''广播的名称：'''
+en = '''Advertised name: '''
+
+[[s]]
+tw = '''會議開始後'''
+cn = '''会议开始后'''
+en = '''Appeared'''
+
+[[s]]
+tw = '''出現，最強'''
+cn = '''出现，最强'''
+en = ''' after the meeting started, strongest'''
+
+[[s]]
+tw = '''前最後一次收到'''
+cn = '''前最后一次收到'''
+en = ''' since last received'''
+
+[[s]]
+tw = '''前離開'''
+cn = '''前离开'''
+en = ''' since it left'''
+
+[[s]]
+tw = '''Apple 裝置（估計）'''
+cn = '''Apple 设备（估计）'''
+en = '''Apple device (estimated)'''
+
+[[s]]
+tw = '''找 Wi-Fi 的裝置'''
+cn = '''找 Wi-Fi 的设备'''
+en = '''Device looking for Wi-Fi'''
+
+[[s]]
+tw = '''個請求'''
+cn = '''个请求'''
+en = '''requests'''
+
+[[s]]
+tw = '''裝置名稱：'''
+cn = '''设备名称：'''
+en = '''Device name: '''
+
+[[s]]
+tw = '''Wi-Fi 指紋'''
+cn = '''Wi-Fi 指纹'''
+en = '''Wi-Fi fingerprint'''
+
+[[s]]
+tw = '''，會議開始後'''
+cn = '''，会议开始后'''
+en = ''', appeared'''
+
+[[s]]
+tw = '''，已經沒有再收到'''
+cn = '''，已经没有再收到'''
+en = ''', no longer received'''
+
+[[s]]
+tw = '''多出來的藍牙裝置'''
+cn = '''多出来的蓝牙设备'''
+en = '''Extra Bluetooth devices'''
+
+[[s]]
+tw = '''在找 Wi-Fi 的裝置（依指紋估計）'''
+cn = '''在找 Wi-Fi 的设备（按指纹估计）'''
+en = '''Devices looking for Wi-Fi (estimated by fingerprint)'''
+
+[[s]]
+tw = '''新的手機每次都換隨機位址，這裡用封包的指紋分組，同一種型號的手機可能被算成一組。'''
+cn = '''新的手机每次都换随机地址，这里用数据包的指纹分组，同一种型号的手机可能被算成一组。'''
+en = '''Newer phones switch to a random address each time, so they are grouped by packet fingerprint here. Phones of the same model may be counted as one group.'''
+
+[[s]]
+tw = '''停止監聽'''
+cn = '''停止监听'''
+en = '''Stop listening'''
+
+[[s]]
+tw = '''監聽中，已經'''
+cn = '''监听中，已经'''
+en = '''Listening for'''
+
+[[s]]
+tw = '''，剩下約'''
+cn = '''，剩下约'''
+en = ''', time left: about'''
+
+[[s]]
+tw = '''監聽了'''
+cn = '''监听了'''
+en = '''Listened for'''
+
+[[s]]
+tw = '''頻道'''
+cn = '''信道'''
+en = ''' Channel'''
+
+[[s]]
+tw = '''，收到'''
+cn = '''，收到'''
+en = ''', received'''
+
+[[s]]
+tw = '''個探測請求，來自'''
+cn = '''个探测请求，来自'''
+en = '''probe requests from'''
+
+[[s]]
+tw = '''個位址（其中'''
+cn = '''个地址（其中'''
+en = '''addresses (of which'''
+
+[[s]]
+tw = '''個是固定位址，在不同地點都認得出是同一支手機）。'''
+cn = '''个是固定地址，在不同地点都能认出是同一部手机）。'''
+en = '''are fixed addresses that identify the same phone in any place). '''
+
+[[s]]
+tw = '''個請求帶出了 Wi-Fi 名稱，共'''
+cn = '''个请求带出了 Wi-Fi 名称，共'''
+en = '''requests revealed a Wi-Fi name, with'''
+
+[[s]]
+tw = '''個不同的名稱。新的手機多半每次都換隨機位址，位址數會比實際的手機多'''
+cn = '''个不同的名称。新的手机大多每次都换随机地址，地址数会比实际的手机多'''
+en = '''different names in total. Newer phones usually switch to a random address each time, so there are more addresses than actual phones'''
+
+[[s]]
+tw = '''。裝置太多，有些沒有計入'''
+cn = '''。设备太多，有些没有计入'''
+en = '''. Too many devices, some were not counted'''
+
+[[s]]
+tw = '''個來源'''
+cn = '''个来源'''
+en = '''sources'''
+
+[[s]]
+tw = '''個請求，最強'''
+cn = '''个请求，最强'''
+en = '''requests, strongest'''
+
+[[s]]
+tw = '''，有固定位址的手機送出'''
+cn = '''，由固定地址的手机发送'''
+en = ''', sent by a phone with a fixed address'''
+
+[[s]]
+tw = '''還沒收到帶名稱的請求'''
+cn = '''还没收到带名称的请求'''
+en = '''No requests with a name yet'''
+
+[[s]]
+tw = '''沒有收到帶名稱的請求'''
+cn = '''没有收到带名称的请求'''
+en = '''No requests with a name received'''
+
+[[s]]
+tw = '''房間檢查完成'''
+cn = '''房间检查完成'''
+en = '''Room check complete'''
+
+[[s]]
+tw = '''建議找出來'''
+cn = '''建议找出来'''
+en = '''Worth finding'''
+
+[[s]]
+tw = '''可以留意'''
+cn = '''可以留意'''
+en = '''Keep an eye on'''
+
+[[s]]
+tw = '''訊號不明'''
+cn = '''信号不明'''
+en = '''Signal unknown'''
+
+[[s]]
+tw = '''，頻道'''
+cn = '''，信道'''
+en = ''', channel'''
+
+[[s]]
+tw = '''，上傳'''
+cn = '''，上传'''
+en = ''', upload'''
+
+[[s]]
+tw = '''上一次檢查中途取消了，沒有結果'''
+cn = '''上一次检查中途取消了，没有结果'''
+en = '''The last check was canceled midway, no results'''
+
+[[s]]
+tw = '''檢查結果（'''
+cn = '''检查结果（'''
+en = '''Check results ('''
+
+[[s]]
+tw = '''沒有找到符合規則的裝置'''
+cn = '''没有找到符合规则的设备'''
+en = '''No devices matched the rules'''
+
+[[s]]
+tw = '''個裝置'''
+cn = '''个设备'''
+en = '''devices'''
+
+[[s]]
+tw = '''基地台'''
+cn = '''接入点'''
+en = '''Found'''
+
+[[s]]
+tw = '''個、連網裝置'''
+cn = '''个、联网设备'''
+en = '''access points,'''
+
+[[s]]
+tw = '''個（其中'''
+cn = '''个（其中'''
+en = '''connected devices (of which'''
+
+[[s]]
+tw = '''個是隨機位址）、藍牙裝置'''
+cn = '''个是随机地址）、蓝牙设备'''
+en = '''use random addresses) and'''
+
+[[s]]
+tw = '''個。監聽頻道'''
+cn = '''个。监听信道'''
+en = '''Bluetooth devices. Channels listened:'''
+
+[[s]]
+tw = '''，花了'''
+cn = '''，花了'''
+en = ''', took'''
+
+[[s]]
+tw = '''裝置太多，有'''
+cn = '''设备太多，有'''
+en = '''Too many devices,'''
+
+[[s]]
+tw = '''個封包沒有記錄。'''
+cn = '''个数据包没有记录。'''
+en = '''packets were not recorded.'''
+
+[[s]]
+tw = '''約'''
+cn = '''约'''
+en = '''About'''
+
+[[s]]
+tw = '''後完成。'''
+cn = '''后完成。'''
+en = ''' until done. '''
+
+[[s]]
+tw = '''應該已經完成了。'''
+cn = '''应该已经完成了。'''
+en = '''Should be done by now. '''
+
+[[s]]
+tw = '''燈號綠色連閃兩下時，到手機的 Wi-Fi 設定連回「'''
+cn = '''指示灯绿色连闪两下时，到手机的 Wi-Fi 设置重新连接“'''
+en = '''When the light blinks green twice, go to your phone’s Wi-Fi settings and reconnect to “'''
+
+[[s]]
+tw = '''偵測器的熱點'''
+cn = '''探测器的热点'''
+en = '''the detector’s hotspot'''
+
+[[s]]
+tw = '''」，這一頁會自動顯示報告。'''
+cn = '''”，这个页面会自动显示报告。'''
+en = '''”. This page will then show the report.'''
+
+[[s]]
+tw = '''連線中斷'''
+cn = '''连接中断'''
+en = '''Connection lost'''
+
+[[s]]
+tw = '''之後沒有更新。'''
+cn = '''之后没有更新。'''
+en = '''was the last update. '''
+
+[[s]]
+tw = '''偵測器可能關閉了 Wi-Fi，或手機離開熱點範圍，畫面上是最後一次的狀態。'''
+cn = '''探测器可能关闭了 Wi-Fi，或手机离开了热点范围，页面上显示的是最后一次的状态。'''
+en = '''The detector may have turned off Wi-Fi, or your phone left the hotspot range. The page shows the last known status.'''

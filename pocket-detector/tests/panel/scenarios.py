@@ -11,7 +11,7 @@ BASE = {
     "captive": True, "stats": False, "statsOn": False, "statsAllowed": True, "statNow": 0, "statPersist": 0,
     "statTotal": 0, "bleOn": False, "bleConnected": False, "bleSecure": True, "bleBonds": 0, "blePin": 123456,
     "needSpan": 600, "needNear": 6, "needPresence": 70, "needRssi": -85, "needPlaces": 0, "placeId": 0, "placeName": "",
-    "moving": False, "appleDevices": 3, "mode": "偵測", "automode": 0, "autosound": 0, "wifiscan": False,
+    "moving": False, "appleDevices": 3, "mode": "detect", "automode": 0, "autosound": 0, "wifiscan": False,
     "preset": 1, "interval": 15, "duration": 5, "idle": 10, "led": True, "apName": "Test-Panel-0000",
     "defaultPass": False,
     "trk": [

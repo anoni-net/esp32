@@ -17,6 +17,7 @@
 //     Command_Response 0x0302（參數：對應的 opcode、狀態碼）與 Sound_Completed 0x0303
 //   - 只有與主人分開的追蹤器接受，不需要配對，聲音持續 5 到 30 秒（建議 12 秒）
 #pragma once
+#include "i18n.h"
 #include <Arduino.h>
 #include <NimBLEDevice.h>
 
@@ -61,13 +62,13 @@ static void onIndicate(NimBLERemoteCharacteristic*, uint8_t* d, size_t n, bool) 
 // 回覆的狀態碼轉成說明
 static const char* statusText(uint16_t s) {
   switch (s) {
-    case 0x0000: return "成功";
-    case 0x0001: return "狀態不符（可能已經在發聲，或聲音不是這塊板子觸發的）";
-    case 0x0002: return "設定不符";
-    case 0x0003: return "長度不符";
-    case 0x0004: return "參數不符";
-    case 0xFFFF: return "不接受這個指令（可能主人就在附近，或不支援發聲）";
-    default: return "保留的狀態碼";
+    case 0x0000: return TR("成功");
+    case 0x0001: return TR("狀態不符（可能已經在發聲，或聲音不是這塊偵測器觸發的）");
+    case 0x0002: return TR("設定不符");
+    case 0x0003: return TR("長度不符");
+    case 0x0004: return TR("參數不符");
+    case 0xFFFF: return TR("不接受這個指令（可能主人就在附近，或不支援發聲）");
+    default: return TR("保留的狀態碼");
   }
 }
 

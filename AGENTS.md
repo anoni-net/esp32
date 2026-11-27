@@ -17,6 +17,7 @@
 
 - 改了 `pocket-detector` 之後執行 `pocket-detector/tools/run_tests.sh`，全部通過才 commit
 - commit 之後用 `./tools/publish_firmware.sh <工具>` 發布到測試通道，打開「接收測試版」的開發用板子會裝上它
+- 其他語系加上 `--lang zh-CN` 或 `--lang en`，各語系的測試通道與正式通道各自獨立，實機測試要用那個語系的韌體測
 - 正式通道只用 `./tools/promote_firmware.sh <工具>` 推，條件是開發用的板子從測試通道裝上那個版本、`tests/hil/run_hil.py --update` 全部通過。`--force` 只在使用者同意的緊急修正時使用
 - 已經燒進板子的韌體讀 `assets.anoni.net/esp32-tracker/` 與 `esp32-tracker-test/`。換網址之前，發布腳本要先同時發布新舊路徑，等板子都更新過再停掉舊路徑，否則已經在用的板子收不到更新
 
@@ -26,7 +27,8 @@
 - `.ino` 會被自動產生函式宣告：用到自訂型別的函式，型別要定義在標頭檔，函式宣告集中放在檔案前面
 - 標頭檔裡的函式用 `static inline`，沒用到的 `static` 函式會被 `-Werror` 擋下
 - 只依賴 C++ 標準函式庫的邏輯（版本判斷、地點比對、探測請求、裝置資訊、會議室檢查）寫在獨立的標頭檔，`tests/unit/` 在電腦上編譯同一份
-- 面板網頁改 `panel.html`，PlatformIO 建置時會重新產生 `panel_gz.h`，兩個檔案一起 commit
+- 面板網頁改 `panel.html`，PlatformIO 建置時會重新產生 `panel_gz*.h`，一起 commit
+- 隨身偵測器有正體中文、簡體中文與英文三個版本（`pocket-detector/README.md` 的「多語系」）。面板與藍牙文字通道上的新字串用 `TR("…")` 包起來，改完執行 `tools/make_i18n.py --extract` 補上翻譯。序列埠的輸出維持正體中文，實機測試比對它的文字。面板與韌體之間不要比對顯示的文字，用欄位或狀態碼
 
 ## 專案網頁的兩種讀者
 

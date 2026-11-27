@@ -11,6 +11,7 @@
 // 裝置廣播的名稱（常帶主人的名字）由呼叫的人另外填進 name。都只放在記憶體、顯示在面板，不寫進記錄。
 // 不依賴 Arduino，韌體與 tests/unit/ 編譯同一份。
 #pragma once
+#include "i18n.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string>
@@ -40,14 +41,14 @@ struct Info {
 // Apple Nearby Info 的活動碼（低 4 位元），PETS 2020 表格。只列有把握的
 static inline const char* activityText(int code) {
   switch (code) {
-    case 0x03: return "閒置";
-    case 0x05: return "螢幕關著，正在播放聲音";
-    case 0x07: return "螢幕亮著";
-    case 0x09: return "螢幕亮著，正在播放影片";
-    case 0x0A: return "手錶戴著、已解鎖";
-    case 0x0B: return "剛剛有人操作";
-    case 0x0D: return "開車中";
-    case 0x0E: return "通話中或 FaceTime";
+    case 0x03: return TR("閒置");
+    case 0x05: return TR("螢幕關著，正在播放聲音");
+    case 0x07: return TR("螢幕亮著");
+    case 0x09: return TR("螢幕亮著，正在播放影片");
+    case 0x0A: return TR("手錶戴著、已解鎖");
+    case 0x0B: return TR("剛剛有人操作");
+    case 0x0D: return TR("開車中");
+    case 0x0E: return TR("通話中或 FaceTime");
     default: return "";
   }
 }
@@ -56,10 +57,10 @@ static inline const char* activityText(int code) {
 static inline const char* appleAudioModel(uint16_t m) {
   switch (m) {
     case 0x0220: return "AirPods";
-    case 0x0F20: return "AirPods（第 2 代）";
-    case 0x1320: return "AirPods（第 3 代）";
+    case 0x0F20: return TR("AirPods（第 2 代）");
+    case 0x1320: return TR("AirPods（第 3 代）");
     case 0x0E20: return "AirPods Pro";
-    case 0x1420: return "AirPods Pro（第 2 代）";
+    case 0x1420: return TR("AirPods Pro（第 2 代）");
     case 0x0A20: return "AirPods Max";
     case 0x0320: return "Powerbeats3";
     case 0x0B20: return "Powerbeats Pro";
@@ -77,16 +78,16 @@ static inline const char* appleAudioModel(uint16_t m) {
 static inline const char* cdpDeviceType(int t) {
   switch (t) {
     case 1: return "Xbox";
-    case 6: return "iPhone（裝了 Microsoft 的手機連結）";
-    case 7: return "iPad（裝了 Microsoft 的手機連結）";
-    case 8: return "Android 手機（裝了 Microsoft 的手機連結）";
-    case 9: return "Windows 桌上型電腦";
-    case 11: return "Windows 手機";
-    case 12: return "Linux 裝置";
-    case 13: return "Windows IoT 裝置";
+    case 6: return TR("iPhone（裝了 Microsoft 的手機連結）");
+    case 7: return TR("iPad（裝了 Microsoft 的手機連結）");
+    case 8: return TR("Android 手機（裝了 Microsoft 的手機連結）");
+    case 9: return TR("Windows 桌上型電腦");
+    case 11: return TR("Windows 手機");
+    case 12: return TR("Linux 裝置");
+    case 13: return TR("Windows IoT 裝置");
     case 14: return "Surface Hub";
-    case 15: return "Windows 筆電";
-    case 16: return "Windows 平板";
+    case 15: return TR("Windows 筆電");
+    case 16: return TR("Windows 平板");
     default: return "";
   }
 }
@@ -106,7 +107,7 @@ static inline Info parse(const std::string& mfr, const std::string& fastPair) {
   char b[96];
   if (company == 0x004C) {
     in.kind = APPLE;
-    setLabel(in, "Apple 裝置（iPhone、iPad、Mac 或手錶）", 1);
+    setLabel(in, TR("Apple 裝置（iPhone、iPad、Mac 或手錶）"), 1);
     // Continuity：從第 3 個 byte 起是「類型、長度、內容」一段接一段
     size_t i = 2;
     while (i + 2 <= mfr.size()) {
@@ -120,13 +121,13 @@ static inline Info parse(const std::string& mfr, const std::string& fastPair) {
         case 0x07:  // Proximity Pairing：AirPods、Beats。第一個 byte 是 0x01 時才是型號在第 2、3 個 byte 的格式，
                     // 2026-11-27 實測收到第一個 byte 是 0x06、長度 17 的變體，型號的位置不同，只標成配件
           if (len >= 3 && p[0] != 0x01) {
-            setLabel(in, "Apple 配件（耳機或其他配件）", 2);
+            setLabel(in, TR("Apple 配件（耳機或其他配件）"), 2);
             in.flags |= ESTIMATE;
           } else if (len >= 3) {
             const uint16_t model = (p[1] << 8) | p[2];
             const char* name = appleAudioModel(model);
             if (*name) snprintf(b, sizeof(b), "%s", name);
-            else snprintf(b, sizeof(b), "Apple 或 Beats 耳機（型號編號 0x%04X）", model);
+            else snprintf(b, sizeof(b), TR("Apple 或 Beats 耳機（型號編號 0x%04X）"), model);
             setLabel(in, b, 4);
             in.flags |= ESTIMATE;
           }
@@ -136,7 +137,7 @@ static inline Info parse(const std::string& mfr, const std::string& fastPair) {
           break;
         case 0x0E:  // Tethering Source：可以分享行動網路
           in.flags |= HOTSPOT;
-          setLabel(in, "iPhone 或 iPad（有行動網路）", 3);
+          setLabel(in, TR("iPhone 或 iPad（有行動網路）"), 3);
           in.flags |= ESTIMATE;
           break;
         case 0x10:  // Nearby Info：低 4 位元是活動碼
@@ -150,7 +151,7 @@ static inline Info parse(const std::string& mfr, const std::string& fastPair) {
           break;
         case 0x12:  // Find My：與主人分開
           in.flags |= FINDMY;
-          setLabel(in, "與主人分開的 Apple 裝置或配件", 2);
+          setLabel(in, TR("與主人分開的 Apple 裝置或配件"), 2);
           break;
       }
       i += 2 + len;
@@ -162,32 +163,32 @@ static inline Info parse(const std::string& mfr, const std::string& fastPair) {
     const uint8_t scenario = mfr[2];
     if (scenario == 0x01) {  // MS-CDP 信標
       const char* t = cdpDeviceType((uint8_t)mfr[3] & 0x1F);
-      setLabel(in, *t ? t : "Windows、Microsoft 裝置", *t ? 3 : 1);
+      setLabel(in, *t ? t : TR("Windows、Microsoft 裝置"), *t ? 3 : 1);
     } else if (scenario == 0x03) {
-      setLabel(in, "可以用 Swift Pair 配對的配件", 2);
+      setLabel(in, TR("可以用 Swift Pair 配對的配件"), 2);
     } else {
-      setLabel(in, "Windows、Microsoft 裝置", 1);
+      setLabel(in, TR("Windows、Microsoft 裝置"), 1);
     }
     return in;
   }
   if (fastPair.size() == 3) {
     in.kind = GOOGLE;
-    snprintf(b, sizeof(b), "可以用 Fast Pair 配對的配件（型號編號 %02X%02X%02X）", (uint8_t)fastPair[0],
+    snprintf(b, sizeof(b), TR("可以用 Fast Pair 配對的配件（型號編號 %02X%02X%02X）"), (uint8_t)fastPair[0],
              (uint8_t)fastPair[1], (uint8_t)fastPair[2]);
     setLabel(in, b, 3);
     return in;
   }
   if (company == 0x00E0 || !fastPair.empty()) {
     in.kind = GOOGLE;
-    setLabel(in, "Android、Google 裝置", 1);
+    setLabel(in, TR("Android、Google 裝置"), 1);
     return in;
   }
   if (company == 0x0075) {
     in.kind = SAMSUNG;
-    setLabel(in, "Samsung 裝置", 1);
+    setLabel(in, TR("Samsung 裝置"), 1);
     return in;
   }
-  setLabel(in, "其他藍牙裝置", 0);
+  setLabel(in, TR("其他藍牙裝置"), 0);
   return in;
 }
 

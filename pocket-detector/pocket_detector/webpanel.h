@@ -6,6 +6,7 @@
 // 網頁這一側不直接碰記錄與追蹤器的資料：按鈕產生事件放進佇列，由 loop() 處理；
 // 狀態由 loop() 在每次掃描後複製一份快照，網頁只讀快照。
 #pragma once
+#include "i18n.h"
 #include <Arduino.h>
 #include <DNSServer.h>
 #include <FFat.h>
@@ -81,7 +82,7 @@ struct Snapshot {
   bool alert = false, timeKnown = false, logMounted = false, logOn = false, logFull = false, quiet = false;
   bool statsOn = false, statsAllowed = true, bleOn = false, bleConnected = false;
   uint32_t statNow = 0, statPersist = 0, statTotal = 0;
-  char mode[16] = "";
+  char mode[16] = "";  // detect、stats、crowd，面板自己換成文字
   MarkInfo recent[RECENT_MARKS] = {};
   int recentCount = 0;
   TrackerInfo trk[MAX_SHOWN] = {};
@@ -119,6 +120,7 @@ struct Snapshot {
   uint32_t otaLeftSec = 0;
   char netSsid[33] = "", netMsg[384] = "", netBuild[24] = "";
   uint8_t netState = 0;  // netupdate::State
+  bool netNote = false;  // netupdate::latestNote
   uint32_t netGot = 0, netTotal = 0;
   bool autoUpd = false;      // 自動更新
   bool testChan = false;     // 從測試通道更新
@@ -242,7 +244,14 @@ static String jsonEscape(const char* s) {
 }
 
 // 手機面板的網頁在 panel.html，建置前由 tools/make_panel.py 壓縮成 panel_gz.h
+// 各語系的面板由 make_panel.py 從 panel.html 與 i18n/panel.toml 產生
+#if defined(FW_LANG_ZH_CN)
+#include "panel_gz_zh_cn.h"
+#elif defined(FW_LANG_EN)
+#include "panel_gz_en.h"
+#else
 #include "panel_gz.h"
+#endif
 
 static void sendText(const String& t) { server.send(200, "text/plain; charset=utf-8", t); }
 
@@ -312,9 +321,9 @@ static String statusJson() {
   j += ",\"apName\":\"" + jsonEscape(s.apName) + "\",\"defaultPass\":" + String(jb(s.defaultPass)) +
        ",\"led\":" + String(jb(s.ledOn));
   j += ",\"rev\":\"" + jsonEscape(s.rev) + "\",\"netRev\":\"" + jsonEscape(s.netRev) + "\"";
-  j += ",\"build\":\"" + String(s.build) + "\",\"part\":\"" + String(s.part) + "\",\"otaState\":" + String(s.otaState) + ",\"bootWhat\":" + String(s.bootWhat) +
+  j += ",\"lang\":\"" FW_LANG "\",\"build\":\"" + String(s.build) + "\",\"part\":\"" + String(s.part) + "\",\"otaState\":" + String(s.otaState) + ",\"bootWhat\":" + String(s.bootWhat) +
        ",\"otaLeft\":" + String(s.otaLeftSec);
-  j += ",\"netSsid\":\"" + jsonEscape(s.netSsid) + "\",\"netState\":" + String(s.netState) + ",\"netMsg\":\"" +
+  j += ",\"netSsid\":\"" + jsonEscape(s.netSsid) + "\",\"netState\":" + String(s.netState) + ",\"netNote\":" + (s.netNote ? "true" : "false") + ",\"netMsg\":\"" +
        jsonEscape(s.netMsg) + "\",\"netBuild\":\"" + jsonEscape(s.netBuild) + "\",\"netGot\":" + String(s.netGot) +
        ",\"netTotal\":" + String(s.netTotal);
   char pin[8];
@@ -577,7 +586,7 @@ static void registerRoutes() {
   });
   server.on("/api/history/clear", HTTP_POST, []() {
     pushEvent(EV_HIST_CLEAR);
-    sendText("已刪除之前開機的紀錄，這次開機的保留");
+    sendText(TR("已刪除之前開機的紀錄，這次開機的保留"));
   });
   server.on("/api/room", HTTP_GET, handleRoom);
   server.on("/api/places", HTTP_GET, handlePlaces);
@@ -586,23 +595,23 @@ static void registerRoutes() {
   server.on("/api/meeting/start", HTTP_POST, []() {
     const int r = server.arg("rssi").toInt();
     pushEvent(EV_MEET, "", r >= 50 && r <= 90 ? r : 70);
-    sendText("開始會議室檢查，先用 2 分鐘建立基準");
+    sendText(TR("開始會議室檢查，先用 2 分鐘建立基準"));
   });
   server.on("/api/meeting/stop", HTTP_POST, []() {
     pushEvent(EV_MEET, "", 0);
-    sendText("已結束會議室檢查");
+    sendText(TR("已結束會議室檢查"));
   });
   server.on("/api/meeting/find", HTTP_POST, []() {
     pushEvent(EV_MEET_FIND, "", server.arg("i").toInt());
-    sendText("開始尋找，拿著板子慢慢走");
+    sendText(TR("開始尋找，拿著偵測器慢慢走"));
   });
   server.on("/api/probes/start", HTTP_POST, []() {
     pushEvent(EV_PROBES, "", 1);
-    sendText("開始監聽 5 分鐘，結果每 2 秒更新");
+    sendText(TR("開始監聽 5 分鐘，結果每 2 秒更新"));
   });
   server.on("/api/probes/stop", HTTP_POST, []() {
     pushEvent(EV_PROBES, "", 0);
-    sendText("已停止監聽");
+    sendText(TR("已停止監聽"));
   });
   server.on("/api/places/name", HTTP_POST, []() {
     String n = server.arg("name");
@@ -610,45 +619,46 @@ static void registerRoutes() {
     bool ok = n.length() <= 30;
     for (size_t i = 0; ok && i < n.length(); i++) ok = (uint8_t)n[i] >= 0x20 && (uint8_t)n[i] != 0x7f;
     if (!ok) {
-      sendText("名稱最多 30 bytes（中文約 10 個字），不能有控制字元");
+      sendText(TR("名稱最多 30 bytes（中文約 10 個字），不能有控制字元"));
       return;
     }
     pushEvent(EV_PLACE_NAME, n, server.arg("id").toInt());
-    sendText("已送出");  // 結果由面板重新讀取清單確認
+    sendText(TR("已送出"));  // 結果由面板重新讀取清單確認
   });
   server.on("/api/places/forget", HTTP_POST, []() {
     pushEvent(EV_PLACE_FORGET, "", server.arg("id").toInt());
-    sendText("已刪除這個地點，下次經過時會當成新的地點");
+    sendText(TR("已刪除這個地點，下次經過時會當成新的地點"));
   });
   server.on("/api/room/find", HTTP_POST, []() {
     pushEvent(EV_ROOM_FIND, "", server.arg("i").toInt());
-    sendText(server.arg("k") == "ble" ? "開始尋找，拿著板子慢慢走"
-                                      : "開始尋找。熱點會換到這個裝置的頻道，手機斷線幾秒後會自動連回");
+    sendText(server.arg("k") == "ble" ? TR("開始尋找，拿著偵測器慢慢走")
+                                      : TR("開始尋找。熱點會換到這個裝置的頻道，手機斷線幾秒後會自動連回"));
   });
   server.on("/api/room/start", HTTP_POST, []() {
     if (otaActive) {
-      sendText("正在更新韌體，結束後再檢查");
+      // 409：面板看狀態碼決定要不要進入等待畫面，不比對文字
+      server.send(409, "text/plain; charset=utf-8", TR("正在更新韌體，結束後再檢查"));
       return;
     }
     pushEvent(EV_ROOM, "", 1);
-    sendText("開始檢查，約 2 分鐘。15 秒後熱點會關閉，燈號綠色連閃兩下時再連回來看報告");
+    sendText(TR("開始檢查，約 2 分鐘。15 秒後熱點會關閉，燈號綠色連閃兩下時再連回來看報告"));
   });
   server.on("/api/mark", HTTP_POST, []() {
     String label = server.arg("label");
     label.trim();
     pushEvent(EV_MARK, label);
-    sendText(label.length() ? "已記錄：" + label : String("已記錄"));
+    sendText(label.length() ? TR("已記錄：") + label : String("已記錄"));
   });
   server.on("/api/time", HTTP_POST, []() {
     const long epoch = server.arg("epoch").toInt();
-    if (epoch < 1700000000L) { sendText("時間格式不對"); return; }
+    if (epoch < 1700000000L) { sendText(TR("時間格式不對")); return; }
     pushEvent(EV_TIME, "", (uint32_t)epoch);
-    sendText("已用手機的時間對時");
+    sendText(TR("已用手機的時間對時"));
   });
   server.on("/api/find", HTTP_POST, []() {
     const String addr = server.arg("addr");
     pushEvent(EV_FIND, addr);
-    sendText(addr.length() ? "開始尋找" : "結束尋找");
+    sendText(addr.length() ? TR("開始尋找") : TR("結束尋找"));
   });
   server.on("/api/set", HTTP_POST, []() {
     const String key = server.arg("key");
@@ -656,56 +666,56 @@ static void registerRoutes() {
     const uint32_t v = server.arg("v").toInt();
     if (key == "preset" || key == "interval" || key == "duration" || key == "idle") {
       pushEvent(EV_CFG, key, v);
-      sendText(key == "preset" ? "警示門檻已變更，追蹤器重新累計" : "設定已變更");
+      sendText(key == "preset" ? TR("警示門檻已變更，追蹤器重新累計") : TR("設定已變更"));
     } else if (key == "autosound") {
       const uint32_t mode = server.hasArg("v") ? v : (on ? 1 : 0);
       if (mode > 2) {
-        sendText("設定值不正確");
+        sendText(TR("設定值不正確"));
         return;
       }
       pushEvent(EV_CFG, key, mode);
-      sendText(mode == 0   ? "自動發聲已關閉，只能手動讓追蹤器響"
-               : mode == 1 ? "追蹤器跟著你經過好幾個地點時，會自動讓它響"
-                           : "也會協助周圍的人：附近與主人分開的 DULT 追蹤器出現夠久，會讓它響一次");
+      sendText(mode == 0   ? TR("自動發聲已關閉，只能手動讓追蹤器響")
+               : mode == 1 ? TR("追蹤器跟著你經過好幾個地點時，會自動讓它響")
+                           : TR("也會協助周圍的人：附近與主人分開的 DULT 追蹤器出現夠久，會讓它響一次"));
     } else if (key == "autoupd") {
       if (on && !snap.netSsid[0]) {
-        sendText("先設定更新用的 Wi-Fi");
+        sendText(TR("先設定更新用的 Wi-Fi"));
         return;
       }
       pushEvent(EV_CFG, key, on);
-      sendText(on ? "請在 60 秒內短按一下板子的 BOOT 鍵，確認打開自動更新" : "自動更新已關閉，從網路更新要先按「開放更新」再按 BOOT");
+      sendText(on ? TR("請在 60 秒內短按一下偵測器的 BOOT 鍵，確認打開自動更新") : TR("自動更新已關閉，從網路更新要先按「開放更新」再按 BOOT"));
     } else if (key == "testchan") {
       pushEvent(EV_CFG, key, on);
-      sendText(on ? "請在 60 秒內短按一下板子的 BOOT 鍵，確認改從測試通道更新" : "改回正式通道");
+      sendText(on ? TR("請在 60 秒內短按一下偵測器的 BOOT 鍵，確認改從測試通道更新") : TR("改回正式通道"));
     } else if (key == "roomlog") {
       pushEvent(EV_CFG, key, on);
-      sendText(on ? "房間檢查收到的位址會寫進 flash 記錄" : "房間檢查的位址不寫進記錄");
+      sendText(on ? TR("房間檢查收到的位址會寫進 flash 記錄") : TR("房間檢查的位址不寫進記錄"));
     } else if (key == "wifiscan") {
       pushEvent(EV_CFG, key, on);
-      sendText(on ? "移動判斷開啟，追蹤器要跟著你經過 3 個不同的地點才警示" : "移動判斷關閉");
+      sendText(on ? TR("移動判斷開啟，追蹤器要跟著你經過 3 個不同的地點才警示") : TR("移動判斷關閉"));
     } else if (key == "stats") {
       pushEvent(EV_STATS, "", on);
-      sendText(on ? "統計模式開啟" : "統計模式關閉");
+      sendText(on ? TR("統計模式開啟") : TR("統計模式關閉"));
     } else if (key == "log") {
       pushEvent(EV_LOG, "", on);
-      sendText(on ? "flash 記錄開始寫入" : "flash 記錄暫停");
+      sendText(on ? TR("flash 記錄開始寫入") : TR("flash 記錄暫停"));
     } else if (key == "quiet") {
       pushEvent(EV_QUIET, "", on);
-      sendText(on ? "安靜模式開啟，蜂鳴器不響" : "安靜模式關閉");
+      sendText(on ? TR("安靜模式開啟，蜂鳴器不響") : TR("安靜模式關閉"));
     } else if (key == "captive") {
       if (on && !captive) dns.start(53, "*", WiFi.softAPIP());
       if (!on && captive) dns.stop();
       captive = on;
       pushEvent(EV_CAPTIVE, "", on);
-      sendText(on ? "已開啟自動跳出面板，下次連線生效" : "已關閉自動跳出面板，重新連線後會維持連線");
+      sendText(on ? TR("已開啟自動跳出面板，下次連線生效") : TR("已關閉自動跳出面板，重新連線後會維持連線"));
     } else {
-      sendText("不認得的設定");
+      sendText(TR("不認得的設定"));
     }
   });
   server.on("/log.txt", HTTP_GET, []() {
-    if (!logPath || !FFat.exists(logPath)) { server.send(404, "text/plain; charset=utf-8", "沒有 flash 記錄"); return; }
+    if (!logPath || !FFat.exists(logPath)) { server.send(404, "text/plain; charset=utf-8", TR("沒有 flash 記錄")); return; }
     File f = FFat.open(logPath, FILE_READ);
-    if (!f) { server.send(500, "text/plain; charset=utf-8", "無法開啟記錄檔"); return; }
+    if (!f) { server.send(500, "text/plain; charset=utf-8", TR("無法開啟記錄檔")); return; }
     static Snapshot s;
     copyCurrent(s);
     const String name = ssid + "-" + String(s.timeKnown ? s.epoch : s.uptime) + ".txt";
@@ -715,77 +725,77 @@ static void registerRoutes() {
   });
   server.on("/api/clear", HTTP_POST, []() {
     pushEvent(EV_CLEAR);
-    sendText("已刪除 flash 記錄");
+    sendText(TR("已刪除 flash 記錄"));
   });
   server.on("/api/identity", HTTP_POST, []() {
     String name = server.arg("name"), pw = server.arg("pass");
     name.trim();
-    if (name.length() && !validName(name)) { sendText("名稱太長或含有控制字元，最多 29 bytes（中文約 9 個字）"); return; }
-    if (pw.length() && !validPass(pw)) { sendText("密碼要 8 到 63 個英數字或符號，不能用中文"); return; }
-    if (!name.length() && !pw.length()) { sendText("沒有要變更的內容"); return; }
+    if (name.length() && !validName(name)) { sendText(TR("名稱太長或含有控制字元，最多 29 bytes（中文約 9 個字）")); return; }
+    if (pw.length() && !validPass(pw)) { sendText(TR("密碼要 8 到 63 個英數字或符號，不能用中文")); return; }
+    if (!name.length() && !pw.length()) { sendText(TR("沒有要變更的內容")); return; }
     pushEvent(EV_IDENTITY, name, 0, pw);
-    sendText("已儲存。熱點會在幾秒後以新的設定重新啟動，請用新的名稱與密碼重新連線");
+    sendText(TR("已儲存。熱點會在幾秒後以新的設定重新啟動，請用新的名稱與密碼重新連線"));
   });
   server.on("/api/led", HTTP_POST, []() {
     const bool on = server.arg("on") == "1";
     pushEvent(EV_LED, "", on);
-    sendText(on ? "燈號開啟" : "燈號全關");
+    sendText(on ? TR("燈號開啟") : TR("燈號全關"));
   });
   server.on("/api/factory", HTTP_POST, []() {
     pushEvent(EV_FACTORY);
-    sendText("恢復原廠設定，板子即將重新開機。熱點名稱與密碼會回到預設值");
+    sendText(TR("恢復原廠設定，偵測器即將重新開機。熱點名稱與密碼會回到預設值"));
   });
   server.on("/api/sound", HTTP_POST, []() {
     const String addr = server.arg("addr");
-    if (addr.length() != 17) { sendText("位址格式不對"); return; }
+    if (addr.length() != 17) { sendText(TR("位址格式不對")); return; }
     pushEvent(EV_SOUND, addr);
-    sendText("正在尋找並連線到追蹤器，約 5 到 10 秒");
+    sendText(TR("正在尋找並連線到追蹤器，約 5 到 10 秒"));
   });
   server.on("/api/ble/newpin", HTTP_POST, []() {
     pushEvent(EV_BLEPIN_NEW);
-    sendText("已產生新的配對碼，之後配對的手機要用新的配對碼");
+    sendText(TR("已產生新的配對碼，之後配對的手機要用新的配對碼"));
   });
   server.on("/api/ble/unpair", HTTP_POST, []() {
     pushEvent(EV_BLE_UNPAIR);
-    sendText("已清除所有配對過的手機，下次連線要重新配對");
+    sendText(TR("已清除所有配對過的手機，下次連線要重新配對"));
   });
   // 從網址更新：先設定可以上網的 Wi-Fi，開放更新的期間內才接受下載
   server.on("/api/net/wifi", HTTP_POST, []() {
     const String n = server.arg("ssid"), pw = server.arg("pass");
     if (n.length() > 32 || pw.length() > 63) {
-      sendText("Wi-Fi 名稱最多 32 bytes，密碼最多 63 個字元");
+      sendText(TR("Wi-Fi 名稱最多 32 bytes，密碼最多 63 個字元"));
       return;
     }
     pushEvent(EV_NET_WIFI, n.c_str(), 0, pw.c_str());
-    sendText(n.length() ? "已儲存更新用的 Wi-Fi" : "已清除更新用的 Wi-Fi");
+    sendText(n.length() ? TR("已儲存更新用的 Wi-Fi") : TR("已清除更新用的 Wi-Fi"));
   });
   server.on("/api/net/update", HTTP_POST, []() {
     // 開啟自動更新後不必按 BOOT。上傳檔案（/update）仍然只在按過 BOOT 的期間內接受
     if (!snap.autoUpd && (otaArmedUntil == 0 || (int32_t)(otaArmedUntil - millis()) <= 0)) {
-      sendText("還沒開放更新，先按「開放更新」，再短按板子的 BOOT 鍵");
+      sendText(TR("還沒開放更新，先按「開放更新」，再短按偵測器的 BOOT 鍵"));
       return;
     }
     if (!snap.netSsid[0]) {
-      sendText("先設定更新用的 Wi-Fi");
+      sendText(TR("先設定更新用的 Wi-Fi"));
       return;
     }
     if (otaActive) {
-      sendText("正在更新中");
+      sendText(TR("正在更新中"));
       return;
     }
     pushEvent(EV_NET_UPDATE);
-    sendText("開始檢查 assets.anoni.net 上的版本");
+    sendText(TR("開始檢查 assets.anoni.net 上的版本"));
   });
   server.on("/api/ota/arm", HTTP_POST, []() {
     pushEvent(EV_OTA_ARM);
-    sendText("請在 60 秒內短按一下板子的 BOOT 鍵");
+    sendText(TR("請在 60 秒內短按一下偵測器的 BOOT 鍵"));
   });
   server.on("/update", HTTP_POST, []() {
     if (!otaOk) {
-      sendText("更新失敗：" + otaErr);
+      sendText(TR("更新失敗：") + otaErr);
       return;
     }
-    sendText("更新完成，板子即將重新開機。重新開機後熱點會自動打開，約 20 秒後重新連上，確認頁尾的版本");
+    sendText(TR("更新完成，偵測器即將重新開機。重新開機後熱點會自動打開，約 20 秒後重新連上，確認頁尾的版本"));
     pushEvent(EV_OTA_DONE, "", otaSize);
   }, []() {
     HTTPUpload& u = server.upload();
@@ -794,13 +804,13 @@ static void registerRoutes() {
       otaErr = "";
       otaReject = false;
       if (otaActive) {
-        otaErr = "正在從網路更新，請等它結束";
+        otaErr = TR("正在從網路更新，請等它結束");
         otaReject = true;
         return;
       }
       if (otaArmedUntil == 0 || (int32_t)(otaArmedUntil - millis()) <= 0) {
-        otaErr = snap.autoUpd ? "還沒開放上傳，先按「開放上傳」，再短按板子的 BOOT 鍵"
-                              : "還沒開放更新，先按「開放更新」，再短按板子的 BOOT 鍵";
+        otaErr = snap.autoUpd ? TR("還沒開放上傳，先按「開放上傳」，再短按偵測器的 BOOT 鍵")
+                              : TR("還沒開放更新，先按「開放更新」，再短按偵測器的 BOOT 鍵");
         otaReject = true;
         return;
       }
@@ -834,7 +844,7 @@ static void registerRoutes() {
       otaUploading = false;
     } else if (u.status == UPLOAD_FILE_ABORTED) {
       if (!otaReject) Update.abort();
-      otaErr = "上傳中斷";
+      otaErr = TR("上傳中斷");
       otaReject = true;
       if (otaUploading) otaActive = false;
       otaUploading = false;
@@ -843,18 +853,18 @@ static void registerRoutes() {
   server.on("/api/link", HTTP_POST, []() {
     const bool wifi = server.arg("wifi") == "1", ble = server.arg("ble") == "1";
     pushEvent(EV_LINK, "", (wifi ? 1 : 0) | (ble ? 2 : 0));
-    sendText(!wifi && ble   ? "Wi-Fi 即將關閉，只留藍牙。面板會斷線，要再打開請長按 BOOT 2 秒"
-             : !wifi        ? "Wi-Fi 與藍牙即將關閉"
-             : ble          ? "藍牙已開啟，用藍牙終端機 App 連線，配對碼在下方"
-                            : "藍牙已關閉");
+    sendText(!wifi && ble   ? TR("Wi-Fi 即將關閉，只留藍牙。面板會斷線，要再打開請長按 BOOT 2 秒")
+             : !wifi        ? TR("Wi-Fi 與藍牙即將關閉")
+             : ble          ? TR("藍牙已開啟，用藍牙終端機 App 連線，配對碼在下方")
+                            : TR("藍牙已關閉"));
   });
   server.on("/api/linkoff", HTTP_POST, []() {
     pushEvent(EV_LINKOFF);
-    sendText("已退出，Wi-Fi 與藍牙即將關閉");
+    sendText(TR("已退出，Wi-Fi 與藍牙即將關閉"));
   });
   server.on("/api/ack", HTTP_POST, []() {
     pushEvent(EV_ACK);
-    sendText("已確認警示");
+    sendText(TR("已確認警示"));
   });
   // 系統檢查網路的網址一律轉到面板，手機就會跳出頁面
   server.onNotFound([]() {

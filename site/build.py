@@ -204,7 +204,8 @@ class Site:
 
     def devtools(self, root):
         items = "".join(f'<li class="card cat-dev"><p class="tag">開發用</p><h3><a href="{root}{t["slug"]}/">{html.escape(t["name"])}</a></h3>'
-                        f'<p>{html.escape(t["summary"])}</p><p class="meta">需要：{html.escape(t["hardware"])}</p></li>'
+                        f'<p>{html.escape(t["summary"])}</p><p class="meta">需要：{html.escape(t["hardware"])}，從原始碼建置安裝</p>'
+                        f'<p class="more"><a href="#build">從原始碼建置的步驟</a></p></li>'
                         for t in self.tools if t["audience"] == "dev")
         return f'<ul class="cards">{items}</ul>'
 

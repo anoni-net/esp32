@@ -1,4 +1,5 @@
 {% extends "base.html.j2" %}
+{% from "_card.html.j2" import tool_card %}
 {% block main %}
 <section class="hero">
   <div>
@@ -15,15 +16,10 @@
 <h2>工具</h2>
 <ul class="cards">
 {% for t in tools %}
-  {# 每張卡片同一個結構：分類標籤、名稱、說明、需要的硬體、底部的連結。開發用的工具只換標籤的顏色 #}
-  <li class="card {{ 'cat-dev' if t.audience == 'dev' else 'cat-privacy' }}">
-    <p class="tag">{{ '開發用' if t.audience == 'dev' else '隱私工具' }}</p>
-    <h3><a href="{{ root }}{{ t.slug }}/">{{ t.name }}</a></h3>
-    <p>{{ t.summary }}</p>
-    <p class="meta">需要：{{ t.hardware }}{% if t.install == 'pio' %}，從原始碼建置安裝{% endif %}</p>
-    {% if t.scenarios %}<p class="more"><a href="{{ root }}demo/{{ t.slug }}/">在網頁上試試看操作畫面</a></p>
-    {% elif t.install == 'pio' %}<p class="more"><a href="{{ root }}developers/#build">從原始碼建置的步驟</a></p>{% endif %}
-  </li>
+  {%- if t.scenarios %}{% set lh, lt = root ~ 'demo/' ~ t.slug ~ '/', '在網頁上試試看操作畫面' %}
+  {%- elif t.install == 'pio' %}{% set lh, lt = root ~ 'developers/#build', '從原始碼建置的步驟' %}
+  {%- else %}{% set lh, lt = none, none %}{% endif %}
+  {{ tool_card(t, root, root ~ t.slug ~ '/', t.name, '需要：' ~ t.hardware ~ ('，從原始碼建置安裝' if t.install == 'pio' else ''), lh, lt) }}
 {% endfor %}
 </ul>
 

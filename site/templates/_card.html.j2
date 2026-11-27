@@ -1,0 +1,11 @@
+{# 工具卡片：首頁、安裝頁與給開發者頁共用同一個結構，分類標籤、名稱、說明、需要的條件、底部的連結。
+   開發用的工具（audience = "dev"）只換標籤的文字與顏色 #}
+{% macro tool_card(t, root, href, title, meta, link_href=none, link_text=none, id=none) -%}
+  <li class="card {{ 'cat-dev' if t.audience == 'dev' else 'cat-privacy' }}"{% if id %} id="{{ id }}"{% endif %}>
+    <p class="tag">{{ '開發用' if t.audience == 'dev' else '隱私工具' }}</p>
+    <h3><a href="{{ href }}">{{ title }}</a></h3>
+    <p>{{ t.summary }}</p>
+    <p class="meta">{{ meta }}</p>
+    {% if link_href %}<p class="more"><a href="{{ link_href }}">{{ link_text }}</a></p>{% endif %}
+  </li>
+{%- endmacro %}

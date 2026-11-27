@@ -1,4 +1,5 @@
 {% extends "base.html.j2" %}
+{% from "_card.html.j2" import tool_card %}
 {% block main %}
 <p class="crumb"><a href="{{ root }}">ESP32 工坊</a></p>
 <h1>安裝韌體</h1>
@@ -9,16 +10,16 @@
 
 <h2>選擇要安裝的工具</h2>
 <ul class="cards">
-{% for t in tools if t.install == 'web' %}
-  <li class="card" id="{{ t.slug }}">
-    <h3><a href="{{ root }}install/{{ t.slug }}/">安裝{{ t.name }}</a></h3>
-    <p>{{ t.summary }}</p>
-    <p class="meta">操作頁面的語言：{% for f in t.firmware %}{{ f.label }}{% if not loop.last %}、{% endif %}{% endfor %}</p>
-  </li>
+{% for t in tools %}
+  {%- if t.install == 'web' %}
+  {{ tool_card(t, root, root ~ 'install/' ~ t.slug ~ '/', '安裝' ~ t.name, '操作頁面的語言：' ~ (t.firmware | map(attribute='label') | join('、')), root ~ 'install/' ~ t.slug ~ '/', '前往安裝', t.slug) }}
+  {%- else %}
+  {{ tool_card(t, root, root ~ t.slug ~ '/', t.name, '需要：' ~ t.hardware ~ '，不提供網頁安裝', root ~ 'developers/#build', '從原始碼建置的步驟', t.slug) }}
+  {%- endif %}
 {% endfor %}
 </ul>
 <p>裝好之後，照<a href="{{ root }}connect/">連上裝置</a>的步驟用手機或電腦打開操作頁面。</p>
 
 <h2>給開發者</h2>
-<p>每個工具的安裝頁用 ESP Web Tools 寫入正式通道的韌體，版本與 SHA-256 寫在各安裝頁的最後。{% for t in tools if t.install == 'pio' %}{{ t.name }}{% if not loop.last %}、{% endif %}{% endfor %}只提供從原始碼建置的方式，見<a href="{{ root }}developers/#build">建置與燒錄</a>。</p>
+<p>每個工具的安裝頁用 ESP Web Tools 寫入正式通道的韌體，版本與 SHA-256 寫在各安裝頁的最後。從原始碼建置與燒錄的方式見<a href="{{ root }}developers/#build">給開發者</a>。</p>
 {% endblock %}

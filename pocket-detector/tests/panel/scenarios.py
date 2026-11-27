@@ -121,5 +121,9 @@ def demo_script(scn, shot=False):
     scroll = ("setTimeout(()=>{let e=document.getElementById(%s);while(e&&e.parentElement&&e.parentElement.tagName!='SECTION')"
               "e=e.parentElement;for(let x=e&&e.previousElementSibling;x;x=x.previousElementSibling)x.hidden=true;},300);"
               % json.dumps(scn["scroll"]) if shot and scn.get("scroll") else "")
-    return ("<script>\n%s"
-            "addEventListener('load',()=>{showTab(%s);%s%s});\n</script>\n") % (stub, json.dumps(scn["tab"]), note, scroll)
+    # 不經過 fetch 的請求也擋掉：上傳韌體用 XMLHttpRequest，下載記錄直接換網址
+    block = ("window.XMLHttpRequest=function(){this.open=this.send=this.setRequestHeader=()=>{};this.upload={};};"
+             "addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[onclick*=\"location.href\"]');"
+             "if(b){e.stopImmediatePropagation();e.preventDefault();toast('示範資料沒有記錄可以下載');}},true);")
+    return ("<script>\n%s%s"
+            "addEventListener('load',()=>{showTab(%s);%s%s});\n</script>\n") % (stub, block, json.dumps(scn["tab"]), note, scroll)

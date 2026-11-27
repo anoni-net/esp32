@@ -197,7 +197,6 @@ class Site:
                 shutil.copytree(shots, out / "shots" / t["slug"])
             if t["scenarios"]:
                 self.build_frames(t, out / "demo" / t["slug"] / "frame")
-        (out / "robots.txt").write_text("User-agent: *\nDisallow: /demo/\n", encoding="utf-8")
 
     def build_frames(self, tool, out):
         """模擬面板：真正的面板網頁，fetch 換成回傳情境的假資料。"""

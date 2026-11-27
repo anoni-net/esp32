@@ -71,8 +71,14 @@ PATCHES = [
 
 
 def apply(out_dir: Path) -> list[str]:
-    """修改 out_dir（輸出的 static/esp-web-tools/）裡的檔案，回傳問題清單。"""
+    """修改 out_dir（輸出的 static/esp-web-tools/）裡的檔案，回傳問題清單。
+
+    改過的檔案換一個帶內容雜湊的檔名，並改寫其他檔案裡 import 它的路徑。ESP Web Tools 用固定的檔名載入
+    這些檔案、網址不帶版本參數，內容改了檔名不變的話，瀏覽器與 Cloudflare 會給舊的檔案（未翻譯、會清除 flash）。
+    """
+    import hashlib
     problems = []
+    changed = set()
     for prefix, pattern, repl, expected in PATCHES:
         files = sorted(out_dir.glob(f"{prefix}-*.js")) if prefix != "index" else sorted(out_dir.glob("index-*.js"))
         if len(files) != 1:
@@ -84,5 +90,26 @@ def apply(out_dir: Path) -> list[str]:
         if n != expected:
             problems.append(f"ESP Web Tools：{f.name} 的「{pattern[:50]}」比對到 {n} 次，預期 {expected} 次")
             continue
-        f.write_text(new, encoding="utf-8")
+        if new != text:
+            f.write_text(new, encoding="utf-8")
+            changed.add(f)
+    if problems:
+        return problems
+    renames = {}
+    for f in sorted(changed):
+        h = hashlib.sha256(f.read_bytes()).hexdigest()[:8]
+        new_name = f"{f.stem}.zh-{h}.js"
+        f.rename(f.with_name(new_name))
+        renames[f.name] = new_name
+    for js in out_dir.glob("*.js"):
+        text = js.read_text(encoding="utf-8")
+        new = text
+        for old, nn in renames.items():
+            new = new.replace(f'"./{old}"', f'"./{nn}"')
+        if new != text:
+            js.write_text(new, encoding="utf-8")
+    for old in renames:
+        for js in out_dir.glob("*.js"):
+            if f'"./{old}"' in js.read_text(encoding="utf-8"):
+                problems.append(f"ESP Web Tools：{js.name} 還在載入改名前的 {old}")
     return problems

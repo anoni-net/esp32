@@ -277,7 +277,8 @@ class Site:
         就只換那個網址。ESP Web Tools 的入口檔會再載入同一個資料夾的其他檔案，用整個資料夾的雜湊。"""
         import hashlib
         f = SITE / "static" / name
-        files = sorted(x for x in f.parent.iterdir() if x.is_file()) if name.startswith("esp-web-tools/") else [f]
+        files = (sorted(x for x in f.parent.iterdir() if x.is_file()) + [SITE / "esp_web_tools_patch.py"]
+                 if name.startswith("esp-web-tools/") else [f])
         return hashlib.sha256(b"".join(x.read_bytes() for x in files)).hexdigest()[:10]
 
     def build(self, out, target):
@@ -287,6 +288,11 @@ class Site:
             shutil.rmtree(out)
         out.mkdir(parents=True)
         shutil.copytree(SITE / "static", out / "static")
+        # ESP Web Tools：一般安裝不清除 flash、對話框翻成正體中文（site/esp_web_tools_patch.py）
+        import esp_web_tools_patch
+        patch_problems = esp_web_tools_patch.apply(out / "static" / "esp-web-tools")
+        if patch_problems:
+            raise SystemExit("\n".join(patch_problems))
         # 404 放在根目錄，由 nginx 的 error_page 送出，任何深度的網址都可能用到，連結用絕對路徑
         pages = list(self.pages()) + [("404.html", "404.html.j2", {"title": "找不到這一頁", "description": SITE_DESC})]
         sitemap = []

@@ -42,13 +42,13 @@
   {% endfor %}
   <ol>
     <li>按上面的按鈕，瀏覽器跳出一個視窗，選 <code>USB Single Serial</code>（或名稱帶有 usbmodem、usbserial 的那一個），按「連線」</li>
-    <li>接下來的視窗是英文的。按 <code>Install {{ tool.name }}</code></li>
-    <li>確認畫面再按一次 <code>Install</code></li>
+    <li>按「安裝{{ tool.name }}」</li>
+    <li>確認畫面再按一次「安裝」</li>
     <li>等進度條跑完，大約兩分鐘。這段時間不要拔線，也讓這個分頁留在畫面上</li>
   </ol>
   <p class="if">{{ icon('alert-circle-outline') }}<span>如果視窗裡沒有任何裝置，換一條能傳資料的線，或確認接的是 <code>COM</code>（<code>UART</code>）那個孔。有些板子在 Mac 上要先裝驅動程式，視窗裡有下載連結。</span></p>
   <p class="if">{{ icon('alert-circle-outline') }}<span>如果連線失敗或停在一半，拔掉線，按住板子上的 <code>BOOT</code> 鍵再接上線，放開之後重新按安裝。關掉 Arduino IDE 這類也在用板子的程式。</span></p>
-  <p class="done">{{ icon('check-circle-outline') }}<span>看到 <code>Installation complete!</code> 就裝好了，按 <code>Next</code> 關掉視窗。原本的設定與記錄都會保留。下一步要打開板子的 Wi-Fi。</span></p>
+  <p class="done">{{ icon('check-circle-outline') }}<span>看到「安裝完成！」就裝好了，按「下一步」再關掉視窗。板子上原本的設定與記錄都會保留。下一步要打開板子的 Wi-Fi。</span></p>
 </section>
 
 <section class="step" id="wifi">

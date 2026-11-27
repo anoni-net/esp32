@@ -29,6 +29,7 @@ import html
 import importlib.util
 import json
 import re
+import secrets
 import shutil
 import sys
 import tempfile
@@ -86,7 +87,8 @@ def fetch_version(channel, offline):
         return None
     url = f"https://assets.anoni.net/{channel}/latest.json"
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": UA})
+        # 加上隨機的查詢字串，避開 Cloudflare 快取的舊版本（同板子的做法）
+        req = urllib.request.Request(f"{url}?r={secrets.token_hex(4)}", headers={"User-Agent": UA})
         with urllib.request.urlopen(req, timeout=15) as r:
             j = json.load(r)
         return {"build": j["build"], "commit": j["commit"], "sha256": j["sha256"], "file": j["file"], "url": url}

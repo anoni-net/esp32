@@ -39,7 +39,7 @@ sha=$(git -C "$REPO" rev-parse --short=12 HEAD)
 ver=""
 for c in $CHANNELS; do
     # 讀不到版本資訊時這一輪略過，不要建出一份沒有版本的網頁
-    v=$(curl -fsS -A anoni-esp32-site "https://assets.anoni.net/$c/latest.json" 2>/dev/null) || exit 0
+    v=$(curl -fsS -A anoni-esp32-site "https://assets.anoni.net/$c/latest.json?r=$(date +%s)" 2>/dev/null) || exit 0
     ver="$ver$v"
 done
 key="$sha-$(printf '%s' "$ver" | sha256sum | cut -c1-8)"

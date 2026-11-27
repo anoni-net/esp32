@@ -125,7 +125,8 @@ p { margin: .5rem 0 1rem; }
 .card h3 a::after { content: ""; position: absolute; inset: 0; }
 .card h3 a:focus-visible { outline: none; }
 .card:has(h3 a:focus-visible) { outline: 2px solid var(--c-focus); outline-offset: 2px; }
-.card .meta { color: var(--c-muted); font-size: .9rem; margin-bottom: .5rem; }
+.meta { color: var(--c-muted); font-size: .9rem; }
+.card .meta { margin-bottom: .5rem; }
 /* 卡片整塊可以點，裡面的第二個連結要疊在上面才按得到 */
 .card .more { position: relative; z-index: 1; margin: 0; font-size: .95rem; }
 .steps { padding-left: 1.4rem; max-width: 42rem; }
@@ -138,6 +139,8 @@ p { margin: .5rem 0 1rem; }
 .prose code { font-size: .88em; background: var(--c-surface); padding: .05em .3em; border-radius: 4px; overflow-wrap: anywhere; }
 .prose pre { overflow-x: auto; background: var(--c-surface); border-radius: var(--radius); padding: .75rem 1rem; font-size: .85rem; line-height: 1.5; }
 .prose pre code { background: none; padding: 0; }
+/* 名稱、密碼、網址這類短字串不在中間斷行，320px 寬也放得下（--check 的版面檢查會擋下超出的）。給開發者頁有很長的路徑與指令，照常斷行 */
+.prose:not(.for-devs) p code, .prose:not(.for-devs) li code { white-space: nowrap; overflow-wrap: normal; }
 .table { overflow-x: auto; }
 .prose table { border-collapse: collapse; width: 100%; font-size: .92rem; margin: 1rem 0; }
 .prose th, .prose td { border-bottom: 1px solid var(--c-hair); padding: .4rem .5rem; text-align: left; vertical-align: top; }
@@ -203,9 +206,6 @@ esp-web-install-button:not(:defined) [slot="not-allowed"] { display: none; }
 esp-web-install-button [slot="unsupported"], esp-web-install-button [slot="not-allowed"] { display: block; }
 .faq { padding-left: 1.4rem; max-width: 42rem; }
 .faq li { margin: .4rem 0; }
-.dev { max-width: 42rem; background: var(--c-surface); border-radius: var(--radius); padding: .75rem 1rem; margin: 1rem 0; }
-.dev summary { cursor: pointer; font-weight: 600; color: var(--c-link); }
-.dev pre { overflow-x: auto; font-size: .85rem; }
 code { font-size: .88em; background: var(--c-surface); padding: .05em .3em; border-radius: 4px; }
 /* 密碼、網址、按鈕名稱這類短字串不在中間斷行 */
 .steps code, .faq code { white-space: nowrap; }

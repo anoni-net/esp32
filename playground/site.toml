@@ -5,3 +5,5 @@ summary = "用手機連上板子的熱點，在網頁上操作 ESP32-S3 的各�
 hardware = "ESP32-S3 N16R8 開發板"
 # pio：沒有發布通道，只提供 PlatformIO 的燒錄方式
 install = "pio"
+# 開發用的工具：不列在首頁與導覽列，放在「給開發者」頁
+audience = "dev"

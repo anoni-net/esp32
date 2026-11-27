@@ -86,7 +86,7 @@ _MEET_DEMO = dict(MEET_ALERT, devs=[dict(MEET_ALERT["devs"][0], nm="示範用的
 _HIST_DEMO = dict(HIST_PATH, name="BLE-Tracker-0000", places={"3": "家", "9": "辦公室"})
 
 DEMO = [
-    {"key": "clear", "title": "沒有發現", "desc": "附近沒有追蹤器，面板顯示最近一次掃描與周圍的裝置數",
+    {"key": "clear", "title": "沒有發現", "desc": "附近沒有追蹤器，畫面顯示最近一次掃描與周圍的裝置數",
      "tab": "scan", "status": _NO_TRACKER},
     {"key": "alert", "title": "警示", "desc": "一個與主人分開的 Find My 配件持續跟著你，觸發警示",
      "tab": "scan", "status": {}},

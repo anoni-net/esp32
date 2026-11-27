@@ -34,8 +34,8 @@
   <a class="brand" href="{{ root }}"><img class="logo" src="{{ asset('logo.svg') }}" alt="" width="24" height="24">ESP32 小工具</a>
   <nav class="main" aria-label="主要">
     {% for t in nav_tools %}<a href="{{ root }}{{ t.slug }}/"{% if path == t.slug + '/' %} aria-current="page"{% endif %}>{{ t.name }}</a>
-    {% endfor %}<a href="{{ root }}about-esp32/"{% if path == 'about-esp32/' %} aria-current="page"{% endif %}>ESP32 是什麼</a>
-    <a href="{{ root }}install/"{% if path == 'install/' %} aria-current="page"{% endif %}>安裝韌體</a>
+    {% endfor %}{% for p, label in [('install/', '安裝韌體'), ('connect/', '連上板子'), ('about-esp32/', 'ESP32 是什麼'), ('developers/', '給開發者')] %}<a href="{{ root }}{{ p }}"{% if path == p %} aria-current="page"{% endif %}>{{ label }}</a>
+    {% endfor %}
   </nav>
 </header>
 <main id="main">

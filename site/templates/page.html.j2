@@ -3,7 +3,7 @@
 <p class="crumb"><a href="{{ root }}">ESP32 小工具</a></p>
 <h1>{{ title }}</h1>
 {% if lead %}<p class="lead">{{ lead }}</p>{% endif %}
-<div class="prose">
+<div class="prose{% if path == 'developers/' %} for-devs{% endif %}">
 {{ html_body | safe }}
 </div>
 {% endblock %}

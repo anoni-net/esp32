@@ -22,6 +22,12 @@ layout_check.py），截圖存在 site/.cache/screenshots/。找不到 Chrome �
     <!-- oled -->        site.toml 的 [[oled]] 列出的 OLED 畫面
     {root}               網站根目錄的相對路徑，連到站內其他頁面時用
 
+site/pages/ 的頁面另外可以寫 <!-- versions -->（各工具正式通道的版本）與 <!-- devtools -->（開發用的工具）。
+
+讀者分兩種：不會寫程式、接上 USB 就要能裝好並連上板子的人，以及會寫程式的工程師。每一頁都先寫給前者，
+腳位、建置、版本雜湊這些技術內容放在頁尾的「給開發者」段落或 developers/ 頁。site.toml 寫
+audience = "dev" 的工具（例如示範韌體）不列在首頁與導覽列，列在 developers/ 頁。
+
 頁面裡的站內連結一律是相對路徑，clearnet（anoni.net/esp32/）與 onion（esp32.<onion>/）掛在
 不同的路徑也能用同一份。onion 那份把連到 anoni.net 的網址改成 onion 位址。頁面不載入任何
 JavaScript、外部字型與第三方資源。模擬面板是例外，放在 demo/<工具>/frame/，由主機另外設定 CSP，
@@ -71,6 +77,7 @@ def load_tools():
         t["dir"] = f.parent
         t["body"] = (f.parent / "site.md").read_text(encoding="utf-8")
         t["scenarios"] = load_scenarios(t)
+        t.setdefault("audience", "all")
         tools.append(t)
     return sorted(tools, key=lambda t: t["order"])
 
@@ -123,27 +130,47 @@ class Site:
 
     # 頁面：(輸出路徑, 模板, 內容)
     def pages(self):
-        yield "", "home.html.j2", {"title": "ESP32 小工具", "tools": self.tools, "description": SITE_DESC,
+        yield "", "home.html.j2", {"title": "ESP32 小工具", "tools": self.user_tools, "description": SITE_DESC,
                                    "hero_v": {t["slug"]: self.file_v(t["dir"] / "site" / "shots" / "alert.png") for t in self.tools}}
         for t in self.tools:
             yield f"{t['slug']}/", "tool.html.j2", {"title": t["name"], "tool": t, "description": t["summary"],
                                                    "html_body": self.body(t, depth=1)}
             if t["scenarios"]:
-                yield f"demo/{t['slug']}/", "demo.html.j2", {"title": f"{t['name']}的模擬面板", "tool": t,
-                                                             "description": f"在網頁上操作{t['name']}的手機面板，用的是虛構的示範資料。",
+                yield f"demo/{t['slug']}/", "demo.html.j2", {"title": f"{t['name']}的操作頁面（示範）", "tool": t,
+                                                             "description": f"在網頁上試試{t['name']}的操作頁面，用的是虛構的示範資料。",
                                                              "scenarios": t["scenarios"].DEMO}
         # manifest.json 在 assets.anoni.net 快取 12 小時。網址帶正式通道韌體的 SHA-256，換版之後網址就不同。
         # 部署腳本在 latest.json 變動時重建網頁，網址跟著換。韌體檔名本身帶雜湊，內容不會變
         manifest_v = {t["slug"]: (self.versions.get(t["slug"]) or {}).get("sha256", "")[:12] or "0" for t in self.tools}
         yield "install/", "install.html.j2", {"title": "安裝韌體", "tools": self.tools, "manifest_v": manifest_v,
                                               "description": "用電腦的 Chrome 或 Edge，接上 ESP32-S3 開發板，按一下就能安裝社群的韌體，不需要寫程式。",
-                                              "versions": {t["slug"]: self.version_block(t) for t in self.tools}}
+                                              "versions": {t["slug"]: self.version_block(t) for t in self.tools},
+                                              "builds": {t["slug"]: (self.versions.get(t["slug"]) or {}).get("build", "") for t in self.tools}}
         for p in sorted((SITE / "pages").glob("*.md")):
             meta, body = split_front(p.read_text(encoding="utf-8"))
             yield f"{p.stem}/", "page.html.j2", {"title": meta["title"], "lead": meta.get("lead", ""),
                                                  "description": meta.get("lead") or SITE_DESC,
-                                                 "html_body": self.md(body, depth=1, tool=None),
+                                                 "html_body": self.page_md(body, depth=1),
                                                  "tools": self.tools}
+
+    @property
+    def user_tools(self):
+        """給一般使用者的工具，列在首頁與導覽列。"""
+        return [t for t in self.tools if t["audience"] != "dev"]
+
+    def page_md(self, text, depth):
+        root = "../" * depth
+        out = self.md(text, depth, None)
+        out = re.sub(r"(<p>)?<!-- versions -->(</p>)?",
+                     lambda m: "".join(f'<h3>{html.escape(t["name"])}</h3>{self.version_block(t)}' for t in self.tools if t.get("channel")), out)
+        out = re.sub(r"(<p>)?<!-- devtools -->(</p>)?", lambda m: self.devtools(root), out)
+        return out
+
+    def devtools(self, root):
+        items = "".join(f'<li class="card"><h3><a href="{root}{t["slug"]}/">{html.escape(t["name"])}</a></h3>'
+                        f'<p>{html.escape(t["summary"])}</p><p class="meta">需要：{html.escape(t["hardware"])}</p></li>'
+                        for t in self.tools if t["audience"] == "dev")
+        return f'<ul class="cards">{items}</ul>'
 
     def body(self, tool, depth):
         return self.md(tool["body"], depth, tool)
@@ -189,7 +216,7 @@ class Site:
         return f'<div class="oled">{items}</div>'
 
     def demo_button(self, tool, root):
-        return f'<p class="actions"><a class="btn" href="{root}demo/{tool["slug"]}/">在網頁上試試看面板</a></p>'
+        return f'<p class="actions"><a class="btn" href="{root}demo/{tool["slug"]}/">在網頁上試試看操作頁面</a></p>'
 
     def install_button(self, tool, root):
         return f'<p class="actions"><a class="btn solid" href="{root}install/#{tool["slug"]}">前往安裝</a></p>'
@@ -231,7 +258,7 @@ class Site:
             root = prefix if path == "404.html" else "../" * path.count("/")
             page = self.env.get_template(tpl).render(
                 root=root, path=path, base=cfg["base"], onion_location=cfg["onion_location"] and cfg["onion_location"] + path,
-                repo=REPO_URL, target=target, nav_tools=self.tools,
+                repo=REPO_URL, target=target, nav_tools=self.user_tools,
                 asset=lambda name, root=root: f"{root}static/{name}?v={self.static_v(name)}",
                 og_image=f"{cfg['base']}static/og.png?v={self.static_v('og.png')}", **ctx)
             for old, new in cfg["rewrite"]:

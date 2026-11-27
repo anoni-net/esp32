@@ -112,7 +112,17 @@ async def measure(ws_url: str, base: str, pages: list[str], shots: Path) -> list
 # 2026-09 出現過五次，重跑都會過。排程發布在固定時間執行，失敗就要等下一輪才上線，
 # 所以開不出來時關掉重開，每次換一個連接埠與新的 profile
 LAUNCH_ATTEMPTS = 3
-LAUNCH_WAIT_SECONDS = 20
+LAUNCH_WAIT_SECONDS = 30
+
+
+def stop(process: subprocess.Popen) -> None:
+    """關掉 Chrome，10 秒內沒結束就強制結束（GitHub 的 runner 上 terminate 偶爾等不到）。"""
+    process.terminate()
+    try:
+        process.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait(timeout=10)
 
 
 def launch(chrome: str, tmp: Path) -> tuple[subprocess.Popen, str | None]:
@@ -134,8 +144,7 @@ def launch(chrome: str, tmp: Path) -> tuple[subprocess.Popen, str | None]:
             except (OSError, StopIteration, ValueError):
                 time.sleep(0.2)
         if attempt + 1 < LAUNCH_ATTEMPTS:
-            process.terminate()
-            process.wait(timeout=10)
+            stop(process)
     return process, None
 
 
@@ -159,8 +168,7 @@ def run(site: Path, pages: list[str], shots: Path, prefix: str = "esp32") -> tup
                 return [f"版面：Chrome 試了 {LAUNCH_ATTEMPTS} 次都沒有開出偵錯連接埠"], None
             problems = asyncio.run(measure(ws_url, base, pages, shots))
         finally:
-            process.terminate()
-            process.wait(timeout=10)
+            stop(process)
             server.shutdown()
     return problems, f"版面截圖存在 {shots}"
 

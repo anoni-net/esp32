@@ -1,5 +1,7 @@
 # anoni.net ESP32 小工具
 
+**只想使用工具、不會寫程式的話**：到 [anoni.net/esp32](https://anoni.net/esp32/) 用電腦的 Chrome 或 Edge [安裝韌體](https://anoni.net/esp32/install/)，接上 USB 按一下就好，再照[連上板子](https://anoni.net/esp32/connect/)的步驟用手機操作。這份 README 寫給要看原始碼或自己建置的人。
+
 匿名網路社群 anoni.net 用 ESP32-S3 開發板做的隱私小工具。反跟蹤工具需要讓人能檢查板子送出了什麼、記了什麼，所以原始碼公開。從這個 repo 建置、發布在 assets.anoni.net 的韌體都寫著建置它的 commit 與 SHA-256，可以對照這裡的原始碼。工作坊的參加者可以當場燒錄帶回家，想自己做一塊的人也可以照這裡的說明。
 
 ## 工具

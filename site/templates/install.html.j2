@@ -3,7 +3,7 @@
 {% block main %}
 <p class="crumb"><a href="{{ root }}">ESP32 小工具</a></p>
 <h1>安裝韌體</h1>
-<p class="lead">用電腦的 Chrome 或 Edge 打開這一頁，USB 線接上板子，按一下按鈕就能安裝，不需要寫程式。只要裝一次，之後的更新在手機面板上按一下就好。</p>
+<p class="lead">用電腦的 Chrome 或 Edge 打開這一頁，USB 線接上板子，按一下按鈕就能安裝，不需要寫程式。只要裝一次，之後的更新在操作頁面上按一下就好。</p>
 
 {% for t in tools if t.install == 'web' %}
 <section class="install" id="{{ t.slug }}">
@@ -14,7 +14,7 @@
     <div slot="unsupported" class="note">這個瀏覽器不能直接安裝，手機、Safari、Firefox 與 Tor Browser 都沒有網頁燒錄的功能。請在電腦上用 Chrome 或 Edge 打開 <strong>anoni.net/esp32/install/</strong>，接上板子再按安裝。</div>
     <div slot="not-allowed" class="note">網頁安裝要在 https 的網址底下才能使用，請從 https://anoni.net/esp32/install/ 打開。</div>
   </esp-web-install-button>
-  {{ versions[t.slug] | safe }}
+  {% if builds[t.slug] %}<p class="meta">目前的版本建置於 {{ builds[t.slug] }}。</p>{% endif %}
 </section>
 {% endfor %}
 
@@ -27,14 +27,7 @@
   <li><strong>等待完成</strong>：進度條跑完大約需要一兩分鐘，過程中不要拔掉 USB 線，也讓這個分頁留在畫面上。看到 <code>Installation complete!</code> 就完成了，按 <code>Next</code> 之後關掉視窗。</li>
 </ol>
 <p>安裝只會寫入韌體的部分，板子上原本的設定（熱點名稱與密碼）、警示歷史與記錄都會保留。</p>
-
-<h2>裝好之後</h2>
-<ol class="steps">
-  <li>拔掉 USB 線，接上行動電源或充電器。長按板子上的 <code>BOOT</code> 鍵 2 秒，板子會打開 Wi-Fi 熱點，名稱是 <code>BLE-Tracker-</code> 加上四個英數字。</li>
-  <li>手機連上這個熱點，密碼是 <code>anoni-tracker</code>，面板會自動跳出來。沒有跳出來時，用瀏覽器打開 <code>http://192.168.4.1</code>。</li>
-  <li>第一件事到「設定」改掉熱點的名稱與密碼。預設密碼公開在這一頁，任何人都知道。</li>
-  <li>之後要更新，在面板「設定 → 韌體」設定一個能上網的 Wi-Fi，按「檢查並安裝新版」，不必再回到這一頁。</li>
-</ol>
+<p class="actions"><a class="btn solid" href="{{ root }}connect/">下一步：連上板子</a></p>
 
 <h2>找不到板子的時候</h2>
 <ul class="faq">
@@ -42,23 +35,14 @@
   <li><strong>Mac 上找不到 CH340 或 CP210x</strong>：板子上的 USB 轉序列埠晶片需要驅動程式，安裝視窗裡有下載連結，裝好之後重新接上板子。</li>
   <li><strong>連線失敗或安裝到一半停住</strong>：拔掉 USB 線，按住板子上的 <code>BOOT</code> 鍵再接上線，放開 BOOT 之後重新按「接上板子並安裝」。</li>
   <li><strong>裝置被別的程式佔用</strong>：關掉 Arduino IDE、序列埠監控之類的程式再試一次。</li>
+  <li><strong>只有手機</strong>：手機的瀏覽器不能安裝韌體，請借一台電腦，或在工作坊現場請工作人員協助。</li>
 </ul>
 
-<h2>其他的安裝方式</h2>
-<p>手機、Safari、Firefox 與 Tor Browser 都沒有網頁燒錄要用的 Web Serial，請改用電腦上的 Chrome 或 Edge。會寫程式的人也可以從原始碼自行建置：</p>
-<details class="dev">
-  <summary>用 PlatformIO 從原始碼建置與燒錄</summary>
-  <ol>
-    <li>電腦裝好 <a href="https://git-scm.com/">Git</a> 與 <a href="https://platformio.org/install/cli">PlatformIO Core</a></li>
-    <li>下載原始碼並燒錄：
-<pre><code>git clone https://github.com/anoni-net/esp32.git
-cd esp32/pocket-detector
-pio run -t upload</code></pre></li>
-    <li>上傳失敗時，按住 <code>BOOT</code> 鍵、按一下 <code>RST</code> 鍵、放開 BOOT，讓板子進入燒錄模式再試一次</li>
-  </ol>
-  <p>Arduino IDE 的設定寫在<a href="https://github.com/anoni-net/esp32/tree/main/pocket-detector#arduino-ide">原始碼的說明</a>。</p>
-</details>
-{% for t in tools if t.install == 'pio' %}
-<p>{{ t.name }}是開發用的工具，只提供 PlatformIO 的方式，在原始碼的 <code>{{ t.slug }}</code> 資料夾執行 <code>pio run -t upload</code>，說明見<a href="{{ root }}{{ t.slug }}/">{{ t.name }}</a>。</p>
+<h2>給開發者</h2>
+<p>網頁安裝用 <a href="https://esphome.github.io/esp-web-tools/">ESP Web Tools</a>，寫入開機程式、分割表、otadata 與程式槽四段，不碰 NVS 與 flash 記錄。安裝的檔案與正式通道相同：</p>
+{% for t in tools if t.channel is defined %}
+<h3>{{ t.name }}</h3>
+{{ versions[t.slug] | safe }}
 {% endfor %}
+<p>要從原始碼建置，在 <a href="{{ repo }}">anoni-net/esp32</a> 的工具資料夾執行 <code>pio run -t upload</code>，<a href="{{ root }}developers/#build">建置與燒錄的細節</a>。{% for t in tools if t.install == 'pio' %}{{ t.name }}只提供這個方式。{% endfor %}</p>
 {% endblock %}

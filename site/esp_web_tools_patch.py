@@ -44,7 +44,7 @@ PATCHES = [
     ("install-dialog", r'_renderProgress\("Erasing"\)', '_renderProgress("清除中")', 1),
     ("install-dialog", r'This\s+will\s+take\s+\$\{"ESP8266"===this\._installState\.chipFamily\?"a minute":"2 minutes"\}\.<br />\s*'
                        + ws("Keep this page visible for fastest installation."),
-     '大約需要${"ESP8266"===this._installState.chipFamily?"1 分鐘":"2 分鐘"}，過程中不要拔掉 USB 線。<br />'
+     '大約需要 ${"ESP8266"===this._installState.chipFamily?"1 分鐘":"2 分鐘"}，過程中不要拔掉 USB 線。<br />'
      '讓這個分頁留在畫面上，安裝會比較快。', 1),
     ("install-dialog", r'label="Installation complete!"', 'label="安裝完成！"', 1),
     ("install-dialog", r't="Installation failed"', 't="安裝失敗"', 1),

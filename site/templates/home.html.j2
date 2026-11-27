@@ -15,10 +15,11 @@
 <h2>工具</h2>
 <ul class="cards">
 {% for t in tools %}
-  <li class="card">
+  <li class="card{% if t.audience == 'dev' %} dev-tool{% endif %}">
+    {% if t.audience == 'dev' %}<p class="tag">開發用</p>{% endif %}
     <h3><a href="{{ root }}{{ t.slug }}/">{{ t.name }}</a></h3>
     <p>{{ t.summary }}</p>
-    <p class="meta">需要：{{ t.hardware }}</p>
+    <p class="meta">需要：{{ t.hardware }}{% if t.install == 'pio' %}，從原始碼建置安裝{% endif %}</p>
     {% if t.scenarios %}<p class="more"><a href="{{ root }}demo/{{ t.slug }}/">在網頁上試試看操作畫面</a></p>{% endif %}
   </li>
 {% endfor %}

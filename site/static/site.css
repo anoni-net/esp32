@@ -28,6 +28,8 @@
   --c-active: var(--brand-cyan-600);
   /* 焦點外框跟底色要有 3:1（WCAG 1.4.11），cyan-500 在白底只有 2.5 */
   --c-focus: var(--brand-cyan-800);
+  /* 開發與技術的分類色（品牌素材的 --cat-dev，同 anoni-net/www） */
+  --cat-dev: #4d57b7;
   --radius: 8px;
   --frame: 58.5rem;
   --font: system-ui, -apple-system, "Segoe UI", "Noto Sans TC", "Noto Sans CJK TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
@@ -48,6 +50,7 @@
     --c-accent: var(--brand-cyan-300);
     --c-active: var(--brand-cyan-400);
     --c-focus: var(--brand-cyan-400);
+    --cat-dev: #a3b2fe;
   }
 }
 
@@ -131,6 +134,11 @@ p { margin: .5rem 0 1rem; }
 .card .meta { margin-bottom: .5rem; }
 /* 卡片整塊可以點，裡面的第二個連結要疊在上面才按得到 */
 .card .more { position: relative; z-index: 1; margin: 0; font-size: .95rem; }
+/* 開發用的工具：虛線框、淺底色與「開發用」標籤，跟給一般使用者的工具區隔 */
+.card.dev-tool { border-style: dashed; background: var(--c-surface); }
+.card.dev-tool:hover { border-color: var(--c-line); }
+.card .tag { display: inline-block; margin: 0 0 .4rem; padding: 0 .55rem; border-radius: 999px; font-size: .78rem; font-weight: 600; line-height: 1.7;
+  color: var(--cat-dev); border: 1px solid currentColor; }
 .steps { padding-left: 1.4rem; max-width: 42rem; }
 .steps li { margin: .4rem 0; }
 

@@ -27,7 +27,7 @@ site/pages/ 的頁面另外可以寫 <!-- versions -->（各工具正式通道�
 
 讀者分兩種：不會寫程式、接上 USB 就要能裝好並連上板子的人，以及會寫程式的工程師。每一頁都先寫給前者，
 腳位、建置、版本雜湊這些技術內容放在頁尾的「給開發者」段落或 developers/ 頁。site.toml 寫
-audience = "dev" 的工具（例如示範韌體）不列在首頁與導覽列，列在 developers/ 頁。
+audience = "dev" 的工具（例如示範韌體）不列在導覽列，首頁的工具列表排在最後並標成開發用，也列在 developers/ 頁。
 
 頁面裡的站內連結一律是相對路徑，clearnet（anoni.net/esp32/）與 onion（esp32.<onion>/）掛在
 不同的路徑也能用同一份。onion 那份把連到 anoni.net 的網址改成 onion 位址。頁面不載入任何
@@ -155,7 +155,9 @@ class Site:
 
     # 頁面：(輸出路徑, 模板, 內容)
     def pages(self):
-        yield "", "home.html.j2", {"title": "ESP32 小工具", "tools": self.user_tools, "description": SITE_DESC,
+        # 首頁列出全部的工具，開發用的排在後面、用不同的樣式標出來。導覽列只放給一般使用者的工具
+        yield "", "home.html.j2", {"title": "ESP32 小工具", "description": SITE_DESC,
+                                   "tools": self.user_tools + [t for t in self.tools if t["audience"] == "dev"],
                                    "hero_v": {t["slug"]: self.file_v(t["dir"] / "site" / "shots" / "alert.png") for t in self.tools}}
         for t in self.tools:
             yield f"{t['slug']}/", "tool.html.j2", {"title": t["name"], "tool": t, "description": t["summary"],
@@ -201,7 +203,7 @@ class Site:
         return out
 
     def devtools(self, root):
-        items = "".join(f'<li class="card"><h3><a href="{root}{t["slug"]}/">{html.escape(t["name"])}</a></h3>'
+        items = "".join(f'<li class="card dev-tool"><p class="tag">開發用</p><h3><a href="{root}{t["slug"]}/">{html.escape(t["name"])}</a></h3>'
                         f'<p>{html.escape(t["summary"])}</p><p class="meta">需要：{html.escape(t["hardware"])}</p></li>'
                         for t in self.tools if t["audience"] == "dev")
         return f'<ul class="cards">{items}</ul>'

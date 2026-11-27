@@ -203,7 +203,7 @@ class Site:
         return out
 
     def devtools(self, root):
-        items = "".join(f'<li class="card dev-tool"><p class="tag">開發用</p><h3><a href="{root}{t["slug"]}/">{html.escape(t["name"])}</a></h3>'
+        items = "".join(f'<li class="card cat-dev"><p class="tag">開發用</p><h3><a href="{root}{t["slug"]}/">{html.escape(t["name"])}</a></h3>'
                         f'<p>{html.escape(t["summary"])}</p><p class="meta">需要：{html.escape(t["hardware"])}</p></li>'
                         for t in self.tools if t["audience"] == "dev")
         return f'<ul class="cards">{items}</ul>'

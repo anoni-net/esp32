@@ -26,7 +26,8 @@ KEEP=5
 # 網頁上寫出版本的通道（各工具 site.toml 的 channel）
 CHANNELS="esp32-tracker"
 
-exec 9>/tmp/esp32-deploy.lock
+# 鎖檔放在 $BASE（同 anoni-net/www 的 tools/deploy-m6.sh），/tmp 會被系統清掉
+exec 9>"$BASE/.deploy.lock"
 flock -n 9 || exit 0
 [ -e "$BASE/hold" ] && exit 0
 

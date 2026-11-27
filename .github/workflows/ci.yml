@@ -45,12 +45,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          # 網頁寫出正式通道的版本時，要查得到那個 commit
-          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: pip install uv
+      # 不讀 assets.anoni.net 的版本資訊（同 anoni-net/www 的 CI），結果不受網路影響。
+      # 版面檢查用 Ubuntu 映像檔內建的 google-chrome
       - name: 專案網頁的建置與檢查
-        run: uv run site/build.py --check
+        run: uv run site/build.py --check --offline

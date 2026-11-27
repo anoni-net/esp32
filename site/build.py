@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["jinja2>=3.1", "markdown>=3.5"]
+# dependencies = ["jinja2>=3.1", "markdown>=3.5", "websockets>=13"]
 # ///
 """產生專案網頁 anoni.net/esp32/ 的 clearnet 與 onion 兩份靜態產物。
 
     uv run site/build.py                 # 產生到 site/public/clearnet 與 site/public/onion
     uv run site/build.py --out DIR       # 產生到 DIR/clearnet 與 DIR/onion，主機部署時用
     uv run site/build.py --check         # 產生到暫存目錄並檢查，CI 執行同一個指令
-    uv run site/build.py --offline       # 不讀 assets.anoni.net 的版本資訊
+    uv run site/build.py --offline       # 不讀 assets.anoni.net 的版本資訊（CI 用）
+
+--check 也用 headless Chrome 以 320、390、1280 三種寬度開每一頁，不能出現橫向捲軸（同 anoni-net/news 的
+layout_check.py），截圖存在 site/.cache/screenshots/。找不到 Chrome 時略過，可以用 CHROME 環境變數指定。
 
 工具的清單來自各工具資料夾的 site.toml，介紹頁的內文是同一個資料夾的 site.md。內文裡可以寫：
 
@@ -36,6 +39,7 @@ import tempfile
 import tomllib
 import urllib.request
 from pathlib import Path
+from urllib.parse import urlparse
 
 import markdown
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
@@ -56,6 +60,7 @@ TARGETS = {
     ]},
 }
 UA = "anoni-esp32-site"
+SITE_DESC = "匿名網路社群 anoni.net 用 ESP32-S3 開發板做的隱私小工具：隨身偵測器找出跟著你的藍牙追蹤器，也能檢查旅館房間與會議室。原始碼公開。"
 
 
 def load_tools():
@@ -118,21 +123,25 @@ class Site:
 
     # 頁面：(輸出路徑, 模板, 內容)
     def pages(self):
-        yield "", "home.html.j2", {"title": "ESP32 小工具", "tools": self.tools,
+        yield "", "home.html.j2", {"title": "ESP32 小工具", "tools": self.tools, "description": SITE_DESC,
                                    "hero_v": {t["slug"]: self.file_v(t["dir"] / "site" / "shots" / "alert.png") for t in self.tools}}
         for t in self.tools:
-            yield f"{t['slug']}/", "tool.html.j2", {"title": t["name"], "tool": t, "html_body": self.body(t, depth=1)}
+            yield f"{t['slug']}/", "tool.html.j2", {"title": t["name"], "tool": t, "description": t["summary"],
+                                                   "html_body": self.body(t, depth=1)}
             if t["scenarios"]:
                 yield f"demo/{t['slug']}/", "demo.html.j2", {"title": f"{t['name']}的模擬面板", "tool": t,
+                                                             "description": f"在網頁上操作{t['name']}的手機面板，用的是虛構的示範資料。",
                                                              "scenarios": t["scenarios"].DEMO}
         # manifest.json 在 assets.anoni.net 快取 12 小時。網址帶正式通道韌體的 SHA-256，換版之後網址就不同。
         # 部署腳本在 latest.json 變動時重建網頁，網址跟著換。韌體檔名本身帶雜湊，內容不會變
         manifest_v = {t["slug"]: (self.versions.get(t["slug"]) or {}).get("sha256", "")[:12] or "0" for t in self.tools}
         yield "install/", "install.html.j2", {"title": "安裝韌體", "tools": self.tools, "manifest_v": manifest_v,
+                                              "description": "用電腦的 Chrome 或 Edge，接上 ESP32-S3 開發板，按一下就能安裝社群的韌體，不需要寫程式。",
                                               "versions": {t["slug"]: self.version_block(t) for t in self.tools}}
         for p in sorted((SITE / "pages").glob("*.md")):
             meta, body = split_front(p.read_text(encoding="utf-8"))
             yield f"{p.stem}/", "page.html.j2", {"title": meta["title"], "lead": meta.get("lead", ""),
+                                                 "description": meta.get("lead") or SITE_DESC,
                                                  "html_body": self.md(body, depth=1, tool=None),
                                                  "tools": self.tools}
 
@@ -199,25 +208,46 @@ class Site:
                 f'<dt>檔案</dt><dd><a href="https://assets.anoni.net/{tool["channel"]}/{html.escape(v["file"])}">{html.escape(v["file"])}</a></dd>'
                 '</dl>')
 
+    @staticmethod
+    def static_v(name):
+        """static/ 底下檔案的版本參數（同 anoni-net/www 的 asset()）：每個檔案各自的內容雜湊，改了哪個檔案
+        就只換那個網址。ESP Web Tools 的入口檔會再載入同一個資料夾的其他檔案，用整個資料夾的雜湊。"""
+        import hashlib
+        f = SITE / "static" / name
+        files = sorted(x for x in f.parent.iterdir() if x.is_file()) if name.startswith("esp-web-tools/") else [f]
+        return hashlib.sha256(b"".join(x.read_bytes() for x in files)).hexdigest()[:10]
+
     def build(self, out, target):
         cfg = TARGETS[target]
-        # 樣式與圖示的網址帶內容的雜湊，換版之後瀏覽器與 Cloudflare 不會用到快取的舊檔
-        import hashlib
-        asset_v = hashlib.sha256(b"".join(f.read_bytes() for f in sorted((SITE / "static").rglob("*")) if f.is_file())).hexdigest()[:10]
+        prefix = urlparse(cfg["base"]).path
         if out.exists():
             shutil.rmtree(out)
         out.mkdir(parents=True)
         shutil.copytree(SITE / "static", out / "static")
-        for path, tpl, ctx in self.pages():
-            depth = path.count("/")
+        # 404 放在根目錄，由 nginx 的 error_page 送出，任何深度的網址都可能用到，連結用絕對路徑
+        pages = list(self.pages()) + [("404.html", "404.html.j2", {"title": "找不到這一頁", "description": SITE_DESC})]
+        sitemap = []
+        for path, tpl, ctx in pages:
+            root = prefix if path == "404.html" else "../" * path.count("/")
             page = self.env.get_template(tpl).render(
-                root="../" * depth, path=path, base=cfg["base"], onion_location=cfg["onion_location"] and cfg["onion_location"] + path,
-                repo=REPO_URL, target=target, nav_tools=self.tools, asset_v=asset_v, **ctx)
+                root=root, path=path, base=cfg["base"], onion_location=cfg["onion_location"] and cfg["onion_location"] + path,
+                repo=REPO_URL, target=target, nav_tools=self.tools,
+                asset=lambda name, root=root: f"{root}static/{name}?v={self.static_v(name)}",
+                og_image=f"{cfg['base']}static/og.png?v={self.static_v('og.png')}", **ctx)
             for old, new in cfg["rewrite"]:
                 page = page.replace(old, new)
-            dest = out / path / "index.html"
+            dest = out / path if path.endswith(".html") else out / path / "index.html"
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_text(page, encoding="utf-8")
+            if path != "404.html":
+                sitemap.append(cfg["base"] + path)
+        (out / "sitemap.xml").write_text(
+            '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+            + "".join(f"<url><loc>{html.escape(u)}</loc></url>\n" for u in sitemap) + "</urlset>\n", encoding="utf-8")
+        # clearnet 的 robots.txt 在 anoni.net 的根目錄，由 anoni-net/www 產生，列出這裡的 sitemap。
+        # onion 這側網站在子網域的根目錄，自己產生（同 anoni-net/news）
+        if target == "onion":
+            (out / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {cfg['base']}sitemap.xml\n", encoding="utf-8")
         for t in self.tools:
             for kind in ("shots", "oled"):
                 src = t["dir"] / "site" / kind
@@ -250,6 +280,7 @@ def split_front(text):
 def check(out, target):
     """站內連結都要找得到檔案，onion 那份不能有 clearnet 的 anoni.net 網址，頁面不載入外部資源。"""
     problems = []
+    prefix = urlparse(TARGETS[target]["base"]).path
     for f in out.rglob("*.html"):
         rel = f.relative_to(out)
         text = f.read_text(encoding="utf-8")
@@ -272,6 +303,12 @@ def check(out, target):
                     continue
                 if url.startswith("#"):
                     continue
+                if url.startswith("/"):
+                    # 404 頁用絕對路徑，要在這個網站的路徑底下
+                    if not url.startswith(prefix):
+                        problems.append(f"{target}/{rel}：連到網站以外的路徑 {url}")
+                        continue
+                    url = str(out / url[len(prefix):])
                 path = (f.parent / url.split("#")[0].split("?")[0]).resolve()
                 if path.is_dir():
                     path = path / "index.html"
@@ -295,10 +332,18 @@ def main():
     for target in TARGETS:
         site.build(base / target, target)
         problems += check(base / target, target)
+    notice = None
+    if a.check:
+        import layout_check
+        pages = [p for p, _, _ in site.pages()] + ["404.html"]
+        layout_problems, notice = layout_check.run(base / "clearnet", pages, SITE / ".cache" / "screenshots", prefix="esp32")
+        problems += layout_problems
     for p in problems:
         print(p, file=sys.stderr)
     if problems:
         sys.exit(f"有 {len(problems)} 個問題")
+    if notice:
+        print(notice)
     print(f"已產生 {base}/clearnet 與 {base}/onion")
 
 

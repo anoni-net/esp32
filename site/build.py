@@ -17,7 +17,7 @@ layout_check.py），截圖存在 site/.cache/screenshots/。找不到 Chrome �
 
     <!-- shot 情境 -->   放一張模擬面板的截圖（site/shots.py 產生，存在 <工具>/site/shots/）
     <!-- demo -->        「在網頁上試試看」的按鈕，連到模擬面板
-    <!-- install -->     「前往安裝」的按鈕
+    <!-- install -->     「前往安裝」的按鈕，連到 install/<工具>/
     <!-- version -->     正式通道目前的版本（建置時讀 latest.json）
     <!-- oled -->        site.toml 的 [[oled]] 列出的 OLED 畫面
     {root}               網站根目錄的相對路徑，連到站內其他頁面時用
@@ -78,6 +78,10 @@ def load_tools():
         t["body"] = (f.parent / "site.md").read_text(encoding="utf-8")
         t["scenarios"] = load_scenarios(t)
         t.setdefault("audience", "all")
+        # 網頁安裝的韌體，每個語系一份（[[firmware]]：lang、label、channel）。還沒寫的工具沿用 channel，只有正體中文
+        fw = t.get("firmware") or ([{"lang": "zh-TW", "label": "正體中文", "channel": t["channel"]}] if t.get("channel") else [])
+        t["firmware"] = fw
+        t.setdefault("channel", fw[0]["channel"] if fw else None)
         tools.append(t)
     return sorted(tools, key=lambda t: t["order"])
 
@@ -121,12 +125,16 @@ class Site:
         self.tools = load_tools()
         self.env = Environment(loader=FileSystemLoader(SITE / "templates"), autoescape=True,
                                undefined=StrictUndefined, trim_blocks=True, lstrip_blocks=True)
-        self.versions = {}
+        # 每個發布通道讀一次 latest.json。工具的版本是它主要通道（第一個語系）的版本
+        self.channel_versions = {}
         for t in self.tools:
-            v = fetch_version(t.get("channel"), offline)
-            if v:
-                v["linked"] = commit_in_repo(v["commit"])
-            self.versions[t["slug"]] = v
+            for ch in {t["channel"], *(f["channel"] for f in t["firmware"])} - {None}:
+                if ch not in self.channel_versions:
+                    v = fetch_version(ch, offline)
+                    if v:
+                        v["linked"] = commit_in_repo(v["commit"])
+                    self.channel_versions[ch] = v
+        self.versions = {t["slug"]: self.channel_versions.get(t["channel"]) for t in self.tools}
 
     # 頁面：(輸出路徑, 模板, 內容)
     def pages(self):
@@ -139,19 +147,28 @@ class Site:
                 yield f"demo/{t['slug']}/", "demo.html.j2", {"title": f"{t['name']}的操作頁面（示範）", "tool": t,
                                                              "description": f"在網頁上試試{t['name']}的操作頁面，用的是虛構的示範資料。",
                                                              "scenarios": t["scenarios"].DEMO}
-        # manifest.json 在 assets.anoni.net 快取 12 小時。網址帶正式通道韌體的 SHA-256，換版之後網址就不同。
-        # 部署腳本在 latest.json 變動時重建網頁，網址跟著換。韌體檔名本身帶雜湊，內容不會變
-        manifest_v = {t["slug"]: (self.versions.get(t["slug"]) or {}).get("sha256", "")[:12] or "0" for t in self.tools}
-        yield "install/", "install.html.j2", {"title": "安裝韌體", "tools": self.tools, "manifest_v": manifest_v,
-                                              "description": "用電腦的 Chrome 或 Edge，接上 ESP32-S3 開發板，按一下就能安裝社群的韌體，不需要寫程式。",
-                                              "versions": {t["slug"]: self.version_block(t) for t in self.tools},
-                                              "builds": {t["slug"]: (self.versions.get(t["slug"]) or {}).get("build", "") for t in self.tools}}
+        # 安裝頁：install/ 選工具，install/<工具>/ 選語系並安裝。工具與語系變多時每一頁都還是短的
+        yield "install/", "install.html.j2", {"title": "安裝韌體", "tools": self.tools,
+                                              "description": "用電腦的 Chrome 或 Edge，接上 ESP32-S3 開發板，按一下就能安裝社群的韌體，不需要寫程式。"}
+        for t in self.tools:
+            if t.get("install") != "web":
+                continue
+            yield f"install/{t['slug']}/", "install_tool.html.j2", {
+                "title": f"安裝{t['name']}", "tool": t, "firmware": [self.firmware_info(t, f) for f in t["firmware"]],
+                "description": f"用電腦的 Chrome 或 Edge，接上 ESP32-S3 開發板，按一下就能安裝{t['name']}，不需要寫程式。"}
         for p in sorted((SITE / "pages").glob("*.md")):
             meta, body = split_front(p.read_text(encoding="utf-8"))
             yield f"{p.stem}/", "page.html.j2", {"title": meta["title"], "lead": meta.get("lead", ""),
                                                  "description": meta.get("lead") or SITE_DESC,
                                                  "html_body": self.page_md(body, depth=1),
                                                  "tools": self.tools}
+
+    def firmware_info(self, tool, fw):
+        """安裝按鈕要的資料。manifest.json 在 assets.anoni.net 快取 12 小時，網址帶那個通道韌體的 SHA-256，
+        換版之後網址就不同。部署腳本在 latest.json 變動時重建網頁，網址跟著換。韌體檔名本身帶雜湊，內容不會變"""
+        v = self.channel_versions.get(fw["channel"]) or {}
+        return dict(fw, manifest=f"https://assets.anoni.net/{fw['channel']}/manifest.json?v={v.get('sha256', '')[:12] or '0'}",
+                    build=v.get("build", ""), version_html=self.version_block(tool, fw["channel"]))
 
     @property
     def user_tools(self):
@@ -219,10 +236,11 @@ class Site:
         return f'<p class="actions"><a class="btn" href="{root}demo/{tool["slug"]}/">在網頁上試試看操作頁面</a></p>'
 
     def install_button(self, tool, root):
-        return f'<p class="actions"><a class="btn solid" href="{root}install/#{tool["slug"]}">前往安裝</a></p>'
+        return f'<p class="actions"><a class="btn solid" href="{root}install/{tool["slug"]}/">前往安裝</a></p>'
 
-    def version_block(self, tool):
-        v = self.versions.get(tool["slug"])
+    def version_block(self, tool, channel=None):
+        channel = channel or tool["channel"]
+        v = self.channel_versions.get(channel)
         if not v:
             return '<p class="note">目前的版本資訊暫時讀不到，請到原始碼的頁面查看。</p>'
         commit = html.escape(v["commit"])
@@ -232,7 +250,7 @@ class Site:
                 f'<dt>建置時間</dt><dd>{html.escape(v["build"])}</dd>'
                 f'<dt>commit</dt><dd>{src}</dd>'
                 f'<dt>SHA-256</dt><dd><code>{html.escape(v["sha256"])}</code></dd>'
-                f'<dt>檔案</dt><dd><a href="https://assets.anoni.net/{tool["channel"]}/{html.escape(v["file"])}">{html.escape(v["file"])}</a></dd>'
+                f'<dt>檔案</dt><dd><a href="https://assets.anoni.net/{channel}/{html.escape(v["file"])}">{html.escape(v["file"])}</a></dd>'
                 '</dl>')
 
     @staticmethod
@@ -318,8 +336,8 @@ def check(out, target):
             if any(not re.search(r'type="module" src="[./]*static/esp-web-tools/install-button\.js(\?v=\w+)?"', s) for s in scripts) \
                     or re.search(r"<script\b[^>]*>[^<]", text) or re.search(r'\son[a-z]+=|style="', text):
                 problems.append(f"{target}/{rel}：頁面有 inline 的 script、事件或 style，CSP 會擋下")
-            if scripts and rel.as_posix() != "install/index.html":
-                problems.append(f"{target}/{rel}：只有安裝頁可以載入 script")
+            if scripts and not (rel.parts[0] == "install" and len(rel.parts) == 3):
+                problems.append(f"{target}/{rel}：只有各工具的安裝頁（install/<工具>/）可以載入 script")
             for m in re.finditer(r'(?:href|src)="([^"]+)"', text):
                 url = html.unescape(m.group(1))
                 if re.match(r"(https?:|mailto:)", url):

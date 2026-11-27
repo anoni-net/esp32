@@ -209,3 +209,4 @@ esp-web-install-button [slot="unsupported"], esp-web-install-button [slot="not-a
 code { font-size: .88em; background: var(--c-surface); padding: .05em .3em; border-radius: 4px; }
 /* 密碼、網址、按鈕名稱這類短字串不在中間斷行 */
 .steps code, .faq code { white-space: nowrap; }
+.install-lang + .install-lang { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--c-hair); }

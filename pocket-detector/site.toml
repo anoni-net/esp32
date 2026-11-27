@@ -5,8 +5,16 @@ summary = "找出一直跟著你的 AirTag、SmartTag、Tile 與 DULT 追蹤器�
 hardware = "ESP32-S3 N16R8 開發板，蜂鳴器與 OLED 選用"
 # 正式通道在 assets.anoni.net 上的目錄，介紹頁與安裝頁寫出目前的版本
 channel = "esp32-tracker"
-# web：之後提供網頁安裝。第一階段先連到 PlatformIO 的燒錄方式
+# web：安裝頁用 ESP Web Tools 從網頁安裝。pio：只提供從原始碼建置
 install = "web"
+
+# 網頁安裝的韌體，每個語系一份：操作頁面的語言、按鈕上的名稱、正式通道在 assets.anoni.net 上的目錄。
+# 只有一個語系時按鈕寫「接上板子並安裝」，多個語系時每個語系一個按鈕。新增語系時韌體要另外建置並發布到
+# 自己的通道（tools/publish_firmware.sh 的 publish.env），再加一段 [[firmware]]
+[[firmware]]
+lang = "zh-TW"
+label = "正體中文"
+channel = "esp32-tracker"
 
 [demo]
 page = "pocket_detector/panel.html"

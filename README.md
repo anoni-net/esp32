@@ -62,7 +62,7 @@ GitHub Actions 在每個 PR 編譯兩個工具，並執行不需要板子的測�
 
 ## 專案網頁
 
-[anoni.net/esp32/](https://anoni.net/esp32/) 由 `site/build.py` 產生純 HTML，不載入 JavaScript、外部字型與第三方資源，clearnet 與 onion 各一份。首頁的工具清單來自各工具資料夾的 `site.toml`，介紹頁的內文是同一個資料夾的 `site.md`，新增一個工具資料夾就多一張卡片。
+[anoni.net/esp32/](https://anoni.net/esp32/) 由 `site/build.py` 產生純 HTML，不載入 JavaScript、外部字型與第三方資源，clearnet 與 onion 各一份。首頁的工具清單來自各工具資料夾的 `site.toml`，介紹頁的內文是同一個資料夾的 `site.md`，新增一個工具資料夾就多一張卡片。安裝頁分成選工具（`/esp32/install/`）與各工具的安裝頁（`/esp32/install/<工具>/`），各語系的韌體寫在 `site.toml` 的 `[[firmware]]`，每個語系一個安裝按鈕。
 
 ```bash
 uv run site/build.py            # 產生到 site/public/

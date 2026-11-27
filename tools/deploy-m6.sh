@@ -49,7 +49,7 @@ current=$(readlink "$BASE/current" 2>/dev/null || true)
 [ "$(cat "$BASE/failed" 2>/dev/null || true)" = "$key" ] && exit 0
 
 dest=$BASE/releases/$key
-need="index.html pocket-detector/index.html playground/index.html about-esp32/index.html install/index.html demo/pocket-detector/index.html demo/pocket-detector/frame/alert.html static/site.css shots/pocket-detector/alert.png"
+need="index.html pocket-detector/index.html playground/index.html about-esp32/index.html install/index.html install/pocket-detector/index.html connect/index.html developers/index.html demo/pocket-detector/index.html demo/pocket-detector/frame/alert.html static/site.css shots/pocket-detector/alert.png"
 rm -rf "$dest.tmp"
 # build.py 本身會檢查站內連結、外部資源與 onion 版本裡的 clearnet 網址，失敗時回傳非零
 if ! (cd "$REPO" && "$UV" run -q site/build.py --out "$dest.tmp" \

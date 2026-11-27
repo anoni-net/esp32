@@ -74,6 +74,8 @@ OLED 的 `VCC` 接 3.3V，ESP32-S3 的腳位不耐 5V。完整的接線說明見
 
 每個通道有 `latest.json`（板子從網址更新時讀）與 `manifest.json`（網頁安裝讀），寫著建置時間、commit、SHA-256 與檔名。韌體檔名帶 SHA-256 的前 12 碼，同一個檔名的內容不會改變。板子下載時一邊寫進另一個程式槽一邊計算 SHA-256，跟 `latest.json` 相符才切換。網址寫死在韌體裡，知道熱點密碼的人也只能裝上社群發布的版本。
 
+安裝頁分成兩層：`/esp32/install/` 選工具，`/esp32/install/<工具>/` 選語系並安裝。每個工具在 `site.toml` 用 `[[firmware]]` 列出各語系的韌體（語言、按鈕上的名稱、發布通道），新增語系時另外建置、發布到自己的通道，再加一段 `[[firmware]]`，安裝頁就多一個按鈕。
+
 新版本先用 `tools/publish_firmware.sh` 發布到測試通道，開發用的板子從測試通道更新、實機測試（`tests/hil/run_hil.py --update`）通過之後，才用 `tools/promote_firmware.sh` 把同一個檔案原封不動複製到正式通道。
 
 正式通道目前的版本：

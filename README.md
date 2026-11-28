@@ -144,7 +144,7 @@ Each tool's channel directories and build settings are in `<tool>/publish.env`. 
 
 ```bash
 cd pocket-detector
-./tools/run_tests.sh                      # unit, panel and comparison tests
+./tools/run_tests.sh                      # unit, panel and color contrast tests
 ./tools/run_tests.sh --hil /dev/cu.xxx    # add hardware-in-the-loop tests with a board connected to the computer
 ```
 

@@ -36,4 +36,4 @@
 
 ## 文字
 
-README、註解與面板文字用正體中文，照 [anoni.net 寫作風格規範](https://anoni.net/join/writing-style/)。
+README、註解與面板文字用正體中文，照 [anoni.net 寫作風格規範](https://anoni.net/join/writing-style/)。根目錄的 `README.md` 後半是英文版，改中文段落時一起更新，英文段引用的按鈕名稱照 `pocket-detector/i18n/panel.toml` 的 `en`。
